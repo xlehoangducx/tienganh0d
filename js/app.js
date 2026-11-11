@@ -355,11 +355,9 @@ window.toggleFreeMode = function() {
   saveStepGatingState();
   window.updateModuleTabsUI();
   if (isFreeMode) {
-    alert("🔓 Đã BẬT Chế Độ Tự Do Ôn Tập!
-Bạn có thể tự do mở xem và ôn tập bất kỳ bước nào trong 7 module.");
+    alert("🔓 Đã BẬT Chế Độ Tự Do Ôn Tập!\nBạn có thể tự do mở xem và ôn tập bất kỳ bước nào trong 7 module.");
   } else {
-    alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!
-Các module sẽ tuân theo lộ trình tiếp thu khoa học thần kinh từng bước.");
+    alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!\nCác module sẽ tuân theo lộ trình tiếp thu khoa học thần kinh từng bước.");
   }
 };
 
@@ -1396,8 +1394,6 @@ function updateCurrentDialogueTurnUI() {
   if (resultBox) resultBox.classList.add("hidden");
   if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới và nói to câu tiếng Anh trên vào micro";
 }
-
-let currentStoryAudio = null;
 
 window.narrateCurrentScenario = function() {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
