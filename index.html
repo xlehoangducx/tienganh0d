@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI English Hub - Học Tiếng Anh Từ Số 0 Miễn Phí</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="border-b border-slate-800 bg-slate-900/85 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">AI English Hub</span>
+          <span class="text-[11px] block text-slate-400">Từ Số 0 Đến Bản Xứ • 0đ Miễn Phí</span>
+        </div>
+      </a>
+
+      <!-- Actions -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Nút Mời Cà Phê tinh tế -->
+        <button onclick="openDonateModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-850 hover:bg-slate-800 text-amber-300 border border-amber-500/25 transition">
+          <span>☕</span>
+          <span class="hidden sm:inline">Mời Cà Phê</span>
+        </button>
+
+        <!-- Nút Đăng nhập / Vào học -->
+        <button id="btnGoogleLogin" class="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-emerald-500/25 active:scale-95">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Đăng Nhập</span>
+        </button>
+
+        <a id="btnDashboardLink" href="dashboard.html" class="hidden items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Vào Phòng Học</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <main class="flex-grow">
+    <section class="relative overflow-hidden py-14 sm:py-20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-950 to-slate-950 pointer-events-none"></div>
+      
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Học Tiếng Anh 0đ Dành Cho Người Chưa Biết Gì</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+          Học Tiếng Anh Từ Số 0<br/>
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+            Bằng Phương Pháp Mô Phỏng AI
+          </span>
+        </h1>
+
+        <p class="max-w-2xl mx-auto text-sm sm:text-base text-slate-300 mb-8 leading-relaxed">
+          Không nhồi ngữ pháp khô khan. Không dịch thầm trong đầu. Học qua <strong>Cụm từ đời thực (Chunks)</strong>, <strong>Phát âm chuẩn giọng Mỹ</strong> và <strong>Cơ chế tự động lưu tiến độ riêng biệt cho từng tài khoản Gmail</strong>.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="dashboard.html" class="w-full sm:w-auto flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-7 py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition hover:scale-105 active:scale-95 text-sm sm:text-base">
+            <i data-lucide="play-circle" class="w-5 h-5"></i>
+            <span>Vào Học Ngay (0đ Miễn Phí)</span>
+          </a>
+          <button onclick="openDonateModal()" class="w-full sm:w-auto flex items-center justify-center space-x-2 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/25 px-6 py-3 rounded-xl font-semibold transition text-sm sm:text-base">
+            <span>☕</span>
+            <span>Mời Cà Phê Tác Giả</span>
+          </button>
+        </div>
+
+        <!-- THÔNG TIN ĐỒNG HÀNH ẨN DANH -->
+        <div class="mt-10 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 max-w-xl mx-auto text-left flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg flex-shrink-0">
+            <i data-lucide="user" class="w-5 h-5"></i>
+          </div>
+          <div class="text-xs text-slate-300">
+            <div class="font-bold text-white text-sm">Học Viên #001 & Người Sáng Lập Dự Án</div>
+            <p class="text-slate-400 mt-0.5 leading-relaxed">
+              "Tôi cũng là một người bắt đầu học từ con số 0. Tôi đồng hành cùng Trí tuệ Nhân tạo Gemini để biên soạn lại giáo trình thực chiến này, với mong muốn bất kỳ ai cũng có thể làm chủ tiếng Anh hoàn toàn miễn phí."
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SỨ MỆNH & ĐẶC QUYỀN ================= -->
+    <section class="py-14 bg-slate-900/40 border-y border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Hệ Thống Được Thiết Kế Cho Bạn Như Thế Nào?</h2>
+          <p class="text-slate-400 text-xs sm:text-sm">Mỗi học viên có một không gian học tập và tiến độ hoàn toàn độc lập</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center mb-4">
+              <i data-lucide="user-check" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-base text-white mb-2">Tiến Độ Riêng Cho Từng Gmail</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Bạn đăng ký ngày nào thì bắt đầu từ ngày đó. Điểm trắc nghiệm, bài học đã qua đều được lưu trên đám mây Firestore, không bị lẫn lộn với người khác.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-4">
+              <i data-lucide="volume-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-base text-white mb-2">Phát Âm Chuẩn Giọng Mỹ 0đ</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Tích hợp công nghệ nhận diện giọng nói và phát âm trình duyệt chuẩn bản xứ. Bạn mở trên điện thoại hay máy tính đều có thể bấm loa nghe nhại theo.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center mb-4">
+              <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-base text-white mb-2">Chống Quên Khi Nghỉ Học Lâu</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Nếu bạn bận rộn 2-3 ngày không vào học, hệ thống tự động nhận diện và đưa ra bài ôn tập 3 phút (Spaced Repetition) để kích hoạt lại trí nhớ trước khi sang bài mới.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BẢN ĐỒ 5 GIAI ĐOẠN ================= -->
+    <section class="py-14">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Lộ Trình Học Chi Tiết (0% → 100%)</h2>
+          <p class="text-slate-400 text-xs sm:text-sm">Học từng bước vững chắc, không vội vàng, không nản chí</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Giai đoạn 0 -->
+          <div class="p-5 rounded-2xl bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-900 border border-blue-500/30 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-blue-400 uppercase tracking-wider">Giai đoạn 0 • Tiến độ: 0% → 10%</span>
+              <h4 class="text-base font-bold text-white mt-0.5">Mở Khóa Cơ Miệng & 100 Token Cốt Lõi</h4>
+              <p class="text-xs text-slate-400 mt-1">Làm chủ âm thổi hơi /θ/, âm gió /s/, âm bật /t/ và câu chào hỏi phản xạ.</p>
+            </div>
+            <a href="dashboard.html" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition flex-shrink-0">
+              Vào Học
+            </a>
+          </div>
+
+          <!-- Giai đoạn 1 -->
+          <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between opacity-80">
+            <div>
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Giai đoạn 1 • Tiến độ: 10% → 30%</span>
+              <h4 class="text-base font-bold text-slate-300 mt-0.5">Giao Tiếp Sinh Tồn Đời Thực</h4>
+              <p class="text-xs text-slate-400 mt-1">500 cụm từ phản xạ: Ăn uống, mua sắm, hỏi đường, khách sạn, sân bay.</p>
+            </div>
+            <span class="text-[11px] text-slate-500 px-2.5 py-1 bg-slate-800 rounded-lg">Sắp mở</span>
+          </div>
+
+          <!-- Giai đoạn 2-4 -->
+          <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between opacity-70">
+            <div>
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Giai đoạn 2, 3, 4 • Tiến độ: 30% → 100%</span>
+              <h4 class="text-base font-bold text-slate-300 mt-0.5">Nối Câu & Tư Duy Trực Tiếp Như Người Mỹ</h4>
+              <p class="text-xs text-slate-400 mt-1">1.500 đến 4.000 từ, nghe hiểu podcast, phim ảnh và làm việc độc lập.</p>
+            </div>
+            <span class="text-[11px] text-slate-500 px-2.5 py-1 bg-slate-800 rounded-lg">Lộ trình nâng cao</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODAL MỜI CÀ PHÊ (TÙY TÂM & TỰ NGUYỆN) ================= -->
+  <div id="donateModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 max-w-md w-full rounded-3xl p-6 relative shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Close button -->
+      <button onclick="closeDonateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-5">
+        <div class="w-13 h-13 rounded-2xl bg-amber-500/15 text-amber-300 flex items-center justify-center text-2xl mx-auto mb-3">
+          ☕
+        </div>
+        <h3 class="text-xl font-bold text-white">Mời Tác Giả Một Ly Cà Phê</h3>
+        <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+          Nền tảng này <strong>100% miễn phí vì cộng đồng</strong>. Nếu bạn thấy các bài học này hữu ích và muốn tiếp thêm động lực cho tác giả duy trì máy chủ, bạn có thể gửi tặng một ly cà phê nhỏ nhé (hoàn toàn tùy tâm)!
+        </p>
+      </div>
+
+      <!-- Khung mã QR Chuyển khoản VietQR -->
+      <div class="bg-white p-3 rounded-2xl text-center shadow-inner mb-4">
+        <img id="qrImage" src="assets/qr-donate.jpg" 
+             alt="Mã QR Chuyển khoản" class="w-48 h-auto mx-auto rounded-xl object-contain">
+        <span class="text-[11px] text-slate-600 block mt-2 font-medium">Quét bằng ứng dụng ngân hàng hoặc MoMo</span>
+      </div>
+
+      <!-- Thông tin STK rõ ràng -->
+      <div class="space-y-2 text-xs bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 mb-5">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Ngân hàng:</span>
+          <span class="font-bold text-slate-200" id="donateBankName">MB Bank</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Số tài khoản:</span>
+          <div class="flex items-center space-x-1.5">
+            <span class="font-mono font-bold text-cyan-400 text-sm" id="donateAccountNumber">0900000000</span>
+            <button onclick="copySTK()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nút đóng -->
+      <button onclick="closeDonateModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition">
+        Đóng lại
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-slate-800 bg-slate-900/40 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        Nền tảng học tiếng Anh trực tuyến phi lợi nhuận 0đ • Phát triển vì người học Việt Nam
+      </div>
+      <div class="flex items-center space-x-4 text-xs">
+        <button onclick="openDonateModal()" class="text-amber-400 hover:underline">Mời cà phê ☕</button>
+        <span>•</span>
+        <a href="dashboard.html" class="text-emerald-400 hover:underline">Vào phòng học</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script type="module">
+    import { setupAuthUI } from "./js/auth.js";
+    import { DONATE_CONFIG, getVietQRUrl } from "./js/donate-config.js";
+
+    lucide.createIcons();
+
+    // Điền thông tin Donate từ cấu hình
+    document.getElementById("donateBankName").textContent = DONATE_CONFIG.banking.bankName;
+    document.getElementById("donateAccountNumber").textContent = DONATE_CONFIG.banking.accountNumber;
+    document.getElementById("qrImage").src = DONATE_CONFIG.banking.qrImagePath;
+
+    window.openDonateModal = function() {
+      document.getElementById("donateModal").classList.remove("hidden");
+    };
+
+    window.closeDonateModal = function() {
+      document.getElementById("donateModal").classList.add("hidden");
+    };
+
+    window.copySTK = function() {
+      navigator.clipboard.writeText(DONATE_CONFIG.banking.accountNumber);
+      alert("Đã sao chép số tài khoản!");
+    };
+
+    setupAuthUI((user, profile) => {
+      const btnDashboardLink = document.getElementById("btnDashboardLink");
+      const btnGoogleLogin = document.getElementById("btnGoogleLogin");
+
+      if (user) {
+        if (btnGoogleLogin) btnGoogleLogin.classList.add("hidden");
+        if (btnDashboardLink) {
+          btnDashboardLink.classList.remove("hidden");
+          btnDashboardLink.classList.add("flex");
+        }
+      } else {
+        if (btnGoogleLogin) btnGoogleLogin.classList.remove("hidden");
+        if (btnDashboardLink) btnDashboardLink.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>
