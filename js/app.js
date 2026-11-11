@@ -194,52 +194,46 @@ function renderMouthTechniques(techniques) {
     return;
   }
 
-  container.innerHTML = techniques.map(m => {
-    const firstWord = m.example.split(',')[0].trim();
+  container.innerHTML = techniques.map((m, idx) => {
+    const wordList = m.words || m.example.split(',').map(s => s.trim());
+    const primaryWord = wordList[0];
+
     return `
-    <div class="p-4 rounded-xl cyber-card card-3d">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-2xl font-extrabold text-cyan-400 font-mono">${m.sound}</span>
-        <button onclick="speakText('${firstWord}')" class="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500 text-cyan-300 hover:text-white transition flex items-center space-x-1.5" title="Bấm nghe phát âm từ mẫu: ${firstWord}">
-          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-          <span class="text-xs font-mono font-bold">${m.example}</span>
-        </button>
+    <div class="p-4 rounded-xl cyber-card card-3d flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-2xl font-extrabold text-cyan-400 font-mono">${m.sound}</span>
+          <div class="flex flex-wrap gap-1.5">
+            ${wordList.map(w => `
+              <button onclick="speakText('${w}')" class="px-2 py-0.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500 text-cyan-300 hover:text-white transition flex items-center space-x-1" title="Bấm nghe phát âm: ${w}">
+                <i data-lucide="volume-2" class="w-3 h-3"></i>
+                <span class="text-xs font-mono font-bold">${w}</span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed mb-2">${m.guide}</p>
+        <div class="text-[11px] text-emerald-400/90 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 mb-3">
+          💡 <strong>Mẹo cơ miệng:</strong> ${m.tip}
+        </div>
       </div>
-      <p class="text-xs text-slate-300 leading-relaxed mb-2">${m.guide}</p>
-      <div class="text-[11px] text-emerald-400/90 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
-        💡 <strong>Mẹo cơ miệng:</strong> ${m.tip}
+
+      <!-- Khu vực bấm Micro phát âm thử âm này -->
+      <div class="pt-2 border-t border-slate-800">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] text-slate-400 font-mono">Luyện phát âm từ: <strong class="text-white">${primaryWord}</strong></span>
+          <button id="btn-mouth-mic-${idx}" onclick="practiceMouthSound('${primaryWord}', ${idx})" class="px-2.5 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 text-xs font-semibold flex items-center space-x-1.5 transition">
+            <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+            <span>Nói thử</span>
+          </button>
+        </div>
+        <div id="mouth-feedback-${idx}" class="hidden mt-2 p-2 rounded-lg bg-slate-950 border border-slate-800 text-[11px]"></div>
       </div>
     </div>
   `;
   }).join("");
   if (window.lucide) window.lucide.createIcons();
 }
-
-window.toggleMouthMirror = async function() {
-  const container = document.getElementById("mouthMirrorContainer");
-  const video = document.getElementById("mouthMirrorVideo");
-  const btnLabel = document.getElementById("btnMirrorLabel");
-  if (!container || !video) return;
-
-  if (window.mouthMirrorStream) {
-    window.mouthMirrorStream.getTracks().forEach(track => track.stop());
-    window.mouthMirrorStream = null;
-    video.srcObject = null;
-    container.classList.add("hidden");
-    if (btnLabel) btnLabel.textContent = "Bật Gương Soi Cơ Miệng (Camera)";
-    return;
-  }
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
-    window.mouthMirrorStream = stream;
-    video.srcObject = stream;
-    container.classList.remove("hidden");
-    if (btnLabel) btnLabel.textContent = "Tắt Gương Soi Cơ Miệng";
-  } catch (err) {
-    alert("Không thể mở camera. Hãy đảm bảo bạn đã cấp quyền sử dụng camera trên trình duyệt nhé!");
-  }
-};
 
 function renderChunks(chunks) {
   const container = document.getElementById("chunksContainer");
@@ -250,22 +244,50 @@ function renderChunks(chunks) {
     return;
   }
 
-  container.innerHTML = chunks.map(c => `
-    <div class="p-4 rounded-xl cyber-card card-3d flex items-center justify-between gap-3 ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}">
-      <div class="flex-grow">
-        <div class="flex flex-wrap items-baseline gap-2 mb-1">
-          <span class="text-base sm:text-lg font-bold text-white tracking-wide">${c.phrase}</span>
-          <span class="text-xs font-mono text-cyan-400">${c.ipa}</span>
-          ${c.type === 'permutation' ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Biến thể Attention</span>' : '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cụm hạt nhân</span>'}
-        </div>
-        <p class="text-xs sm:text-sm text-emerald-300 font-medium mb-1">${c.meaning}</p>
-        <span class="text-[11px] text-slate-400 block">${c.context}</span>
+  // Header hướng dẫn ngắn gọn, dễ hiểu
+  const guideHeader = `
+    <div class="p-3 mb-3 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+      <div class="flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span><strong>Mẫu Câu Cốt Lõi:</strong> Câu chuẩn người Mỹ dùng</span>
       </div>
-      <button onclick="speakText('${c.phrase.replace(/'/g, "\\'")}')" class="w-11 h-11 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white flex items-center justify-center transition active:scale-90 flex-shrink-0" title="Bấm để nghe phát âm Mỹ">
-        <i data-lucide="volume-2" class="w-5 h-5"></i>
-      </button>
+      <div class="flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+        <span><strong>Cách Nói Mở Rộng:</strong> Tình huống biến đổi linh hoạt</span>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = guideHeader + chunks.map((c, idx) => `
+    <div class="p-4 rounded-xl cyber-card card-3d ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex-grow">
+          <div class="flex flex-wrap items-baseline gap-2 mb-1">
+            <span class="text-base sm:text-lg font-bold text-white tracking-wide">${c.phrase}</span>
+            <span class="text-xs font-mono text-cyan-400">${c.ipa}</span>
+            ${c.type === 'permutation' ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">Cách nói mở rộng</span>' : '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">Mẫu câu cốt lõi</span>'}
+          </div>
+          <p class="text-xs sm:text-sm text-emerald-300 font-medium mb-1">${c.meaning}</p>
+          <span class="text-[11px] text-slate-400 block">${c.context}</span>
+        </div>
+
+        <div class="flex items-center space-x-2 flex-shrink-0">
+          <button onclick="speakText('${c.phrase.replace(/'/g, "\\'")}')" class="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white flex items-center space-x-1.5 transition active:scale-95 text-xs font-semibold" title="Bấm nghe giọng Mỹ chuẩn">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+            <span>Nghe</span>
+          </button>
+          <button id="btn-chunk-mic-${idx}" onclick="practiceChunkSpeech('${c.phrase.replace(/'/g, "\\'")}', ${idx})" class="px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 flex items-center space-x-1.5 transition active:scale-95 text-xs font-semibold" title="Bấm để nói và AI chấm điểm">
+            <i data-lucide="mic" class="w-4 h-4"></i>
+            <span>Nói thử</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Khung kết quả chấm điểm tức thì của câu này -->
+      <div id="chunk-feedback-${idx}" class="hidden mt-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs"></div>
     </div>
   `).join("");
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function renderQuizzes(quizzes) {
@@ -585,6 +607,130 @@ function calculateSimilarity(str1, str2) {
   });
   return Math.min(1.0, (matches / Math.max(words1.length, words2.length)));
 }
+
+window.practiceMouthSound = function(targetWord, idx) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Hãy dùng Google Chrome hoặc Microsoft Edge để nói và chấm điểm 0đ nhé!");
+    return;
+  }
+
+  const micBtn = document.getElementById(`btn-mouth-mic-${idx}`);
+  const feedbackEl = document.getElementById(`mouth-feedback-${idx}`);
+  if (!micBtn || !feedbackEl) return;
+
+  const recog = new SpeechRecognition();
+  recog.lang = "en-US";
+  recog.continuous = false;
+  recog.interimResults = false;
+
+  recog.onstart = function() {
+    micBtn.classList.add("animate-pulse", "bg-rose-600", "text-white");
+    feedbackEl.classList.remove("hidden");
+    feedbackEl.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe... Hãy phát âm: "${targetWord}"</span>`;
+  };
+
+  recog.onresult = function(event) {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+    const transcript = event.results[0][0].transcript;
+    const similarity = calculateSimilarity(transcript, targetWord);
+    const score = Math.round(similarity * 100);
+
+    feedbackEl.classList.remove("hidden");
+    if (score >= 70) {
+      playCorrectSound();
+      feedbackEl.className = "mt-2 p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-[11px] text-emerald-300";
+      feedbackEl.innerHTML = `🎯 <strong>AI nghe bạn nói:</strong> "${transcript}" • <span class="font-mono font-bold text-emerald-400">Độ chuẩn xác: ${score}%</span> • Phát âm rất chuẩn!`;
+    } else {
+      playIncorrectSound();
+      feedbackEl.className = "mt-2 p-2 rounded-lg bg-amber-950/50 border border-amber-500/40 text-[11px] text-amber-300";
+      feedbackEl.innerHTML = `💡 <strong>AI nghe bạn nói:</strong> "${transcript}" • <span class="font-mono font-bold text-amber-400">Độ chuẩn xác: ${score}%</span> • Hãy phát âm to và rõ hơn từ: "${targetWord}" nhé!`;
+    }
+  };
+
+  recog.onerror = function() {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+    feedbackEl.innerHTML = `<span class="text-slate-400">Chưa nghe rõ âm thanh. Bấm lại nút để thử lại!</span>`;
+  };
+
+  recog.onend = function() {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+  };
+
+  try {
+    recog.start();
+  } catch (err) {
+    console.warn("Lỗi start mic:", err);
+  }
+};
+
+window.practiceChunkSpeech = function(targetPhrase, idx) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Hãy dùng Google Chrome hoặc Microsoft Edge để nói và chấm điểm 0đ nhé!");
+    return;
+  }
+
+  const micBtn = document.getElementById(`btn-chunk-mic-${idx}`);
+  const feedbackEl = document.getElementById(`chunk-feedback-${idx}`);
+  if (!micBtn || !feedbackEl) return;
+
+  const recog = new SpeechRecognition();
+  recog.lang = "en-US";
+  recog.continuous = false;
+  recog.interimResults = false;
+
+  recog.onstart = function() {
+    micBtn.classList.add("animate-pulse", "bg-rose-600", "text-white");
+    feedbackEl.classList.remove("hidden");
+    feedbackEl.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe bạn nói câu này...</span>`;
+  };
+
+  recog.onresult = function(event) {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+    const transcript = event.results[0][0].transcript;
+    const similarity = calculateSimilarity(transcript, targetPhrase);
+    const score = Math.round(similarity * 100);
+
+    feedbackEl.classList.remove("hidden");
+    if (score >= 70) {
+      playCorrectSound();
+      feedbackEl.className = "mt-3 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300";
+      feedbackEl.innerHTML = `
+        <div class="flex items-center justify-between mb-1">
+          <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
+          <span class="font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Độ chính xác: ${score}%</span>
+        </div>
+        <p class="text-emerald-400/90 text-[11px]">🎉 Xuất sắc! Bạn phát âm câu này rất chuẩn xác và rõ ràng.</p>
+      `;
+    } else {
+      playIncorrectSound();
+      feedbackEl.className = "mt-3 p-3 rounded-xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-300";
+      feedbackEl.innerHTML = `
+        <div class="flex items-center justify-between mb-1">
+          <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
+          <span class="font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Độ chính xác: ${score}%</span>
+        </div>
+        <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và chú ý phát âm rõ âm đuôi nhé.</p>
+      `;
+    }
+  };
+
+  recog.onerror = function() {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+    feedbackEl.innerHTML = `<span class="text-slate-400">Không thu được âm thanh. Hãy bấm nút và nói lại nhé!</span>`;
+  };
+
+  recog.onend = function() {
+    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
+  };
+
+  try {
+    recog.start();
+  } catch (err) {
+    console.warn("Lỗi start mic:", err);
+  }
+};
 
 window.toggleSpeechRecording = function() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;

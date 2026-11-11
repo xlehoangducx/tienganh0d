@@ -90,30 +90,33 @@ export const CURRICULUM_DATA = {
         {
           sound: "/θ/",
           example: "Thank you, Think",
+          words: ["Thank you", "Think"],
           guide: "Đặt đầu lưỡi chạm nhẹ giữa 2 hàm răng cửa, thổi luồng hơi nhẹ ra ngoài rồi phát âm. Tuyệt đối không đọc thành 'Thanh-kiu'!",
           tip: "Cắn nhẹ đầu lưỡi và thổi hơi mát như tiếng gió rít."
         },
         {
           sound: "/s/",
           example: "Nice, Thanks, See",
+          words: ["Nice", "Thanks", "See"],
           guide: "Khép 2 hàm răng lại, đẩy luồng hơi xì nhẹ như tiếng xì lốp xe hoặc gió rít qua khe cửa.",
           tip: "Tiếng Anh mất âm đuôi /s/ giống như tiếng Việt mất dấu thanh."
         },
         {
           sound: "/t/",
           example: "Meet, Great, Wait",
+          words: ["Meet", "Great", "Wait"],
           guide: "Đặt đầu lưỡi lên vòm họng trên sau răng cửa, nén hơi rồi bật nhẹ xuống dứt khoát.",
           tip: "Bật dứt khoát, gọn gàng, không kéo dài."
         }
       ],
 
-      // Module 2: Cụm từ phản xạ cốt lõi & Biến thể ghép khe cắm (Slot-Filling Permutations)
+      // Module 2: Mẫu câu cốt lõi & Cách nói mở rộng tình huống (Slot-Filling)
       chunks: [
         {
           phrase: "Hi, nice to meet you!",
           ipa: "/haɪ, naɪs tuː miːt juː/",
           meaning: "Chào bạn, rất vui được gặp bạn!",
-          context: "Cụm hạt nhân: Bắt tay làm quen người mới lần đầu tiên",
+          context: "Mẫu câu cốt lõi: Bắt tay làm quen người mới lần đầu tiên",
           audioText: "Hi, nice to meet you!",
           type: "core"
         },
@@ -121,7 +124,7 @@ export const CURRICULUM_DATA = {
           phrase: "Hi, great to meet you!",
           ipa: "/haɪ, ɡreɪt tuː miːt juː/",
           meaning: "Chào bạn, thật tuyệt khi được gặp bạn!",
-          context: "Biến thể: Tạo cảm giác hào hứng, nhiệt tình hơn",
+          context: "Cách nói mở rộng: Tạo cảm giác hào hứng, nhiệt tình hơn",
           audioText: "Hi, great to meet you!",
           type: "permutation"
         },
@@ -129,7 +132,7 @@ export const CURRICULUM_DATA = {
           phrase: "Good to see you again!",
           ipa: "/ɡʊd tuː siː juː əˈɡen/",
           meaning: "Rất vui được gặp lại bạn!",
-          context: "Biến thể: Khi gặp lại người quen từ lần thứ hai trở đi",
+          context: "Cách nói mở rộng: Khi gặp lại người quen từ lần thứ hai trở đi",
           audioText: "Good to see you again!",
           type: "permutation"
         },
@@ -137,7 +140,7 @@ export const CURRICULUM_DATA = {
           phrase: "Thank you so much!",
           ipa: "/ˈθæŋk juː soʊ mʌtʃ/",
           meaning: "Cảm ơn bạn rất nhiều!",
-          context: "Cụm hạt nhân: Khi nhận được sự giúp đỡ, nói với giọng trầm ấm",
+          context: "Mẫu câu cốt lõi: Khi nhận được sự giúp đỡ, nói với giọng trầm ấm",
           audioText: "Thank you so much!",
           type: "core"
         },
@@ -145,7 +148,7 @@ export const CURRICULUM_DATA = {
           phrase: "Thank you for your help!",
           ipa: "/ˈθæŋk juː fər jɔːr help/",
           meaning: "Cảm ơn bạn đã nhiệt tình giúp đỡ tôi!",
-          context: "Biến thể: Cụ thể hóa lời cảm ơn cho sự trợ giúp vừa nhận",
+          context: "Cách nói mở rộng: Cụ thể hóa lời cảm ơn cho sự trợ giúp vừa nhận",
           audioText: "Thank you for your help!",
           type: "permutation"
         },
@@ -153,7 +156,7 @@ export const CURRICULUM_DATA = {
           phrase: "Thanks a lot!",
           ipa: "/θæŋks ə lɑːt/",
           meaning: "Cảm ơn nhiều nhé! (Thân mật, bạn bè)",
-          context: "Biến thể: Nói nhanh gọn với bạn bè đồng trang lứa",
+          context: "Cách nói mở rộng: Nói nhanh gọn với bạn bè đồng trang lứa",
           audioText: "Thanks a lot!",
           type: "permutation"
         },
@@ -161,7 +164,7 @@ export const CURRICULUM_DATA = {
           phrase: "Have a great day!",
           ipa: "/hæv ə ɡreɪt deɪ/",
           meaning: "Chúc bạn một ngày tuyệt vời nhé!",
-          context: "Cụm hạt nhân: Khi chào tạm biệt lúc ra về hoặc kết thúc trò chuyện",
+          context: "Mẫu câu cốt lõi: Khi chào tạm biệt lúc ra về hoặc kết thúc trò chuyện",
           audioText: "Have a great day!",
           type: "core"
         },
@@ -169,7 +172,7 @@ export const CURRICULUM_DATA = {
           phrase: "Have a nice weekend!",
           ipa: "/hæv ə naɪs ˈwiːkend/",
           meaning: "Chúc bạn cuối tuần vui vẻ nhé!",
-          context: "Biến thể: Chào tạm biệt đồng nghiệp vào chiều thứ Sáu",
+          context: "Cách nói mở rộng: Chào tạm biệt đồng nghiệp vào chiều thứ Sáu",
           audioText: "Have a nice weekend!",
           type: "permutation"
         },
@@ -177,7 +180,7 @@ export const CURRICULUM_DATA = {
           phrase: "Have a safe trip!",
           ipa: "/hæv ə seɪf trɪp/",
           meaning: "Chúc bạn chuyến đi thượng lộ bình an!",
-          context: "Biến thể: Tiễn bạn bè đi xa, ra sân bay hoặc đi du lịch",
+          context: "Cách nói mở rộng: Tiễn bạn bè đi xa, ra sân bay hoặc đi du lịch",
           audioText: "Have a safe trip!",
           type: "permutation"
         }

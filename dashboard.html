@@ -181,60 +181,44 @@
         </div>
 
         <!-- 5 TABS MODULE HỌC THUẬT ĐA GIÁC QUAN (MULTIMODAL LEARNING) -->
-        <div class="border-b border-slate-800 flex space-x-2 sm:space-x-4 overflow-x-auto scrollbar-none pb-2">
-          <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+        <div class="border-b border-slate-800 flex flex-wrap gap-2 pb-2">
+          <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             <i data-lucide="mic" class="w-4 h-4"></i>
-            <span>1. Khẩu Hình & Gương Soi</span>
+            <span>1. Khẩu Hình & Phát Âm</span>
           </button>
 
-          <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+          <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
-            <span>2. Cụm Từ Phản Xạ (Audio Mỹ)</span>
+            <span>2. Cụm Từ & Luyện Nói</span>
           </button>
 
-          <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+          <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
             <i data-lucide="help-circle" class="w-4 h-4"></i>
-            <span>3. Luyện Tập Trắc Nghiệm</span>
+            <span>3. Trắc Nghiệm</span>
           </button>
 
-          <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+          <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
             <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>4. Thẻ Ghi Nhớ 3D</span>
+            <span>4. Sổ Thẻ 3D</span>
           </button>
 
-          <button onclick="switchLessonModule('moduleSpeaking')" id="btn-moduleSpeaking" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+          <button onclick="switchLessonModule('moduleSpeaking')" id="btn-moduleSpeaking" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-purple-400 hover:text-purple-300 border border-transparent">
             <i data-lucide="radio" class="w-4 h-4"></i>
-            <span>5. Đối Thoại Nói 2 Chiều (AI Coach)</span>
+            <span>5. Đối Thoại AI 2 Chiều</span>
           </button>
         </div>
 
-        <!-- MODULE 1: KHẨU HÌNH, ÂM VỊ & KÍNH SOI CƠ MIỆNG -->
+        <!-- MODULE 1: KHẨU HÌNH, ÂM VỊ & LUYỆN PHÁT ÂM CÓ AI CHẤM ĐIỂM -->
         <div id="moduleMouth" class="module-content block space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-3">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
               <div class="flex items-center space-x-2 text-cyan-400 font-bold">
                 <i data-lucide="mic" class="w-5 h-5"></i>
-                <h3 class="text-base text-white">Kỹ Thuật Đặt Cơ Miệng & Hơi Thở Người Mỹ</h3>
+                <h3 class="text-base text-white">Kỹ Thuật Đặt Cơ Miệng Chuẩn Mỹ & Luyện Phát Âm</h3>
               </div>
-              <button onclick="toggleMouthMirror()" class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500 text-cyan-300 hover:text-white border border-cyan-500/30 transition">
-                <i data-lucide="camera" class="w-4 h-4"></i>
-                <span id="btnMirrorLabel">Bật Gương Soi Cơ Miệng (Camera)</span>
-              </button>
-            </div>
-
-            <!-- Khung Gương Soi Camera (Mouth Mirror) -->
-            <div id="mouthMirrorContainer" class="hidden mb-5 p-4 rounded-2xl bg-slate-950 border border-cyan-500/30 flex flex-col sm:flex-row items-center gap-4">
-              <div class="relative w-44 h-32 rounded-xl overflow-hidden bg-black border border-cyan-500/40 shadow-lg flex-shrink-0">
-                <video id="mouthMirrorVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                <span class="absolute bottom-1 right-2 text-[10px] font-mono text-cyan-400 bg-black/70 px-1 rounded">Live Cam</span>
-              </div>
-              <div class="text-xs text-slate-300 leading-relaxed">
-                <div class="font-bold text-cyan-400 mb-1">🔍 Kính Soi Khẩu Hình Ảo (Tự Kiểm Tra Bằng Mắt)</div>
-                <p class="text-slate-400">
-                  Hãy nhìn vào camera để kiểm tra: Khi phát âm âm <strong>/θ/</strong>, đầu lưỡi của bạn đã thò nhẹ ra giữa 2 hàm răng cửa chưa? Khi phát âm <strong>/s/</strong>, hai hàm răng đã khép lại để tạo luồng gió rít chưa?
-                </p>
-                <span class="text-[10px] text-slate-500 block mt-1 font-mono">Camera hoạt động 100% cục bộ trên trình duyệt, không gửi dữ liệu ra ngoài, hoàn toàn bảo mật 0đ.</span>
-              </div>
+              <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/40 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                🎙️ Bấm loa nghe mẫu • Bấm micro nói để AI chấm điểm
+              </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="mouthTechniquesContainer"></div>
