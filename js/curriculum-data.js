@@ -81,11 +81,11 @@ export const CURRICULUM_DATA = {
       phaseId: 0,
       title: "Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường Đầu Tiên",
       topic: "Mở khóa khẩu hình cơ miệng, làm quen âm gió, âm bật và phản xạ chào hỏi",
-      duration: "20 phút",
+      duration: "25 phút",
       practicalContext: "Gặp gỡ làm quen người nước ngoài, chào hỏi xã giao, cảm ơn chân thành và tạm biệt vui vẻ.",
       status: "unlocked",
 
-      // Module 1: Khẩu hình cơ miệng
+      // Module 1: Khẩu hình cơ miệng & Cặp âm đối chiếu
       mouthTechniques: [
         {
           sound: "/θ/",
@@ -107,28 +107,79 @@ export const CURRICULUM_DATA = {
         }
       ],
 
-      // Module 2: Cụm từ phản xạ cốt lõi (Chunks)
+      // Module 2: Cụm từ phản xạ cốt lõi & Biến thể ghép khe cắm (Slot-Filling Permutations)
       chunks: [
         {
           phrase: "Hi, nice to meet you!",
           ipa: "/haɪ, naɪs tuː miːt juː/",
           meaning: "Chào bạn, rất vui được gặp bạn!",
-          context: "Khi bắt tay làm quen người mới lần đầu tiên",
-          audioText: "Hi, nice to meet you!"
+          context: "Cụm hạt nhân: Bắt tay làm quen người mới lần đầu tiên",
+          audioText: "Hi, nice to meet you!",
+          type: "core"
+        },
+        {
+          phrase: "Hi, great to meet you!",
+          ipa: "/haɪ, ɡreɪt tuː miːt juː/",
+          meaning: "Chào bạn, thật tuyệt khi được gặp bạn!",
+          context: "Biến thể: Tạo cảm giác hào hứng, nhiệt tình hơn",
+          audioText: "Hi, great to meet you!",
+          type: "permutation"
+        },
+        {
+          phrase: "Good to see you again!",
+          ipa: "/ɡʊd tuː siː juː əˈɡen/",
+          meaning: "Rất vui được gặp lại bạn!",
+          context: "Biến thể: Khi gặp lại người quen từ lần thứ hai trở đi",
+          audioText: "Good to see you again!",
+          type: "permutation"
         },
         {
           phrase: "Thank you so much!",
           ipa: "/ˈθæŋk juː soʊ mʌtʃ/",
           meaning: "Cảm ơn bạn rất nhiều!",
-          context: "Khi nhận được sự giúp đỡ, nói với giọng trầm ấm và biết ơn",
-          audioText: "Thank you so much!"
+          context: "Cụm hạt nhân: Khi nhận được sự giúp đỡ, nói với giọng trầm ấm",
+          audioText: "Thank you so much!",
+          type: "core"
+        },
+        {
+          phrase: "Thank you for your help!",
+          ipa: "/ˈθæŋk juː fər jɔːr help/",
+          meaning: "Cảm ơn bạn đã nhiệt tình giúp đỡ tôi!",
+          context: "Biến thể: Cụ thể hóa lời cảm ơn cho sự trợ giúp vừa nhận",
+          audioText: "Thank you for your help!",
+          type: "permutation"
+        },
+        {
+          phrase: "Thanks a lot!",
+          ipa: "/θæŋks ə lɑːt/",
+          meaning: "Cảm ơn nhiều nhé! (Thân mật, bạn bè)",
+          context: "Biến thể: Nói nhanh gọn với bạn bè đồng trang lứa",
+          audioText: "Thanks a lot!",
+          type: "permutation"
         },
         {
           phrase: "Have a great day!",
           ipa: "/hæv ə ɡreɪt deɪ/",
           meaning: "Chúc bạn một ngày tuyệt vời nhé!",
-          context: "Khi chào tạm biệt lúc ra về hoặc kết thúc cuộc trò chuyện",
-          audioText: "Have a great day!"
+          context: "Cụm hạt nhân: Khi chào tạm biệt lúc ra về hoặc kết thúc trò chuyện",
+          audioText: "Have a great day!",
+          type: "core"
+        },
+        {
+          phrase: "Have a nice weekend!",
+          ipa: "/hæv ə naɪs ˈwiːkend/",
+          meaning: "Chúc bạn cuối tuần vui vẻ nhé!",
+          context: "Biến thể: Chào tạm biệt đồng nghiệp vào chiều thứ Sáu",
+          audioText: "Have a nice weekend!",
+          type: "permutation"
+        },
+        {
+          phrase: "Have a safe trip!",
+          ipa: "/hæv ə seɪf trɪp/",
+          meaning: "Chúc bạn chuyến đi thượng lộ bình an!",
+          context: "Biến thể: Tiễn bạn bè đi xa, ra sân bay hoặc đi du lịch",
+          audioText: "Have a safe trip!",
+          type: "permutation"
         }
       ],
 
@@ -138,7 +189,7 @@ export const CURRICULUM_DATA = {
         targetPhrase: "Hi, nice to meet you! Have a great day!"
       },
 
-      // Module 4: Bài tập trắc nghiệm âm thanh & tự chấm điểm
+      // Module 4: Bài tập trắc nghiệm âm thanh & tự chấm điểm (4 câu hỏi đa chiều)
       quizzes: [
         {
           id: "q1",
@@ -164,14 +215,25 @@ export const CURRICULUM_DATA = {
         },
         {
           id: "q3",
-          question: "Khi người khác giúp đỡ bạn một việc nhiệt tình, bạn đáp lại bằng câu nào?",
+          question: "Khi được đồng nghiệp hoặc người bản xứ giúp hoàn thành một việc, bạn nói câu nào lịch sự nhất?",
           options: [
-            "Thank you so much!",
-            "Nice to meet you!",
-            "I don't know"
+            "Thank you for your help!",
+            "Have a safe trip!",
+            "Good to see you again!"
           ],
           correctIndex: 0,
-          explanation: "'Thank you so much!' vừa chân thành vừa ấm áp, có âm thổi hơi /θ/ ở đầu từ Thank."
+          explanation: "'Thank you for your help!' là cấu trúc biến thể chuẩn xác để cảm ơn sự hỗ trợ trực tiếp."
+        },
+        {
+          id: "q4",
+          question: "Vào chiều thứ Sáu lúc tan làm, câu chúc tạm biệt nào tự nhiên và ấm áp nhất?",
+          options: [
+            "Have a nice weekend!",
+            "Nice to meet you!",
+            "I need some water!"
+          ],
+          correctIndex: 0,
+          explanation: "'Have a nice weekend!' là câu chúc phổ biến nhất của người Mỹ khi chia tay trước kỳ nghỉ cuối tuần."
         }
       ]
     },

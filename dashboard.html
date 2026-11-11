@@ -92,15 +92,18 @@
       <!-- Box đo tiến độ tổng thể -->
       <div class="cyber-card p-4 rounded-2xl">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold text-slate-300">Tiến Độ Thông Thạo</span>
-          <span id="personalProgressText" class="text-xs font-mono font-bold text-emerald-400">0%</span>
+          <div>
+            <span class="text-xs font-bold text-slate-300 block">Tiến Độ Chặng 0 (Khởi Động)</span>
+            <span class="text-[10px] text-slate-500 font-mono">Chuẩn CEFR: A0 → A1 (100h)</span>
+          </div>
+          <span id="personalProgressText" class="text-xs font-mono font-bold text-emerald-400">0% Chặng 0</span>
         </div>
         <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden mb-2">
           <div id="personalProgressBar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
         <div class="flex justify-between text-[11px] text-slate-400">
-          <span id="personalCompletedCount">Đã học: 0/100 buổi</span>
-          <span class="text-cyan-400 font-mono">Mục tiêu: 100%</span>
+          <span id="personalCompletedCount">Đã học: 0/10 buổi chặng</span>
+          <span id="personalHoursCount" class="text-cyan-400 font-mono">Tích lũy: 0.0h</span>
         </div>
       </div>
 

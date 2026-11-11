@@ -217,14 +217,15 @@ function renderChunks(chunks) {
   }
 
   container.innerHTML = chunks.map(c => `
-    <div class="p-4 rounded-xl cyber-card card-3d flex items-center justify-between gap-3">
+    <div class="p-4 rounded-xl cyber-card card-3d flex items-center justify-between gap-3 ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}">
       <div class="flex-grow">
         <div class="flex flex-wrap items-baseline gap-2 mb-1">
           <span class="text-base sm:text-lg font-bold text-white tracking-wide">${c.phrase}</span>
           <span class="text-xs font-mono text-cyan-400">${c.ipa}</span>
+          ${c.type === 'permutation' ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Biến thể Attention</span>' : '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Cụm hạt nhân</span>'}
         </div>
         <p class="text-xs sm:text-sm text-emerald-300 font-medium mb-1">${c.meaning}</p>
-        <span class="text-[11px] text-slate-400 block">Tình huống: ${c.context}</span>
+        <span class="text-[11px] text-slate-400 block">${c.context}</span>
       </div>
       <button onclick="speakText('${c.phrase.replace(/'/g, "\\'")}')" class="w-11 h-11 rounded-xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-400 hover:text-white flex items-center justify-center transition active:scale-90 flex-shrink-0" title="Bấm để nghe phát âm Mỹ">
         <i data-lucide="volume-2" class="w-5 h-5"></i>
@@ -369,16 +370,20 @@ function renderFlashcards(chunks) {
 function updateProgressUI(progress) {
   if (!progress) return;
 
-  const percent = progress.progressPercent || 0;
   const completedCount = (progress.completedLessons || []).length;
+  const phase0Target = 10;
+  const percent = Math.min(100, Math.round((completedCount / phase0Target) * 100));
+  const hours = (completedCount * 0.5).toFixed(1);
 
   const progressText = document.getElementById("personalProgressText");
   const progressBar = document.getElementById("personalProgressBar");
   const completedCountEl = document.getElementById("personalCompletedCount");
+  const hoursCountEl = document.getElementById("personalHoursCount");
 
-  if (progressText) progressText.textContent = `${percent}% Hoàn thành`;
+  if (progressText) progressText.textContent = `${percent}% Chặng 0`;
   if (progressBar) progressBar.style.width = `${percent}%`;
-  if (completedCountEl) completedCountEl.textContent = `Đã học: ${completedCount}/100 buổi`;
+  if (completedCountEl) completedCountEl.textContent = `Đã học: ${completedCount}/${phase0Target} buổi chặng`;
+  if (hoursCountEl) hoursCountEl.textContent = `Tích lũy: ${hours}h`;
 
   const alertBox = document.getElementById("spacedReviewAlert");
   const countDays = document.getElementById("inactiveDaysCount");

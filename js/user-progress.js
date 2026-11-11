@@ -89,10 +89,11 @@ export async function saveLessonCompletion(user, lessonId, score, total) {
     date: new Date().toISOString()
   };
 
-  // Tính lại phần trăm tiến độ tổng thể của cá nhân
-  // Giả sử Giai đoạn 0 có 10 buổi -> mỗi buổi hoàn thành = 1%
-  const totalLessonsInCurriculum = 100; // Tổng 100 buổi từ 0 đến 100%
-  progress.progressPercent = Math.min(100, Math.round((progress.completedLessons.length / totalLessonsInCurriculum) * 100));
+  // Tính lại phần trăm tiến độ Chặng 0 (10 buổi nền móng chuẩn A0 -> A1)
+  const phase0Target = 10;
+  const completedCount = progress.completedLessons.length;
+  progress.progressPercent = Math.min(100, Math.round((completedCount / phase0Target) * 100));
+  progress.hoursAccumulated = (completedCount * 0.5).toFixed(1);
 
   // Tắt cờ cần review nếu vừa làm xong
   progress.needsReview = false;
