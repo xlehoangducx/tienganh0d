@@ -151,36 +151,36 @@ export const CURRICULUM_DATA = {
       // Module 1: Khẩu hình cơ miệng chuẩn xác kèm nghĩa & ngữ cảnh từng từ
       mouthTechniques: [
         {
-          sound: "/θ/",
+          sound: "/θ/ (Âm Theta kẹp lưỡi)",
           example: "Thank you, Think",
           words: [
             { word: "Thank you", ipa: "/ˈθæŋk juː/", meaning: "Cảm ơn bạn", context: "Bày tỏ lòng biết ơn chân thành khi nhận trợ giúp" },
             { word: "Think", ipa: "/θɪŋk/", meaning: "Suy nghĩ / Tôi nghĩ", context: "Bày tỏ ý kiến cá nhân: I think so (Tôi nghĩ vậy)" }
           ],
-          guide: "Đặt đầu lưỡi chạm nhẹ giữa 2 hàm răng cửa, thổi luồng hơi nhẹ ra ngoài rồi phát âm. Tuyệt đối không đọc thành 'Thanh-kiu'!",
-          tip: "Cắn nhẹ đầu lưỡi và thổi hơi mát như tiếng gió rít qua kẽ răng."
+          guide: "Ký hiệu /θ/ chính là chữ Theta (θ). Người Việt hay nghe nhầm thành 'Th' tiếng Việt, 'S' hoặc 'T'. Cách làm đúng: Thè nhẹ đầu lưỡi ra giữa 2 hàm răng cửa (kẹp nhẹ, không cắn), đẩy luồng gió mát trượt trên bề mặt lưỡi rồi mới phát âm. Tuyệt đối không thụt lưỡi vào trong biến thành 'Thanh-kiu'!",
+          tip: "💡 Mẹo vàng: Cắn nhẹ đầu lưỡi, thổi hơi gió mát ra mu bàn tay. Lưỡi phải lộ ra ngoài răng thì mới đúng âm chuẩn người Mỹ!"
         },
         {
-          sound: "/s/",
+          sound: "/s/ (Âm xì răng khép)",
           example: "Nice, Thanks, See",
           words: [
             { word: "Nice", ipa: "/naɪs/", meaning: "Tốt đẹp / Dễ mến", context: "Lời khen ngợi: Nice to meet you" },
             { word: "Thanks", ipa: "/θæŋks/", meaning: "Cảm ơn nha (thân mật)", context: "Dùng với bạn bè đồng trang lứa" },
             { word: "See", ipa: "/siː/", meaning: "Nhìn thấy / Gặp lại", context: "Gặp lại người quen: See you soon" }
           ],
-          guide: "Khép 2 hàm răng lại gần nhau, đẩy luồng hơi xì nhẹ như tiếng xì lốp xe hoặc gió rít qua khe cửa.",
-          tip: "Tiếng Anh mất âm đuôi /s/ giống như tiếng Việt nói chuyện bị mất dấu thanh."
+          guide: "Khác với /θ/, âm /s/ yêu cầu lưỡi nằm hoàn toàn BÊN TRONG sau răng cửa dưới. Khép 2 hàm răng lại gần nhau, xì luồng hơi mạnh qua kẽ răng như tiếng xì lốp xe.",
+          tip: "💡 Mẹo vàng: Răng khép chặt, lưỡi thụt vào trong, không thè lưỡi như âm /θ/. Mất âm đuôi /s/ giống như tiếng Việt bị mất dấu thanh."
         },
         {
-          sound: "/t/",
+          sound: "/t/ (Âm gõ bật dứt khoát)",
           example: "Meet, Great, Wait",
           words: [
             { word: "Meet", ipa: "/miːt/", meaning: "Gặp gỡ", context: "Gặp ai đó lần đầu hoặc hẹn gặp" },
             { word: "Great", ipa: "/ɡreɪt/", meaning: "Tuyệt vời", context: "Cảm xúc hào hứng: Have a great day!" },
             { word: "Wait", ipa: "/weɪt/", meaning: "Chờ đợi", context: "Nhờ người khác nán lại: Wait a minute" }
           ],
-          guide: "Đặt đầu lưỡi lên phần nướu hàm trên sau răng cửa, nén luồng hơi lại rồi bật mạnh xuống dứt khoát.",
-          tip: "Bật dứt khoát, gọn gàng, có luồng gió nhỏ thổi ra làm rung tờ giấy."
+          guide: "Khác với /θ/ và /s/ (luồng hơi trượt dài), âm /t/ là âm TẮC BẬT: Đặt đầu lưỡi chạm vào phần nướu hàm trên sau răng cửa, nén hơi lại rồi bật mạnh xuống dứt khoát như tiếng gõ 'tách'.",
+          tip: "💡 Mẹo vàng: Bật dứt khoát, gọn gàng, có luồng gió nhỏ bật ra làm rung tờ giấy trước miệng."
         }
       ],
 
