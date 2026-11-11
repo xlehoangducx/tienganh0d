@@ -180,7 +180,7 @@
           </div>
         </div>
 
-        <!-- 5 TABS MODULE HỌC THUẬT ĐA GIÁC QUAN (MULTIMODAL LEARNING) -->
+        <!-- 6 TABS MODULE HỌC THUẬT ĐA GIÁC QUAN (MULTIMODAL LEARNING) -->
         <div class="border-b border-slate-800 flex flex-wrap gap-2 pb-2">
           <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             <i data-lucide="mic" class="w-4 h-4"></i>
@@ -189,7 +189,7 @@
 
           <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
-            <span>2. Cụm Từ & Luyện Nói</span>
+            <span>2. Cụm Từ & Phản Xạ</span>
           </button>
 
           <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
@@ -206,18 +206,23 @@
             <i data-lucide="radio" class="w-4 h-4"></i>
             <span>5. Đối Thoại AI 2 Chiều</span>
           </button>
+
+          <button onclick="switchLessonModule('moduleTyping')" id="btn-moduleTyping" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 border border-transparent">
+            <i data-lucide="keyboard" class="w-4 h-4"></i>
+            <span>6. Gõ Phản Xạ & Ghép Khối</span>
+          </button>
         </div>
 
         <!-- MODULE 1: KHẨU HÌNH, ÂM VỊ & LUYỆN PHÁT ÂM CÓ AI CHẤM ĐIỂM -->
         <div id="moduleMouth" class="module-content block space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
-            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 border-b border-slate-800 pb-3">
               <div class="flex items-center space-x-2 text-cyan-400 font-bold">
                 <i data-lucide="mic" class="w-5 h-5"></i>
-                <h3 class="text-base text-white">Kỹ Thuật Đặt Cơ Miệng Chuẩn Mỹ & Luyện Phát Âm</h3>
+                <h3 class="text-base text-white">Kỹ Thuật Đặt Cơ Miệng Chuẩn Mỹ & Luyện Phát Âm Từng Từ</h3>
               </div>
               <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/40 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                🎙️ Bấm loa nghe mẫu • Bấm micro nói để AI chấm điểm
+                🎙️ Bấm từ mẫu để đổi từ luyện phát âm • AI chấm điểm tức thì
               </span>
             </div>
 
@@ -225,14 +230,17 @@
           </div>
         </div>
 
-        <!-- MODULE 2: CỤM TỪ PHẢN XẠ CHUNKS -->
+        <!-- MODULE 2: CỤM TỪ PHẢN XẠ CHUNKS VỚI CHỈ SỐ KHẮC SÂU NƠ-RON -->
         <div id="moduleChunks" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
               <div class="flex items-center space-x-2 text-emerald-400 font-bold">
                 <i data-lucide="volume-2" class="w-5 h-5"></i>
                 <h3 class="text-base text-white">Cụm Từ Phản Xạ Giao Tiếp Đời Thường (Bấm Loa Nghe Giọng Mỹ Bản Xứ 0đ)</h3>
               </div>
+              <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                🧠 Mục tiêu khoa học: Lặp 7 lần đa giác quan để nhớ vĩnh viễn
+              </span>
             </div>
             <div class="space-y-3" id="chunksContainer"></div>
           </div>
@@ -244,10 +252,10 @@
             <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
               <div>
                 <h3 class="text-base font-bold text-white">Kiểm Tra Phản Xạ Ngữ Cảnh</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Điểm số sẽ tự động lưu vào hồ sơ học viên của bạn</p>
+                <p class="text-xs text-slate-400 mt-0.5">Điểm số sẽ tự động lưu vào hồ sơ học viên của bạn để mở khóa buổi tiếp theo</p>
               </div>
               <span id="quizScoreBadge" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg font-mono">
-                Điểm: 0/3
+                Điểm: 0/4
               </span>
             </div>
             <div id="quizContainer" class="space-y-4"></div>
@@ -257,8 +265,8 @@
               <div class="flex items-center space-x-3 text-xs text-slate-300">
                 <span class="text-2xl">🎉</span>
                 <div>
-                  <div class="font-bold text-emerald-400">Xuất sắc! Bạn đã hoàn thành bài tập buổi học này.</div>
-                  <p class="text-slate-400 text-[11px] mt-0.5">Tiến độ đã được đồng bộ lên máy chủ đám mây.</p>
+                  <div class="font-bold text-emerald-400">Xuất sắc! Bạn đã vượt qua bài kiểm tra của buổi học này.</div>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Buổi học tiếp theo đã được mở khóa trên thanh danh mục!</p>
                 </div>
               </div>
               <button onclick="openDonateModal()" class="flex-shrink-0 text-xs px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/25 transition flex items-center space-x-1.5">
@@ -280,7 +288,7 @@
           </div>
         </div>
 
-        <!-- MODULE 5: ĐỐI THOẠI NÓI 2 CHIỀU CÙNG AI COACH -->
+        <!-- MODULE 5: ĐỐI THOẠI NÓI 2 CHIỀU CÙNG AI COACH VỚI BỐI CẢNH THỰC TẾ -->
         <div id="moduleSpeaking" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl border-purple-500/30">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
@@ -289,8 +297,8 @@
                   <i data-lucide="bot" class="w-5 h-5"></i>
                 </div>
                 <div>
-                  <h3 class="text-base font-bold text-white">Phòng Luyện Phản Xạ Nói 2 Chiều (AI Speaking Loop)</h3>
-                  <p class="text-xs text-purple-300/80 mt-0.5">Mô phỏng 100% phản xạ giao tiếp thực tế: Nghe AI → Bấm Micro Nói → AI Chấm Điểm</p>
+                  <h3 class="text-base font-bold text-white" id="dialogueScenarioTitle">Phòng Đối Thoại Nhập Vai 2 Chiều (AI Speaking Loop)</h3>
+                  <p class="text-xs text-purple-300/80 mt-0.5">Mô phỏng 100% bối cảnh thực tế: Nghe gia sư kể chuyện → Người bản xứ mở lời → Bạn nói đối đáp</p>
                 </div>
               </div>
               <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
@@ -298,58 +306,86 @@
               </span>
             </div>
 
-            <!-- Hộp đối thoại tương tác -->
-            <div class="space-y-4 mb-6">
-              <!-- AI prompt card -->
-              <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-start space-x-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <!-- Khung Dẫn Chuyện Kể Bối Cảnh (Teacher Audio Storytelling) -->
+            <div class="p-4 rounded-xl bg-purple-950/20 border border-purple-500/20 mb-5">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2 text-xs font-bold text-purple-300">
+                  <i data-lucide="book-open" class="w-4 h-4"></i>
+                  <span>Bối Cảnh Thực Tế Do Gia Sư AI Kể Chuyện</span>
                 </div>
-                <div class="flex-grow">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-xs font-bold text-emerald-400">Gia sư AI phát âm mẫu:</span>
-                    <button onclick="replaySpeakingTarget()" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1">
-                      <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-                      <span>Nghe mẫu</span>
-                    </button>
-                  </div>
-                  <div id="speakingTargetPhrase" class="text-lg sm:text-xl font-bold text-white tracking-wide">Hi, nice to meet you!</div>
-                  <p id="speakingTargetMeaning" class="text-xs text-slate-400 mt-0.5">Chào bạn, rất vui được gặp bạn!</p>
-                </div>
+                <button onclick="narrateCurrentScenario()" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-purple-900/30 transition">
+                  <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                  <span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>
+                </button>
+              </div>
+              <p id="dialogueStoryNarrative" class="text-xs text-slate-300 leading-relaxed italic">
+                Đang tải bối cảnh câu chuyện...
+              </p>
+            </div>
+
+            <!-- Khu vực đối thoại từng lượt (Turn-based Dialogue) -->
+            <div id="dialogueTurnsContainer" class="space-y-4 mb-6"></div>
+
+            <!-- Khu vực ghi âm & nhận diện giọng nói đối đáp -->
+            <div class="p-6 rounded-2xl cyber-card text-center border-dashed border-purple-500/40 bg-slate-950/40">
+              <div class="text-xs font-bold text-purple-300 mb-1" id="currentTurnPromptHeader">Đến lượt bạn nói đối đáp:</div>
+              <div id="currentTurnTargetText" class="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 font-mono">...</div>
+              <div id="currentTurnTargetMeaning" class="text-xs text-emerald-400 mb-4">...</div>
+
+              <div id="micStatusText" class="text-xs text-slate-400 mb-4">
+                Bấm nút Micro màu tím bên dưới và nói to câu tiếng Anh trên vào micro máy tính hoặc điện thoại
               </div>
 
-              <!-- Khu vực ghi âm & nhận diện giọng nói -->
-              <div class="p-6 rounded-2xl cyber-card text-center border-dashed border-slate-700 bg-slate-950/40">
-                <div id="micStatusText" class="text-xs text-slate-400 mb-4">
-                  Bấm nút Micro màu tím bên dưới rồi nói to câu tiếng Anh trên vào micro máy tính hoặc điện thoại
-                </div>
-
-                <button id="btnRecordVoice" onclick="toggleSpeechRecording()" class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 hover:scale-105 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 mx-auto transition">
-                  <i data-lucide="mic" class="w-7 h-7" id="micIcon"></i>
+              <div class="flex items-center justify-center space-x-3">
+                <button onclick="replayCurrentTurnTarget()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1.5">
+                  <i data-lucide="volume-2" class="w-4 h-4"></i>
+                  <span>Nghe câu mẫu</span>
                 </button>
 
-                <!-- Kết quả nhận diện & Chấm điểm tức thì -->
-                <div id="speechResultBox" class="hidden mt-5 p-4 rounded-xl bg-slate-950 border border-slate-800 text-left">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs text-slate-400">AI nghe bạn nói:</span>
-                    <span id="speechAccuracyBadge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      Độ chính xác: 95%
-                    </span>
-                  </div>
-                  <div id="speechTranscribedText" class="text-base font-bold text-white mb-2 font-mono">...</div>
-                  <div id="speechFeedbackText" class="text-xs text-slate-300">...</div>
+                <button id="btnRecordVoice" onclick="toggleDialogueSpeechRecording()" class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 hover:scale-105 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 transition">
+                  <i data-lucide="mic" class="w-7 h-7" id="micIcon"></i>
+                </button>
+              </div>
+
+              <!-- Kết quả nhận diện & Chấm điểm tức thì -->
+              <div id="speechResultBox" class="hidden mt-5 p-4 rounded-xl bg-slate-950 border border-slate-800 text-left">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-slate-400">AI nghe bạn nói:</span>
+                  <span id="speechAccuracyBadge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Độ chính xác: 0%
+                  </span>
                 </div>
+                <div id="speechTranscribedText" class="text-base font-bold text-white mb-2 font-mono">...</div>
+                <div id="speechFeedbackText" class="text-xs text-slate-300">...</div>
               </div>
             </div>
 
-            <!-- Điều khiển chuyển câu luyện nói -->
+            <!-- Điều khiển chuyển lượt đối thoại -->
             <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-              <span class="text-xs text-slate-400" id="speakingRoundIndicator">Tình huống: 1 / 3</span>
+              <span class="text-xs text-slate-400" id="dialogueTurnIndicator">Lượt hội thoại: 1 / 3</span>
               <div class="flex space-x-2">
-                <button onclick="prevSpeakingItem()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Câu trước</button>
-                <button onclick="nextSpeakingItem()" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold">Câu tiếp theo</button>
+                <button onclick="prevDialogueTurn()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Lượt trước</button>
+                <button onclick="nextDialogueTurn()" class="text-xs px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold">Lượt tiếp theo</button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- MODULE 6: THỬ THÁCH GÕ PHẢN XẠ & GHÉP KHỐI TỪ (ACTIVE RECALL TYPING) -->
+        <div id="moduleTyping" class="module-content hidden space-y-4">
+          <div class="cyber-card p-5 rounded-2xl border-amber-500/30">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-4">
+              <div class="flex items-center space-x-2 text-amber-400 font-bold">
+                <i data-lucide="keyboard" class="w-5 h-5"></i>
+                <h3 class="text-base text-white">Thử Thách Gõ Phản Xạ & Ghép Khối Từ (Orthographic Memory)</h3>
+              </div>
+              <span class="text-[11px] font-mono text-amber-400 bg-amber-950/40 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                ⌨️ Gõ hoặc chạm khối từ để tái tạo câu • Khắc sâu cấu trúc vào não
+              </span>
+            </div>
+
+            <!-- Khu vực thử thách gõ câu -->
+            <div id="typingChallengeContainer" class="space-y-4"></div>
           </div>
         </div>
 
