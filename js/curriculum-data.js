@@ -86,6 +86,68 @@ export const CURRICULUM_DATA = {
       practicalContext: "Gặp gỡ làm quen người nước ngoài, chào hỏi xã giao, cảm ơn chân thành và tạm biệt vui vẻ.",
       status: "unlocked",
 
+      // Module 0: Bài Thuyết Giảng Khai Mở Tâm Trí & Căn Cứ Khoa Học Não Bộ
+      masterLecture: {
+        title: "Bản Đồ Khai Mở Buổi 01: Tại Sao Học Như Vậy Là Chuẩn Xác Nhất?",
+        subtitle: "Giải mã cơ chế thần kinh học: 3 âm vị bẻ gãy tật nói bồi và tam giác sinh tồn xã hội",
+        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
+        duration: "3 phút đọc sâu",
+        audioStory: "Bạn có từng tự hỏi: Tại sao 10 năm qua học tiếng Anh vẫn không mở miệng được, và tại sao hôm nay ta lại bắt đầu bằng 3 âm vị kỳ lạ này?",
+        keyPoints: [
+          {
+            icon: "sparkles",
+            title: "Trị Dứt Điểm Tật Nói Tiếng Anh Bồi Của Người Việt",
+            desc: "99% người Việt biến 'Thank you' thành 'Thanh-kiu' và nuốt sạch âm đuôi /s/, /t/ (Nice thành Nai). 3 âm /θ/, /s/, /t/ là liệu pháp tái cấu trúc cơ miệng ngay từ ngày đầu."
+          },
+          {
+            icon: "pie-chart",
+            title: "Định Luật Pareto 80/20 & Corpus COCA 1 Tỷ Từ",
+            desc: "Âm /s/ và /t/ chiếm hơn 65% toàn bộ hệ thống danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi thứ 3. Nắm 2 âm này là làm chủ cái móng cho toàn bộ ngữ pháp sau này."
+          },
+          {
+            icon: "shield-check",
+            title: "Tam Giác Sinh Tồn Xã Hội: Vũ Khí Đập Tan Nỗi Sợ",
+            desc: "Bộ ba: Chào hỏi (Hi, nice to meet you!) → Cảm ơn (Thank you so much!) → Tạm biệt (Have a great day!) là chiếc chìa khóa vạn năng khiến người bản xứ mỉm cười và đón nhận bạn."
+          },
+          {
+            icon: "cpu",
+            title: "Nguyên Lý Attention Khóa Nơ-ron (Như Cách Huấn Luyện AI)",
+            desc: "Giới hạn nhận thức tối ưu 3 cụm câu trong 25 phút. Hoàn thành 6 bước đa giác quan để chạm mốc 7/7 lần khắc sâu vĩnh viễn vào vỏ não dài hạn."
+          }
+        ],
+        deepExplanationHtml: `
+          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-amber-300 mb-2 flex items-center space-x-2">
+                <span>❓ Bạn có từng thắc mắc: Tại sao không học Bảng chữ cái A-B-C hay Công thức ngữ pháp trước?</span>
+              </h4>
+              <p>Hầu hết các phương pháp truyền thống bắt người học bắt đầu bằng bảng chữ cái rời rạc hoặc công thức S + V + O khô khan. Nhưng kết quả thực tế: Sau nhiều năm, 95% người học vẫn sợ hãi và câm nín khi gặp người nước ngoài ngoài đời thực. Bộ não con người không được tiến hóa để học công thức trừu tượng trước khi có trải nghiệm cảm xúc. Trẻ em bản xứ nói lưu loát hàng nghìn câu trước khi biết viết chữ A. Ở Buổi 1 này, chúng ta kích hoạt chính bản năng ngôn ngữ nguyên thủy: <strong>Kết nối và sinh tồn xã hội</strong>.</p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-cyan-300 mb-2 flex items-center space-x-2">
+                <span>🧠 Tại sao lại là 3 âm /θ/, /s/, /t/ mà không phải âm khác?</span>
+              </h4>
+              <p>Tiếng Việt là ngôn ngữ đơn lập, không có âm cọ xát kẽ răng <code>/θ/</code>, không có âm xì gió đuôi <code>/s/</code>, và không có âm tắc bật hơi dứt khoát <code>/t/</code>. Nếu bắt đầu bằng các âm dễ như /m/, /p/, /b/ (vốn tiếng Việt đã có), cơ miệng bạn sẽ tiếp tục lười biếng và nói giọng bồi. Bắt đầu ngay với <code>/θ/</code>, <code>/s/</code>, <code>/t/</code> là liệu pháp <em>"Tái cấu trúc cơ quan phát âm"</em> (Speech Motor Kinematics), ép cơ hàm và lưỡi thoát khỏi quán tính tiếng mẹ đẻ ngay từ phút đầu tiên!</p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-emerald-300 mb-2 flex items-center space-x-2">
+                <span>🤝 Tam Giác Sinh Tồn: Chiếc Chìa Khóa Vàng Hạ Thấp Bộ Lọc Lo Âu</span>
+              </h4>
+              <p>Theo Thuyết Bộ lọc Cảm xúc (GS. Stephen Krashen), kẻ thù lớn nhất của người bắt đầu từ số 0 là <strong>nỗi sợ bị đánh giá</strong>. Bộ ba: <em>Chào hỏi kết nối</em> (Hi, nice to meet you!) → <em>Biết ơn chân thành</em> (Thank you so much!) → <em>Chúc lành tạm biệt</em> (Have a great day!) là nghi thức ứng xử phổ quát trong văn hóa phương Tây. Dù ở sân bay JFK, quầy cà phê hay ngoài đường phố, chỉ cần bạn mỉm cười và thốt ra 3 câu này với ngữ điệu tự tin, người bản xứ sẽ lập tức cởi mở và đối xử nồng nhiệt với bạn. Dopamine tiết ra trong não sẽ xóa tan hoàn toàn nỗi sợ tiếng Anh!</p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-purple-300 mb-2 flex items-center space-x-2">
+                <span>🎯 Lộ Trình 25 Phút Chinh Phục Buổi 1 Của Bạn</span>
+              </h4>
+              <p>Hãy tự tin và chậm rãi đi qua 6 bước bên dưới: Bật gương camera soi khẩu hình → Nghe loa Mỹ chuẩn → Nói vào micro để AI chấm điểm → Làm trắc nghiệm → Lật thẻ 3D → Đối thoại nhập vai cùng David tại sân bay JFK → Gõ chữ phản xạ. Đạt đủ <strong>7/7 lần khắc sâu</strong> là bạn đã hoàn thành xuất sắc ngày đầu tiên!</p>
+            </div>
+          </div>
+        `
+      },
+
       // Module 1: Khẩu hình cơ miệng chuẩn xác kèm nghĩa & ngữ cảnh từng từ
       mouthTechniques: [
         {
@@ -349,6 +411,45 @@ export const CURRICULUM_DATA = {
       duration: "25 phút",
       practicalContext: "Xác định rõ ràng ai đang làm gì, giới thiệu người đi cùng và diễn đạt danh tính.",
       status: "locked",
+
+      // Module 0: Bài Thuyết Giảng Khai Mở Buổi 02
+      masterLecture: {
+        title: "Bản Đồ Khai Mở Buổi 02: Lan Tỏa Mạng Nơ-ron Sang Âm Rung /z/ & Giới Thiệu Bản Thân",
+        subtitle: "Kế thừa 35% nguyên liệu từ Buổi 1: Từ âm gió /s/ bước sang âm rung /z/ và đại từ xưng hô",
+        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
+        duration: "3 phút đọc sâu",
+        audioStory: "Buổi 02 là bước tiến tự nhiên tiếp theo. Chúng ta không học rời rạc mà kế thừa trực tiếp cơ hàm của Buổi 1.",
+        keyPoints: [
+          {
+            icon: "repeat",
+            title: "Kế Thừa Khẩu Hình Răng Từ Buổi 1",
+            desc: "Âm rung /z/ có khẩu hình răng hệt như âm /s/ của Buổi 1, chỉ cần bật rung dây thanh quản ở cổ họng (như tiếng ong vo ve)."
+          },
+          {
+            icon: "users",
+            title: "5 Đại Từ Sống Còn Trong Mọi Cuộc Giao Tiếp",
+            desc: "Làm chủ phản xạ ai làm gì (I, You, We, They, He, She) và cấu trúc giới thiệu người đồng hành: This is my friend."
+          },
+          {
+            icon: "shield-alert",
+            title: "Cắt Đứt Tật Nuốt Âm Đuôi Của Người Việt",
+            desc: "Từ 'Is' và 'Please' luôn có âm đuôi /z/. Nói rõ âm này giúp người bản xứ nghe rõ mồn một không còn bị lẫn lộn."
+          }
+        ],
+        deepExplanationHtml: `
+          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-cyan-300 mb-2">🔗 Nguyên Lý Lan Tỏa: Buổi 02 Kế Thừa Gì Từ Buổi 01?</h4>
+              <p>Trong thuyết mạng nơ-ron (Spreading Activation), một bài học mới chỉ được tiếp thu nhanh nhất khi nó có ít nhất 30% giàn giáo cũ. Ở Buổi 01, bạn đã khép 2 hàm răng để tạo âm gió <code>/s/</code>. Hôm nay ở Buổi 02, bạn vẫn giữ nguyên vị trí răng đó, nhưng thêm độ rung của thanh quản để tạo ra âm <code>/z/</code>. Khẩu hình không cần học lại, chỉ nâng cấp thêm một tầng nơ-ron mới!</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-emerald-300 mb-2">🎯 Tình Huống Thực Chiến: Thu Hút Sự Chú Ý Văn Minh</h4>
+              <p>Câu <code>Excuse me, please!</code> kết hợp âm /s/ và /z/ vừa học, giúp bạn lịch sự nhờ người khác nhường đường, gọi phục vụ bàn, hoặc mở lời trước khi hỏi đường một cách trang trọng.</p>
+            </div>
+          </div>
+        `
+      },
+
       mouthTechniques: [
         {
           sound: "/z/",
@@ -459,6 +560,41 @@ export const CURRICULUM_DATA = {
       duration: "25 phút",
       practicalContext: "Khi bị mệt, khát nước, đói bụng hoặc cần sự trợ giúp khẩn cấp.",
       status: "locked",
+
+      // Module 0: Bài Thuyết Giảng Khai Mở Buổi 03
+      masterLecture: {
+        title: "Bản Đồ Khai Mở Buổi 03: Giải Tỏa Nhu Cầu Sinh Tồn Với 'I need' & 'I want'",
+        subtitle: "Đan kết 3 buổi học thành chuỗi hành động hoàn chỉnh: Yêu cầu trợ giúp và nói lời cảm ơn",
+        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
+        duration: "3 phút đọc sâu",
+        audioStory: "Buổi 03 đưa bạn vào tình huống sinh tồn: khi cần nước, cần chỉ đường hay cần bác sĩ cấp cứu.",
+        keyPoints: [
+          {
+            icon: "heart-handshake",
+            title: "Khung Câu Nhu Cầu Thiết Yếu: I need / I want",
+            desc: "Nói thẳng nhu cầu cấp thiết mà không vòng vo: I need some water, please. / I need help, please."
+          },
+          {
+            icon: "repeat",
+            title: "Tái Kích Hoạt 2 Mắt Xích Cũ",
+            desc: "Dùng 'please' của Buổi 2 để tạo sự lịch sự, và dùng 'Thank you so much!' của Buổi 1 để kết thúc màn tương tác."
+          },
+          {
+            icon: "smile",
+            title: "Khẩu Hình Âm Cười /iː/ (Long E)",
+            desc: "Kéo mép môi sang hai bên như mỉm cười để phát âm sáng vang trong các từ Need, Please, Meet."
+          }
+        ],
+        deepExplanationHtml: `
+          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+              <h4 class="text-base font-bold text-emerald-300 mb-2">🌊 Vòng Tròn Phản Xạ Khép Kín</h4>
+              <p>Một người du lịch bản lĩnh chỉ cần 3 buổi học là có thể tự sinh tồn: Mở lời văn minh (<code>Excuse me, please!</code>) → Nêu nhu cầu cấp bách (<code>I need some water, please</code>) → Nhận đồ và tri ân (<code>Thank you so much!</code>). Toàn bộ 3 bài học đan cài thành một sợi dây thừng nơ-ron không thể đứt gãy!</p>
+            </div>
+          </div>
+        `
+      },
+
       mouthTechniques: [
         {
           sound: "/iː/",
