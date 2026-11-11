@@ -4,13 +4,13 @@ export const DONATE_CONFIG = {
   ownerTitle: "Tác Giả & Người Sáng Lập Nền Tảng",
   message: "Hệ thống học tiếng Anh này được phát triển hoàn toàn miễn phí 0đ vì cộng đồng. Nếu bạn thấy các bài học này hữu ích và muốn tiếp thêm động lực cho tác giả duy trì máy chủ, bạn có thể gửi tặng một ly cà phê nhỏ nhé (hoàn toàn tùy tâm)!",
   
-  // Thông tin ngân hàng từ mã VietQR thật của bạn
+  // Thông tin ngân hàng MB Bank chuẩn của bạn
   banking: {
-    bankId: "CTG",               // VietinBank (Ngân Hàng TMCP Công Thương Việt Nam)
-    bankName: "VietinBank (Công Thương)",
+    bankId: "MB",               // Ngân hàng TMCP Quân Đội (MB Bank)
+    bankName: "MB Bank (Ngân Hàng Quân Đội)",
     accountNumber: "0941958090",
     accountName: "LE HOANG DUC",
-    qrImagePath: "assets/qr-donate.jpg", // Sử dụng trực tiếp ảnh QR sắc nét của bạn
+    qrImagePath: "assets/qr-donate.jpg", // Ảnh QR MB Bank sắc nét của bạn
     suggestedAmounts: [10000, 20000, 50000]
   }
 };
