@@ -866,9 +866,65 @@ function updateCurrentDialogueTurnUI() {
   if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới và nói to câu tiếng Anh trên vào micro";
 }
 
+let currentStoryAudio = null;
+
 window.narrateCurrentScenario = function() {
-  if (!currentDialogueScenario || !currentDialogueScenario.storyNarrativeVi) return;
-  speakVietnamese(currentDialogueScenario.storyNarrativeVi);
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const audioPath = `assets/audio/story-${currentActiveLessonId}.mp3`;
+
+  // Nếu đang phát thì bấm lại sẽ tạm dừng
+  if (currentStoryAudio) {
+    currentStoryAudio.pause();
+    currentStoryAudio = null;
+    const btn = document.querySelector('[onclick="narrateCurrentScenario()"]');
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const audio = new Audio(audioPath);
+  currentStoryAudio = audio;
+
+  const btn = document.querySelector('[onclick="narrateCurrentScenario()"]');
+  if (btn) {
+    btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời kể... (Bấm dừng)</span>`;
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  audio.onended = function() {
+    currentStoryAudio = null;
+    const noticeEl = document.getElementById("voiceNoticeTip");
+    if (noticeEl) noticeEl.classList.add("hidden");
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  };
+
+  audio.onerror = function() {
+    currentStoryAudio = null;
+    if (lesson?.dialogueScenario?.storyNarrativeVi) {
+      speakVietnamese(lesson.dialogueScenario.storyNarrativeVi);
+    }
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  };
+
+  audio.play().catch(() => {
+    currentStoryAudio = null;
+    if (lesson?.dialogueScenario?.storyNarrativeVi) {
+      speakVietnamese(lesson.dialogueScenario.storyNarrativeVi);
+    }
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  });
 };
 
 window.triggerAiPartnerPrompt = function() {
