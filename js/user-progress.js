@@ -78,16 +78,21 @@ export async function loadUserProgress(user) {
 export async function saveLessonCompletion(user, lessonId, score, total) {
   const progress = await loadUserProgress(user);
 
-  if (!progress.completedLessons.includes(lessonId)) {
-    progress.completedLessons.push(lessonId);
-  }
+  const isPassed = score >= Math.ceil(total * 0.7);
 
   progress.quizHistory[lessonId] = {
     score: score,
     total: total,
-    passed: score >= Math.ceil(total * 0.7),
+    passed: isPassed,
     date: new Date().toISOString()
   };
+
+  // CHỈ THÊM VÀO DANH SÁCH HOÀN THÀNH KHI ĐẠT TỐI THIỂU 70% ĐIỂM
+  if (isPassed) {
+    if (!progress.completedLessons.includes(lessonId)) {
+      progress.completedLessons.push(lessonId);
+    }
+  }
 
   // Tính lại phần trăm tiến độ Chặng 0 (10 buổi nền móng chuẩn A0 -> A1)
   const phase0Target = 10;

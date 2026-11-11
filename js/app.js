@@ -1,6 +1,7 @@
 // ============================================================================
-// HỆ ĐIỀU HÀNH HỌC TẬP AI (COGNITIVE LEARNING OS ENGINE)
-// Hỗ trợ Danh mục bài học tuần tự khóa nơ-ron, 6 Module học thuật chuẩn đa giác quan
+// HỆ ĐIỀU HÀNH HỌC TẬP AI (COGNITIVE LEARNING OS ENGINE) - PHIÊN BẢN 2.2 ĐÃ KIỂM ĐỊNH
+// Khắc phục triệt để lỗi ngầm, đồng bộ khẩu hình động, xác thực lặp 7 lần thực chất,
+// phòng luyện nói đối thoại tương tác trực tiếp và khóa bài học tuần tự nơ-ron
 // ============================================================================
 
 import { setupAuthUI, getAllStudents, updateStudentStatus } from "./auth.js";
@@ -16,43 +17,65 @@ let currentActiveLessonId = "buoi-01";
 let userQuizScore = 0;
 let answeredCount = 0;
 
-// Bộ nhớ lưu từ đang chọn luyện phát âm trong Module 1
+// Bộ nhớ lưu từ đang chọn luyện phát âm trong Module 1: { [techIdx]: wordObject }
 const selectedMouthWords = {};
 
-// Bộ nhớ theo dõi số lần lặp đa giác quan (Chỉ số khắc sâu nơ-ron: 0/7)
-const neuroRepetitionStats = JSON.parse(localStorage.getItem('ai_english_neuro_reps') || '{}');
+// ==============================================================
+// BỘ NHỚ THEO DÕI SỐ LẦN LẶP ĐA GIÁC QUAN (XÁC THỰC THỰC CHẤT 4 KÊNH - MAX 7 ĐIỂM)
+// Không cho phép bấm nút "Nghe" liên tục để gian lận số lần lặp
+// ==============================================================
+const neuroRepetitionStats = JSON.parse(localStorage.getItem('ai_english_neuro_reps_v2') || '{}');
 
-function getChunkRepetitionCount(phrase) {
-  return neuroRepetitionStats[phrase] || 0;
+function getChunkRepetitionData(phrase) {
+  if (!neuroRepetitionStats[phrase] || typeof neuroRepetitionStats[phrase] !== 'object') {
+    neuroRepetitionStats[phrase] = {
+      listened: false,        // 1 điểm: Đã nghe mẫu ít nhất 1 lần
+      spokenCorrectly: false, // 2 điểm: Đã nói vào micro và AI chấm >= 70%
+      typedCorrectly: false,  // 2 điểm: Đã xếp chữ hoặc gõ chính tả đúng
+      dialoguePassed: false   // 2 điểm: Đã đối đáp chuẩn trong kịch bản nhập vai
+    };
+  }
+  return neuroRepetitionStats[phrase];
 }
 
-function incrementChunkRepetition(phrase, countToAdd = 1) {
-  const current = neuroRepetitionStats[phrase] || 0;
-  const updated = Math.min(7, current + countToAdd);
-  neuroRepetitionStats[phrase] = updated;
-  localStorage.setItem('ai_english_neuro_reps', JSON.stringify(neuroRepetitionStats));
+function calculateRepetitionScore(data) {
+  let score = 0;
+  if (data.listened) score += 1;
+  if (data.spokenCorrectly) score += 2;
+  if (data.typedCorrectly) score += 2;
+  if (data.dialoguePassed) score += 2;
+  return Math.min(7, score);
+}
 
-  // Cập nhật DOM của các badge và thanh tiến trình nếu có
+function saveRepetitionStats() {
+  localStorage.setItem('ai_english_neuro_reps_v2', JSON.stringify(neuroRepetitionStats));
+}
+
+function updateChunkUIBadge(phrase) {
+  const data = getChunkRepetitionData(phrase);
+  const score = calculateRepetitionScore(data);
+
   const countEl = document.getElementById(`rep-count-${phrase}`);
   const barEl = document.getElementById(`rep-bar-${phrase}`);
   const statusEl = document.getElementById(`rep-status-${phrase}`);
+  const tagsEl = document.getElementById(`rep-tags-${phrase}`);
 
-  if (countEl) countEl.textContent = `${updated}/7 lần`;
+  if (countEl) countEl.textContent = `${score}/7 lần`;
   if (barEl) {
-    barEl.style.width = `${(updated / 7) * 100}%`;
-    if (updated >= 7) {
+    barEl.style.width = `${(score / 7) * 100}%`;
+    if (score >= 7) {
       barEl.className = "h-full rounded-full transition-all duration-500 bg-emerald-400";
-    } else if (updated >= 3) {
+    } else if (score >= 3) {
       barEl.className = "h-full rounded-full transition-all duration-500 bg-amber-400";
     } else {
       barEl.className = "h-full rounded-full transition-all duration-500 bg-cyan-400";
     }
   }
   if (statusEl) {
-    if (updated >= 7) {
+    if (score >= 7) {
       statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold";
       statusEl.textContent = "Đã khắc sâu vĩnh viễn ✨";
-    } else if (updated >= 3) {
+    } else if (score >= 3) {
       statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold";
       statusEl.textContent = "Phản xạ cơ miệng";
     } else {
@@ -60,14 +83,66 @@ function incrementChunkRepetition(phrase, countToAdd = 1) {
       statusEl.textContent = "Ghi nhận âm thanh";
     }
   }
+  if (tagsEl) {
+    tagsEl.innerHTML = `
+      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
+      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
+      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold' : 'bg-slate-800 text-slate-500'}">⌨️ Gõ đúng ${data.typedCorrectly ? '✓' : '○'}</span>
+      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold' : 'bg-slate-800 text-slate-500'}">💬 Đối thoại ${data.dialoguePassed ? '✓' : '○'}</span>
+    `;
+  }
+}
 
-  if (updated === 7 && current < 7) {
-    playVictorySound();
+function markChunkListened(phrase) {
+  const data = getChunkRepetitionData(phrase);
+  if (!data.listened) {
+    data.listened = true;
+    saveRepetitionStats();
+    updateChunkUIBadge(phrase);
+  }
+}
+
+function markChunkSpoken(phrase) {
+  const data = getChunkRepetitionData(phrase);
+  if (!data.spokenCorrectly) {
+    data.spokenCorrectly = true;
+    saveRepetitionStats();
+    updateChunkUIBadge(phrase);
+    if (calculateRepetitionScore(data) === 7) playVictorySound();
+  }
+}
+
+function markChunkTyped(phrase) {
+  // Tìm cụm từ tương ứng
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const matchedChunk = (lesson?.chunks || []).find(c => normalizeText(c.phrase) === normalizeText(phrase));
+  const targetPhrase = matchedChunk ? matchedChunk.phrase : phrase;
+
+  const data = getChunkRepetitionData(targetPhrase);
+  if (!data.typedCorrectly) {
+    data.typedCorrectly = true;
+    saveRepetitionStats();
+    updateChunkUIBadge(targetPhrase);
+    if (calculateRepetitionScore(data) === 7) playVictorySound();
+  }
+}
+
+function markChunkDialogue(phrase) {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const matchedChunk = (lesson?.chunks || []).find(c => normalizeText(c.phrase) === normalizeText(phrase));
+  const targetPhrase = matchedChunk ? matchedChunk.phrase : phrase;
+
+  const data = getChunkRepetitionData(targetPhrase);
+  if (!data.dialoguePassed) {
+    data.dialoguePassed = true;
+    saveRepetitionStats();
+    updateChunkUIBadge(targetPhrase);
+    if (calculateRepetitionScore(data) === 7) playVictorySound();
   }
 }
 
 // ==============================================================
-// 1. CÔNG NGHỆ PHÁT ÂM GIỌNG MỸ & GIỌNG KỂ DẪN CHUYỆN TIẾNG VIỆT (WEB SPEECH API 0Đ)
+// 1. CÔNG NGHỆ PHÁT ÂM GIỌNG MỸ & KỂ CHUYỆN TIẾNG VIỆT NGẮT NGHỈ CHUẨN
 // ==============================================================
 export function speakText(text) {
   if (!('speechSynthesis' in window)) {
@@ -82,7 +157,7 @@ export function speakText(text) {
   utterance.pitch = 1.0;
 
   const voices = window.speechSynthesis.getVoices();
-  const usVoice = voices.find(v => v.lang === 'en-US' || v.lang.includes('US'));
+  const usVoice = voices.find(v => v.lang === 'en-US' || v.lang.includes('US') || v.lang.includes('en'));
   if (usVoice) utterance.voice = usVoice;
 
   window.speechSynthesis.speak(utterance);
@@ -90,20 +165,59 @@ export function speakText(text) {
 window.speakText = speakText;
 window.playClickSound = playClickSound;
 
+// Đọc tiếng Việt có ngắt nghỉ tự nhiên giữa các câu, tránh đọc liên tục hoặc dùng nhầm giọng Mỹ
 export function speakVietnamese(text) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'vi-VN';
-  utterance.rate = 0.95;
-  utterance.pitch = 1.0;
-
   const voices = window.speechSynthesis.getVoices();
-  const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.includes('vi'));
-  if (viVoice) utterance.voice = viVoice;
+  const viVoice = voices.find(v => 
+    (v.lang && (v.lang === 'vi-VN' || v.lang === 'vi_VN' || v.lang.startsWith('vi'))) ||
+    (v.name && v.name.toLowerCase().includes('vietnam'))
+  );
 
-  window.speechSynthesis.speak(utterance);
+  const noticeEl = document.getElementById("voiceNoticeTip");
+
+  if (!viVoice) {
+    // Nếu hệ điều hành không có giọng tiếng Việt, hiện thông báo tinh tế và không ép giọng Mỹ đọc
+    if (noticeEl) noticeEl.classList.remove("hidden");
+    return;
+  } else {
+    if (noticeEl) noticeEl.classList.add("hidden");
+  }
+
+  // Tách thành từng câu theo dấu chấm, chấm than, hỏi chấm để có nhịp thở tự nhiên
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  let sIndex = 0;
+
+  function playSentence() {
+    if (sIndex >= sentences.length) return;
+    const currentSentence = sentences[sIndex].trim();
+    if (!currentSentence) {
+      sIndex++;
+      playSentence();
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(currentSentence);
+    utterance.voice = viVoice;
+    utterance.lang = 'vi-VN';
+    utterance.rate = 0.90; // Nhịp độ truyền cảm, chậm rãi
+    utterance.pitch = 1.0;
+
+    utterance.onend = function() {
+      sIndex++;
+      setTimeout(playSentence, 350); // Nghỉ 350ms giữa 2 câu như người thật
+    };
+
+    utterance.onerror = function(err) {
+      console.warn("Lỗi đọc câu tiếng Việt:", err);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  playSentence();
 }
 window.speakVietnamese = speakVietnamese;
 
@@ -112,9 +226,7 @@ window.speakVietnamese = speakVietnamese;
 // ==============================================================
 window.toggleSidebar = function() {
   const sidebar = document.getElementById("curriculumSidebar");
-  if (sidebar) {
-    sidebar.classList.toggle("-translate-x-full");
-  }
+  if (sidebar) sidebar.classList.toggle("-translate-x-full");
 };
 
 window.switchMainView = function(viewId) {
@@ -162,14 +274,13 @@ window.switchLessonModule = function(moduleId) {
 };
 
 // ==============================================================
-// 3. KIỂM TRA MỞ KHÓA BÀI HỌC TUẦN TỰ (SEQUENTIAL LESSON LOCKING)
+// 3. KIỂM TRA MỞ KHÓA BÀI HỌC TUẦN TỰ (SEQUENTIAL NEUROLOGICAL GATING)
 // ==============================================================
 function isLessonUnlocked(lesson) {
   if (!lesson) return false;
   if (lesson.sessionNumber === 1) return true;
 
   const completed = (userProgress && userProgress.completedLessons) || [];
-  // Tìm bài trước
   const prevLesson = CURRICULUM_DATA.lessons.find(l => l.sessionNumber === lesson.sessionNumber - 1);
   if (!prevLesson) return true;
   return completed.includes(prevLesson.id);
@@ -293,7 +404,8 @@ window.selectLesson = function(lessonId) {
 };
 
 // ==============================================================
-// 6. MODULE 1: KHẨU HÌNH, ÂM VỊ & CHỌN TỪ LUYỆN PHÁT ÂM CÓ AI CHẤM ĐIỂM
+// 6. MODULE 1: KHẨU HÌNH, ÂM VỊ & ĐỒNG BỘ 100% TỪ LUYỆN NÓI
+// Đã khắc phục triệt để lỗi bấm "Nghe lại" bị phát sai từ
 // ==============================================================
 function renderMouthTechniques(techniques) {
   const container = document.getElementById("mouthTechniquesContainer");
@@ -305,7 +417,6 @@ function renderMouthTechniques(techniques) {
   }
 
   container.innerHTML = techniques.map((m, idx) => {
-    // Chuẩn hóa word list thành dạng object { word, ipa, meaning, context }
     const wordList = (m.words || []).map(w => {
       if (typeof w === 'string') {
         return { word: w, ipa: '', meaning: 'Từ ví dụ', context: '' };
@@ -343,7 +454,7 @@ function renderMouthTechniques(techniques) {
         </div>
       </div>
 
-      <!-- Khu vực luyện phát âm từ đang chọn -->
+      <!-- Khu vực luyện phát âm từ đang chọn (Liên kết động 100% qua hàm trung gian) -->
       <div class="pt-2 border-t border-slate-800" id="mouthPracticeBox-${idx}">
         <div class="mb-2">
           <div class="flex items-center justify-between">
@@ -356,12 +467,12 @@ function renderMouthTechniques(techniques) {
         </div>
 
         <div class="flex items-center justify-between gap-2">
-          <button onclick="speakText('${currentWord.word.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1 transition">
-            <i data-lucide="volume-2" class="w-3 h-3"></i>
+          <button id="btn-mouth-replay-${idx}" onclick="replaySelectedMouthWord(${idx})" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1 transition active:scale-95">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
             <span>Nghe lại</span>
           </button>
 
-          <button id="btn-mouth-mic-${idx}" onclick="practiceMouthSound('${currentWord.word.replace(/'/g, "\\'")}', ${idx})" class="px-3 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 text-xs font-semibold flex items-center space-x-1.5 transition">
+          <button id="btn-mouth-mic-${idx}" onclick="practiceSelectedMouthWord(${idx})" class="px-3 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 text-xs font-semibold flex items-center space-x-1.5 transition active:scale-95">
             <i data-lucide="mic" class="w-3.5 h-3.5"></i>
             <span>Nói thử</span>
           </button>
@@ -384,20 +495,18 @@ window.selectMouthWord = function(techIdx, wordIdx) {
   selectedMouthWords[techIdx] = wordObj;
   speakText(wordObj.word);
 
-  // Cập nhật DOM trực tiếp
+  // Cập nhật DOM trực tiếp không lo bị lệch từ
   const wordEl = document.getElementById(`mouthTargetWord-${techIdx}`);
   const ipaEl = document.getElementById(`mouthTargetIpa-${techIdx}`);
   const meaningEl = document.getElementById(`mouthTargetMeaning-${techIdx}`);
-  const micBtn = document.getElementById(`btn-mouth-mic-${techIdx}`);
   const feedbackEl = document.getElementById(`mouth-feedback-${techIdx}`);
 
   if (wordEl) wordEl.textContent = wordObj.word;
   if (ipaEl) ipaEl.textContent = wordObj.ipa || '';
   if (meaningEl) meaningEl.textContent = `Nghĩa: ${wordObj.meaning} ${wordObj.context ? '• ' + wordObj.context : ''}`;
-  if (micBtn) micBtn.setAttribute('onclick', `practiceMouthSound('${wordObj.word.replace(/'/g, "\\'")}', ${techIdx})`);
   if (feedbackEl) feedbackEl.classList.add('hidden');
 
-  // Cập nhật nút active
+  // Đổi trạng thái highlight nút từ đang chọn
   const wordsListEl = document.getElementById(`mouthWordsList-${techIdx}`);
   if (wordsListEl) {
     const buttons = wordsListEl.querySelectorAll('button');
@@ -411,8 +520,22 @@ window.selectMouthWord = function(techIdx, wordIdx) {
   }
 };
 
+window.replaySelectedMouthWord = function(techIdx) {
+  const wordObj = selectedMouthWords[techIdx];
+  if (wordObj && wordObj.word) {
+    speakText(wordObj.word);
+  }
+};
+
+window.practiceSelectedMouthWord = function(techIdx) {
+  const wordObj = selectedMouthWords[techIdx];
+  if (wordObj && wordObj.word) {
+    practiceMouthSound(wordObj.word, techIdx);
+  }
+};
+
 // ==============================================================
-// 7. MODULE 2: CỤM TỪ PHẢN XẠ & CHỈ SỐ KHẮC SÂU NƠ-RON (0/7 LẦN LẶP)
+// 7. MODULE 2: CỤM TỪ PHẢN XẠ & CHỈ SỐ KHẮC SÂU ĐA GIÁC QUAN 0/7
 // ==============================================================
 function renderChunks(chunks) {
   const container = document.getElementById("chunksContainer");
@@ -434,13 +557,14 @@ function renderChunks(chunks) {
         <span><strong>Cách Nói Mở Rộng:</strong> Tình huống biến đổi linh hoạt</span>
       </div>
       <div class="text-[11px] text-amber-400 font-mono">
-        💡 Mỗi lần Nghe (+1), Nói (+2), Gõ (+2) tích lũy khắc sâu não bộ
+        🧠 Cần hoàn thành đủ 4 kênh (Nghe + Nói ≥70% + Gõ câu + Đối thoại) để đạt 7/7
       </div>
     </div>
   `;
 
   container.innerHTML = guideHeader + chunks.map((c, idx) => {
-    const reps = getChunkRepetitionCount(c.phrase);
+    const data = getChunkRepetitionData(c.phrase);
+    const score = calculateRepetitionScore(data);
 
     return `
     <div class="p-4 rounded-xl cyber-card card-3d ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}">
@@ -467,18 +591,26 @@ function renderChunks(chunks) {
         </div>
       </div>
 
-      <!-- Chỉ số khắc sâu nơ-ron (Neuro-Retention Tracker) -->
+      <!-- Chỉ số khắc sâu nơ-ron xác thực thực chất -->
       <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px]">
         <div class="flex items-center space-x-2">
           <span class="text-xs">🧠</span>
           <span class="text-slate-400">Khắc sâu não bộ:</span>
-          <strong class="${reps >= 7 ? 'text-emerald-400' : 'text-cyan-400'}" id="rep-count-${c.phrase}">${reps}/7 lần</strong>
-          <span id="rep-status-${c.phrase}" class="text-[10px] px-1.5 py-0.5 rounded ${reps >= 7 ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (reps >= 3 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'bg-blue-500/20 text-blue-300 font-semibold')}">
-            ${reps >= 7 ? 'Đã khắc sâu vĩnh viễn ✨' : (reps >= 3 ? 'Phản xạ cơ miệng' : 'Ghi nhận âm thanh')}
+          <strong class="${score >= 7 ? 'text-emerald-400' : 'text-cyan-400'}" id="rep-count-${c.phrase}">${score}/7 lần</strong>
+          <span id="rep-status-${c.phrase}" class="text-[10px] px-1.5 py-0.5 rounded ${score >= 7 ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (score >= 3 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'bg-blue-500/20 text-blue-300 font-semibold')}">
+            ${score >= 7 ? 'Đã khắc sâu vĩnh viễn ✨' : (score >= 3 ? 'Phản xạ cơ miệng' : 'Ghi nhận âm thanh')}
           </span>
         </div>
-        <div class="w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div id="rep-bar-${c.phrase}" class="h-full rounded-full transition-all duration-500 ${reps >= 7 ? 'bg-emerald-400' : (reps >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(reps / 7) * 100}%"></div>
+
+        <div class="flex items-center space-x-2" id="rep-tags-${c.phrase}">
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold' : 'bg-slate-800 text-slate-500'}">⌨️ Gõ đúng ${data.typedCorrectly ? '✓' : '○'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold' : 'bg-slate-800 text-slate-500'}">💬 Đối thoại ${data.dialoguePassed ? '✓' : '○'}</span>
+        </div>
+
+        <div class="w-full sm:w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div id="rep-bar-${c.phrase}" class="h-full rounded-full transition-all duration-500 ${score >= 7 ? 'bg-emerald-400' : (score >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(score / 7) * 100}%"></div>
         </div>
       </div>
 
@@ -492,7 +624,7 @@ function renderChunks(chunks) {
 
 window.handleListenChunk = function(phrase) {
   speakText(phrase);
-  incrementChunkRepetition(phrase, 1);
+  markChunkListened(phrase);
 };
 
 // ==============================================================
@@ -576,7 +708,8 @@ window.selectQuizAnswer = async function(quizId, selectedIdx, correctIdx, explan
   if (scoreBadge) scoreBadge.textContent = `Điểm: ${userQuizScore}/${totalQuizzes}`;
 
   if (answeredCount >= totalQuizzes) {
-    if (userQuizScore >= Math.ceil(totalQuizzes * 0.7)) {
+    const isPassed = userQuizScore >= Math.ceil(totalQuizzes * 0.7);
+    if (isPassed) {
       playVictorySound();
       if (window.confetti) {
         setTimeout(() => window.confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } }), 200);
@@ -588,7 +721,20 @@ window.selectQuizAnswer = async function(quizId, selectedIdx, correctIdx, explan
     renderCurriculumTree();
 
     const finishBanner = document.getElementById("quizFinishBanner");
-    if (finishBanner) finishBanner.classList.remove("hidden");
+    if (finishBanner) {
+      finishBanner.classList.remove("hidden");
+      if (!isPassed) {
+        finishBanner.innerHTML = `
+          <div class="flex items-center space-x-3 text-xs text-amber-300">
+            <span class="text-2xl">💡</span>
+            <div>
+              <div class="font-bold text-amber-400">Bạn đạt ${userQuizScore}/${totalQuizzes} câu (cần ≥ 70% để mở khóa Buổi tiếp theo).</div>
+              <p class="text-slate-400 text-[11px] mt-0.5">Hãy tải lại trang và làm lại để kích hoạt nơ-ron nhé!</p>
+            </div>
+          </div>
+        `;
+      }
+    }
   }
 };
 
@@ -641,7 +787,8 @@ function renderFlashcards(chunks) {
 }
 
 // ==============================================================
-// 10. MODULE 5: ĐỐI THOẠI AI 2 CHIỀU VỚI KỂ CHUYỆN BỐI CẢNH (DIALOGUE ENGINE)
+// 10. MODULE 5: PHÒNG ĐỐI THOẠI NHẬP VAI TƯƠNG TÁC SỐNG ĐỘNG (INTERACTIVE ROLEPLAY ENGINE)
+// Học viên đóng vai trực tiếp: AI nói mở lời -> Bạn nói đối đáp -> AI phản hồi tức thì
 // ==============================================================
 let currentDialogueScenario = null;
 let currentDialogueTurnIndex = 0;
@@ -662,7 +809,6 @@ function setupDialogueModule(lesson) {
   if (titleEl) titleEl.textContent = currentDialogueScenario.title;
   if (narrativeEl) narrativeEl.textContent = currentDialogueScenario.storyNarrativeVi;
 
-  // Lọc danh sách lượt của user
   userTurnsList = (currentDialogueScenario.turns || []).filter(t => t.role === 'user');
   currentDialogueTurnIndex = 0;
 
@@ -674,47 +820,30 @@ function renderDialogueTurns() {
   const container = document.getElementById("dialogueTurnsContainer");
   if (!container || !currentDialogueScenario) return;
 
-  container.innerHTML = currentDialogueScenario.turns.map((turn, idx) => {
-    if (turn.role === 'ai') {
-      return `
-        <div class="p-4 rounded-2xl bg-slate-900/90 border border-purple-500/20 flex items-start space-x-3">
-          <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-lg flex-shrink-0">
-            ${currentDialogueScenario.characterAvatar || '👨‍💼'}
+  const turns = currentDialogueScenario.turns || [];
+  container.innerHTML = turns.map((turn, idx) => {
+    const isAi = turn.role === 'ai';
+    return `
+      <div id="dialogueBubble-${idx}" class="p-3.5 rounded-2xl transition-all duration-300 ${isAi ? 'bg-slate-900/90 border border-purple-500/20 mr-4 sm:mr-12' : 'bg-emerald-950/20 border border-emerald-500/30 ml-4 sm:ml-12'}">
+        <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 rounded-xl ${isAi ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-base flex-shrink-0">
+            ${isAi ? (currentDialogueScenario.characterAvatar || '👨‍💼') : '🙋'}
           </div>
           <div class="flex-grow">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-bold text-purple-300">${turn.speaker} <span class="text-[11px] text-slate-400 font-normal">(${currentDialogueScenario.roleContext || 'Người bản xứ'})</span></span>
-              <button onclick="speakText('${turn.text.replace(/'/g, "\\'")}')" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 px-2 py-0.5 rounded bg-slate-800">
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="text-xs font-bold ${isAi ? 'text-purple-300' : 'text-emerald-400'}">${turn.speaker}</span>
+              <button onclick="speakText('${(isAi ? turn.text : turn.targetText).replace(/'/g, "\\'")}')" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 px-2 py-0.5 rounded bg-slate-800">
                 <i data-lucide="volume-2" class="w-3 h-3"></i>
                 <span>Nghe</span>
               </button>
             </div>
-            <div class="text-base font-bold text-white">${turn.text}</div>
+            <div class="text-sm sm:text-base font-bold text-white">${isAi ? turn.text : turn.targetText}</div>
             <div class="text-xs text-slate-400 mt-0.5">${turn.meaning}</div>
-          </div>
-        </div>
-      `;
-    } else {
-      return `
-        <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 flex items-start space-x-3 ml-4 sm:ml-8">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-lg flex-shrink-0">
-            🙋
-          </div>
-          <div class="flex-grow">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-bold text-emerald-400">${turn.speaker} <span class="text-[11px] text-slate-400 font-normal">(Phản xạ của bạn)</span></span>
-              <button onclick="speakText('${turn.targetText.replace(/'/g, "\\'")}')" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 px-2 py-0.5 rounded bg-slate-800">
-                <i data-lucide="volume-2" class="w-3 h-3"></i>
-                <span>Nghe mẫu</span>
-              </button>
-            </div>
-            <div class="text-base font-bold text-white">${turn.targetText}</div>
-            <div class="text-xs text-emerald-300/90 mt-0.5">${turn.meaning}</div>
             ${turn.hint ? `<div class="text-[11px] text-amber-400/90 mt-1">💡 <em>Mẹo: ${turn.hint}</em></div>` : ''}
           </div>
         </div>
-      `;
-    }
+      </div>
+    `;
   }).join("");
 
   if (window.lucide) window.lucide.createIcons();
@@ -734,12 +863,59 @@ function updateCurrentDialogueTurnUI() {
   if (targetMeaningEl) targetMeaningEl.textContent = `Nghĩa: ${currentTurn.meaning} • ${currentTurn.hint || ''}`;
   if (indicatorEl) indicatorEl.textContent = `Lượt đối thoại của bạn: ${currentDialogueTurnIndex + 1} / ${userTurnsList.length}`;
   if (resultBox) resultBox.classList.add("hidden");
-  if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới rồi nói to câu tiếng Anh trên vào micro";
+  if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới và nói to câu tiếng Anh trên vào micro";
 }
 
 window.narrateCurrentScenario = function() {
   if (!currentDialogueScenario || !currentDialogueScenario.storyNarrativeVi) return;
   speakVietnamese(currentDialogueScenario.storyNarrativeVi);
+};
+
+window.triggerAiPartnerPrompt = function() {
+  if (!currentDialogueScenario || !currentDialogueScenario.turns) return;
+  // Tìm câu thoại của AI ngay trước lượt của user hiện tại
+  const currentTurn = userTurnsList[currentDialogueTurnIndex];
+  const userIdx = currentDialogueScenario.turns.indexOf(currentTurn);
+  const aiTurn = userIdx > 0 ? currentDialogueScenario.turns[userIdx - 1] : currentDialogueScenario.turns[0];
+
+  if (aiTurn && aiTurn.role === 'ai') {
+    speakText(aiTurn.text);
+  }
+};
+
+window.playFullConversationLoop = function() {
+  if (!currentDialogueScenario || !currentDialogueScenario.turns) return;
+  const turns = currentDialogueScenario.turns;
+  let idx = 0;
+
+  function playTurn() {
+    if (idx >= turns.length) {
+      alert("🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên!");
+      return;
+    }
+
+    const turn = turns[idx];
+    const phrase = turn.role === 'ai' ? turn.text : turn.targetText;
+
+    // Highlight bubble
+    document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400'));
+    const bubble = document.getElementById(`dialogueBubble-${idx}`);
+    if (bubble) bubble.classList.add('ring-2', 'ring-cyan-400');
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(phrase);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.88;
+
+    utterance.onend = function() {
+      idx++;
+      setTimeout(playTurn, 1000);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  playTurn();
 };
 
 window.replayCurrentTurnTarget = function() {
@@ -751,7 +927,7 @@ window.prevDialogueTurn = function() {
   if (currentDialogueTurnIndex > 0) {
     currentDialogueTurnIndex--;
     updateCurrentDialogueTurnUI();
-    speakText(userTurnsList[currentDialogueTurnIndex].targetText);
+    window.triggerAiPartnerPrompt();
   }
 };
 
@@ -759,7 +935,7 @@ window.nextDialogueTurn = function() {
   if (currentDialogueTurnIndex < userTurnsList.length - 1) {
     currentDialogueTurnIndex++;
     updateCurrentDialogueTurnUI();
-    speakText(userTurnsList[currentDialogueTurnIndex].targetText);
+    window.triggerAiPartnerPrompt();
   } else {
     alert("🎉 Xuất sắc! Bạn đã hoàn thành toàn bộ kịch bản đối thoại nhập vai của buổi học hôm nay!");
     playVictorySound();
@@ -817,8 +993,17 @@ window.toggleDialogueSpeechRecording = function() {
 
     if (percentScore >= 70) {
       playCorrectSound();
-      incrementChunkRepetition(currentTurn.targetText, 2);
-      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-emerald-400 font-semibold">🎉 Xuất sắc!</span> Phát âm của bạn rất tự nhiên và chuẩn xác. Hãy bấm <strong>Lượt tiếp theo</strong> để tiếp tục cuộc trò chuyện!`;
+      markChunkDialogue(currentTurn.targetText);
+
+      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-emerald-400 font-semibold">🎉 Xuất sắc!</span> Phát âm rất tự nhiên. Bạn đã vượt qua lượt thoại này!`;
+
+      // Tự động chuyển lượt sau 1.2s để câu chuyện tiếp diễn tự nhiên
+      setTimeout(() => {
+        if (currentDialogueTurnIndex < userTurnsList.length - 1) {
+          window.nextDialogueTurn();
+        }
+      }, 1500);
+
     } else {
       playIncorrectSound();
       if (feedbackEl) feedbackEl.innerHTML = `<span class="text-amber-400 font-semibold">Gần đúng rồi!</span> Hãy bấm nút <em>Nghe câu mẫu</em> và nói lại rõ ràng: "${currentTurn.targetText}".`;
@@ -846,7 +1031,7 @@ window.toggleDialogueSpeechRecording = function() {
 // ==============================================================
 // 11. MODULE 6: THỬ THÁCH GÕ PHẢN XẠ & GHÉP KHỐI TỪ (ACTIVE RECALL TYPING)
 // ==============================================================
-const typingUserState = {}; // challengeId -> { constructedWords: [] }
+const typingUserState = {};
 
 function renderTypingChallenges(challenges) {
   const container = document.getElementById("typingChallengeContainer");
@@ -862,9 +1047,7 @@ function renderTypingChallenges(challenges) {
       constructedWords: []
     };
 
-    // Tạo danh sách các khối từ bị xáo trộn (Target words + Distractors)
     const allWords = [...c.targetWords, ...(c.distractorWords || [])];
-    // Xáo trộn ngẫu nhiên
     const shuffledWords = allWords.sort(() => Math.random() - 0.5);
 
     return `
@@ -967,7 +1150,6 @@ function updateConstructedSentenceUI(challengeId, challenge) {
 
   if (window.lucide) window.lucide.createIcons();
 
-  // Kiểm tra nếu đã đủ số từ
   const currentSentence = state.constructedWords.map(w => w.word).join(" ");
   if (state.constructedWords.length >= challenge.targetWords.length) {
     checkSentenceCompletion(challengeId, currentSentence, challenge.fullSentence);
@@ -991,7 +1173,7 @@ function checkSentenceCompletion(challengeId, currentSentence, expectedSentence)
     feedbackEl.className = "mt-2 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-300";
     feedbackEl.innerHTML = `🎉 <strong>Chính xác tuyệt đối!</strong> Câu hoàn chỉnh: <em>"${expectedSentence}"</em>. Đã cộng +2 điểm khắc sâu nơ-ron!`;
     card.classList.add("border-emerald-500/40");
-    incrementChunkRepetition(expectedSentence, 2);
+    markChunkTyped(expectedSentence);
   } else {
     playIncorrectSound();
     feedbackEl.className = "mt-2 p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300";
@@ -1123,14 +1305,14 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
     feedbackEl.classList.remove("hidden");
     if (score >= 70) {
       playCorrectSound();
-      incrementChunkRepetition(targetPhrase, 2);
+      markChunkSpoken(targetPhrase);
       feedbackEl.className = "mt-3 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300";
       feedbackEl.innerHTML = `
         <div class="flex items-center justify-between mb-1">
           <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
           <span class="font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Độ chính xác: ${score}%</span>
         </div>
-        <p class="text-emerald-400/90 text-[11px]">🎉 Xuất sắc! Bạn phát âm câu này rất chuẩn xác và rõ ràng. Đã cộng +2 điểm khắc sâu não bộ!</p>
+        <p class="text-emerald-400/90 text-[11px]">🎉 Xuất sắc! Bạn phát âm câu này rất chuẩn xác và rõ ràng. Đã xác nhận +2 điểm phát âm nơ-ron!</p>
       `;
     } else {
       playIncorrectSound();
@@ -1140,7 +1322,7 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
           <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
           <span class="font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Độ chính xác: ${score}%</span>
         </div>
-        <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và chú ý phát âm rõ âm đuôi nhé.</p>
+        <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và chú ý phát âm rõ âm đuôi nhé (cần ≥ 70% để ghi nhận điểm).</p>
       `;
     }
   };
@@ -1162,22 +1344,22 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
 };
 
 // ==============================================================
-// 13. TIẾN ĐỘ HỌC VIÊN & CẬP NHẬT UI
+// 13. TIẾN ĐỘ HỌC VIÊN & CẬP NHẬT UI SIDEBAR ĐÃ ĐỒNG BỘ
 // ==============================================================
 function updateProgressUI(progress) {
   if (!progress) return;
 
-  const percentEl = document.getElementById("overallProgressPercent");
-  const barEl = document.getElementById("overallProgressBar");
-  const sessionCountEl = document.getElementById("overallSessionCount");
-  const hoursAccumulatedEl = document.getElementById("hoursAccumulated");
+  const percentEl = document.getElementById("personalProgressText") || document.getElementById("overallProgressPercent");
+  const barEl = document.getElementById("personalProgressBar") || document.getElementById("overallProgressBar");
+  const sessionCountEl = document.getElementById("personalCompletedCount") || document.getElementById("overallSessionCount");
+  const hoursAccumulatedEl = document.getElementById("personalHoursCount") || document.getElementById("hoursAccumulated");
 
   const completedCount = (progress.completedLessons || []).length;
 
-  if (percentEl) percentEl.textContent = `${progress.progressPercent || 0}%`;
+  if (percentEl) percentEl.textContent = `${progress.progressPercent || 0}% Chặng 0`;
   if (barEl) barEl.style.width = `${progress.progressPercent || 0}%`;
-  if (sessionCountEl) sessionCountEl.textContent = `Đã học: ${completedCount}/10 buổi chặng 0`;
-  if (hoursAccumulatedEl) hoursAccumulatedEl.textContent = `Tích lũy: ${progress.hoursAccumulated || 0}h`;
+  if (sessionCountEl) sessionCountEl.textContent = `Đã học: ${completedCount}/10 buổi chặng`;
+  if (hoursAccumulatedEl) hoursAccumulatedEl.textContent = `Tích lũy: ${progress.hoursAccumulated || '0.0'}h`;
 }
 
 // ==============================================================
