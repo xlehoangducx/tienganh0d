@@ -142,24 +142,48 @@ function markChunkDialogue(phrase) {
 }
 
 // ==============================================================
-// 1. CÔNG NGHỆ PHÁT ÂM GIỌNG MỸ & KỂ CHUYỆN TIẾNG VIỆT NGẮT NGHỈ CHUẨN
-// ==============================================================
+// BẢNG ÁNH XẠ ÂM THANH VIENEU-TTS CHẤT LƯỢNG CAO 48kHz CHO TOÀN BỘ TỪ & CÂU
+const VIENEU_AUDIO_MAP = {
+  // Module 1: Từ vựng luyện âm
+  "thank you": "assets/audio/thank-you.mp3",
+  "think": "assets/audio/think.mp3",
+  "nice": "assets/audio/nice.mp3",
+  "thanks": "assets/audio/thanks.mp3",
+  "see": "assets/audio/see.mp3",
+  "meet": "assets/audio/meet.mp3",
+  "great": "assets/audio/great.mp3",
+  "wait": "assets/audio/wait.mp3",
+  // Module 2: Cụm từ phản xạ cốt lõi & mở rộng
+  "hi nice to meet you": "assets/audio/hi-nice-to-meet-you.mp3",
+  "hi great to meet you": "assets/audio/hi-great-to-meet-you.mp3",
+  "good to see you again": "assets/audio/good-to-see-you-again.mp3",
+  "thank you so much": "assets/audio/thank-you-so-much.mp3",
+  "thank you for your help": "assets/audio/thank-you-for-your-help.mp3",
+  "thanks a lot": "assets/audio/thanks-a-lot.mp3",
+  "have a great day": "assets/audio/have-a-great-day.mp3",
+  "have a good one": "assets/audio/have-a-good-one.mp3",
+  "take care see you later": "assets/audio/take-care-see-you-later.mp3"
+};
+
 export function speakText(text) {
-  if (!('speechSynthesis' in window)) {
-    alert("Trình duyệt không hỗ trợ phát âm tự động.");
+  if (!text) return;
+  const normKey = text.trim().toLowerCase().replace(/[.,!?;:"']/g, "").replace(/\s+/g, " ").trim();
+  const matchedAudio = VIENEU_AUDIO_MAP[normKey];
+  
+  if (matchedAudio) {
+    window.playTrack(matchedAudio);
     return;
   }
-  window.speechSynthesis.cancel();
 
+  // Fallback sang Web Speech API nếu chưa có file MP3
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-US';
   utterance.rate = 0.88;
-  utterance.pitch = 1.0;
-
   const voices = window.speechSynthesis.getVoices();
   const usVoice = voices.find(v => v.lang === 'en-US' || v.lang.includes('US') || v.lang.includes('en'));
   if (usVoice) utterance.voice = usVoice;
-
   window.speechSynthesis.speak(utterance);
 }
 window.speakText = speakText;
@@ -479,18 +503,27 @@ function renderCurriculumTree() {
 
   const completed = (userProgress && userProgress.completedLessons) || [];
 
+  const shortPhaseNames = {
+    0: "Chặng 0: Khởi Động Khẩu Hình",
+    1: "Chặng 1: Giao Tiếp Đời Thường",
+    2: "Chặng 2: Nối Câu Đa Tầng",
+    3: "Chặng 3: Phản Xạ Bản Xứ",
+    4: "Chặng 4: Tự Do Ngôn Ngữ"
+  };
+
   container.innerHTML = CURRICULUM_DATA.milestones.map(m => {
     const milestoneLessons = CURRICULUM_DATA.lessons.filter(l => l.phaseId === m.id);
+    const phaseTitle = shortPhaseNames[m.id] || m.phaseName;
 
     return `
       <div class="rounded-xl border border-slate-800/80 bg-slate-900/60 overflow-hidden mb-3">
         <!-- Milestone Header -->
         <div class="p-3 bg-slate-850/80 border-b border-slate-800 flex items-center justify-between cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
           <div>
-            <div class="text-[10px] font-mono uppercase text-cyan-400 font-bold">${m.badge}</div>
-            <div class="text-xs font-bold text-white truncate max-w-[200px]">${m.phaseName.split(":")[1] || m.phaseName}</div>
+            <div class="text-[10px] font-mono uppercase text-cyan-400 font-bold">${m.badge || ''}</div>
+            <div class="text-xs font-bold text-white break-words pr-1">${phaseTitle}</div>
           </div>
-          <span class="text-[10px] text-slate-400 font-mono bg-slate-800 px-1.5 py-0.5 rounded">${m.targetProgress}</span>
+          <span class="text-[10px] text-slate-400 font-mono bg-slate-800 px-1.5 py-0.5 rounded flex-shrink-0">${m.targetProgress}</span>
         </div>
 
         <!-- Lessons List -->
@@ -499,16 +532,17 @@ function renderCurriculumTree() {
             const isCompleted = completed.includes(l.id);
             const isActive = l.id === currentActiveLessonId;
             const unlocked = isLessonUnlocked(l);
+            const shortLessonTitle = `Buổi ${l.sessionNumber < 10 ? '0' + l.sessionNumber : l.sessionNumber}: ${l.title.split('&')[0].trim()}`;
 
             if (!unlocked) {
               return `
                 <div onclick="notifyLockedLesson(${l.sessionNumber})" 
                      class="p-2.5 rounded-lg text-xs cursor-not-allowed transition flex items-center justify-between text-slate-500 bg-slate-950/40 border border-slate-900/80 opacity-60">
-                  <div class="flex items-center space-x-2 truncate pr-2">
+                  <div class="flex items-center space-x-2 pr-2">
                     <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-600 flex-shrink-0"></i>
-                    <span class="truncate">Buổi ${l.sessionNumber < 10 ? '0' + l.sessionNumber : l.sessionNumber}: ${l.title.split('&')[0]}</span>
+                    <span class="break-words">${shortLessonTitle}</span>
                   </div>
-                  <span class="text-[10px] font-mono text-slate-600 bg-slate-900 px-1.5 py-0.5 rounded">Khóa</span>
+                  <span class="text-[10px] font-mono text-slate-600 bg-slate-900 px-1.5 py-0.5 rounded flex-shrink-0">Khóa</span>
                 </div>
               `;
             }
@@ -516,9 +550,9 @@ function renderCurriculumTree() {
             return `
               <div onclick="selectLesson('${l.id}')" 
                    class="p-2.5 rounded-lg text-xs cursor-pointer transition flex items-center justify-between ${isActive ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'text-slate-300 hover:bg-slate-800/70 border border-transparent'}">
-                <div class="flex items-center space-x-2 truncate pr-2">
-                  <span class="w-1.5 h-1.5 rounded-full ${isCompleted ? 'bg-emerald-400' : (isActive ? 'bg-cyan-400' : 'bg-slate-600')}"></span>
-                  <span class="truncate">Buổi ${l.sessionNumber < 10 ? '0' + l.sessionNumber : l.sessionNumber}: ${l.title.split('&')[0]}</span>
+                <div class="flex items-center space-x-2 pr-2">
+                  <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 ${isCompleted ? 'bg-emerald-400' : (isActive ? 'bg-cyan-400' : 'bg-slate-600')}"></span>
+                  <span class="break-words">${shortLessonTitle}</span>
                 </div>
                 ${isCompleted ? '<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>' : ''}
               </div>
@@ -606,7 +640,7 @@ window.renderTeacherGuideBanner = function(stepNum, title, instruction) {
         <div>
           <div class="text-xs font-bold text-white flex items-center space-x-2">
             <span>${title}</span>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Gia Sư Hải Đăng • 48kHz</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"></span>
           </div>
           <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${instruction}</p>
         </div>
@@ -699,12 +733,9 @@ function renderMasterLecture(lesson) {
       <div class="relative z-10 border-b border-slate-800 pb-4 mb-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div class="flex items-center space-x-2">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center space-x-1.5">
-              <i data-lucide="award" class="w-3.5 h-3.5"></i>
-              <span>Bài Thuyết Giảng Khai Mở Tâm Trí</span>
-            </span>
-            <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/30">
-              ${lec.author || "Gia Sư Hải Đăng (Nam · Miền Bắc)"}
+            <span class="px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>BÀI THUYẾT GIẢNG MỞ ĐẦU</span>
             </span>
           </div>
 
@@ -713,7 +744,7 @@ function renderMasterLecture(lesson) {
             ${slides.map((s, idx) => `
               <button onclick="goToSlide(${idx})" class="h-2 rounded-full transition-all duration-300 ${idx === currentSlideIndex ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-500/50' : idx < currentSlideIndex ? 'w-3 bg-emerald-700 hover:bg-emerald-600' : 'w-3 bg-slate-800 hover:bg-slate-700'}" title="Slide ${idx + 1}: ${s.title}"></button>
             `).join("")}
-            <span class="text-xs font-mono text-slate-400 ml-2">Slide ${currentSlideIndex + 1}/${slides.length}</span>
+            
           </div>
         </div>
 
@@ -726,7 +757,7 @@ function renderMasterLecture(lesson) {
       </div>
 
       <!-- Slide Main Visual Card (Animated) -->
-      <div class="relative z-10 mb-6 p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-slate-800/90 shadow-2xl transition-all duration-300 transform" id="activeSlideCard">
+      <div class="relative z-10 mb-6 p-6 sm:p-7 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl slide-card-active transition-all duration-300" id="activeSlideCard">
         <div class="flex items-start justify-between gap-3 mb-4 border-b border-slate-800/70 pb-3">
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30">
@@ -737,8 +768,8 @@ function renderMasterLecture(lesson) {
               <h3 class="text-base sm:text-lg font-bold text-white">${currentSlide.title}</h3>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-mono bg-slate-800/80 text-slate-300 border border-slate-700">
-            Slide ${currentSlideIndex + 1}
+          <span class="px-3 py-1 rounded-full text-[11px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
+            Trang ${currentSlideIndex + 1}
           </span>
         </div>
 
@@ -801,8 +832,18 @@ window.goToSlide = function(idx) {
   if (!lesson?.masterLecture?.slides) return;
   window.stopAllAudios();
   isSlideAudioPlaying = false;
-  currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
-  renderMasterLecture(lesson);
+
+  const card = document.getElementById("activeSlideCard");
+  if (card) {
+    card.classList.add("slide-card-fadeout");
+    setTimeout(() => {
+      currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+      renderMasterLecture(lesson);
+    }, 140);
+  } else {
+    currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+    renderMasterLecture(lesson);
+  }
 };
 
 window.nextSlide = function() {

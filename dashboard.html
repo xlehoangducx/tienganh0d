@@ -25,6 +25,40 @@
     }
   </script>
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* Cognitive Typography & Smooth Transitions */
+    .slide-card-active {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide-card-fadeout {
+      opacity: 0 !important;
+      transform: translateY(8px) scale(0.98) !important;
+    }
+    .wave-bar {
+      display: inline-block;
+      width: 3px;
+      height: 14px;
+      border-radius: 9999px;
+      background: #34d399;
+      animation: waveAnimation 1.2s ease-in-out infinite;
+    }
+    @keyframes waveAnimation {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
+    .glow-accent {
+      text-shadow: 0 0 12px rgba(52, 211, 153, 0.45);
+    }
+    /* Sticky Module Navigation */
+    .sticky-module-nav {
+      position: sticky;
+      top: 4rem;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background-color: rgba(7, 8, 13, 0.92);
+    }
+  </style>
 </head>
 <body class="bg-[#07080d] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
 
@@ -155,52 +189,84 @@
       <!-- ================= VIEW 1: BÀI HỌC HIỆN TẠI ================= -->
       <div id="curriculumView" class="space-y-6">
 
-        <!-- TRACK INDICATOR BAR -->
-        <div id="trackIndicatorBar" class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
-          <div class="flex items-center space-x-2.5">
-            <div id="trackIconBadge" class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base border border-emerald-500/30">
-              🟢
+        <!-- UNIFIED COMPACT LESSON HEADER -->
+        <div class="cyber-card p-4 sm:p-5 rounded-2xl relative overflow-hidden border-slate-800/80 bg-slate-900/60 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2.5 mb-2 border-b border-slate-800/60 pb-2.5">
+            <div class="flex items-center space-x-2">
+              <span id="trackIconBadge" class="text-sm">🟢</span>
+              <span id="trackTitleBadge" class="text-xs font-bold text-white flex items-center space-x-1.5">
+                <span>Tiếng Anh Giao Tiếp Đời Thường</span>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono">0đ Cộng Đồng</span>
+              </span>
             </div>
-            <div>
-              <div id="trackTitleBadge" class="text-xs font-bold text-white flex items-center space-x-2">
-                <span>Lộ Trình: Tiếng Anh Giao Tiếp Đời Thường</span>
-                <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono font-normal">0đ Miễn Phí Cộng Đồng</span>
-              </div>
-              <div id="trackSubBadge" class="text-[11px] text-slate-400">
-                Khung chuẩn Cambridge & CEFR (Pre-A1 → B2) • 5 Chặng 600 giờ • Không cần Key
-              </div>
+            
+            <div class="flex items-center space-x-3 text-xs">
+              <span id="currentPhaseBadge" class="font-mono text-cyan-400 font-semibold">Chặng 0: Khởi Động</span>
+              <span class="text-slate-500">•</span>
+              <span id="currentLessonDuration" class="text-slate-400 font-mono">25 phút</span>
+              <a href="tracks.html" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-cyan-300 font-semibold transition flex items-center space-x-1 border border-slate-700">
+                <i data-lucide="compass" class="w-3 h-3"></i>
+                <span>Đổi Lộ Trình</span>
+              </a>
             </div>
           </div>
-          <div class="flex items-center space-x-2">
-            <a href="index.html#languageMatrixSection" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-300 hover:text-white transition flex items-center space-x-1.5 border border-slate-700/80 cursor-pointer">
-              <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i>
-              <span>Đổi Lộ Trình / Chuyên Ngành</span>
-            </a>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 id="currentLessonTitle" class="text-lg sm:text-2xl font-black text-white tracking-wide glow-accent">
+                Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường Đầu Tiên
+              </h2>
+              <p id="currentLessonTopic" class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+                Chủ đề: Mở khóa khẩu hình cơ miệng, làm quen âm thè lưỡi /θ/, âm gió /s/, âm bật /t/ và phản xạ chào hỏi
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Header bài học hiện tại -->
-        <div class="cyber-card card-3d p-6 rounded-2xl relative overflow-hidden">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-            <span id="currentPhaseBadge" class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20">
-              Giai đoạn 0: Căn Chỉnh Âm Vị
-            </span>
-            <div class="flex items-center space-x-2 text-xs text-slate-400 font-mono">
-              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-              <span id="currentLessonDuration">20 phút</span>
+        <!-- 7 TABS MODULE HỌC THUẬT ĐA GIÁC QUAN (STICKY TẬP TRUNG) -->
+        <div class="sticky-module-nav border-b border-slate-800/90 py-2.5 -mx-1 px-1">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap gap-1.5 sm:gap-2">
+              <button onclick="switchLessonModule('moduleLecture')" id="btn-moduleLecture" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+                <span>0. Thuyết Giảng</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="mic" class="w-4 h-4"></i>
+                <span>1. Khẩu Hình</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="volume-2" class="w-4 h-4"></i>
+                <span>2. Cụm Từ</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="help-circle" class="w-4 h-4"></i>
+                <span>3. Trắc Nghiệm</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleCards')" id="btn-moduleCards" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                <span>4. Sổ Thẻ 3D</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleDialogue')" id="btn-moduleDialogue" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="radio" class="w-4 h-4"></i>
+                <span>5. Đối Thoại AI</span>
+              </button>
+
+              <button onclick="switchLessonModule('moduleTyping')" id="btn-moduleTyping" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+                <i data-lucide="keyboard" class="w-4 h-4"></i>
+                <span>6. Ghép Khối</span>
+              </button>
             </div>
-          </div>
-
-          <h2 id="currentLessonTitle" class="text-xl sm:text-2xl font-extrabold text-white">
-            Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường
-          </h2>
-          <p id="currentLessonTopic" class="text-xs sm:text-sm text-slate-400 mt-1">
-            Chủ đề: Mở khóa khẩu hình cơ miệng, làm quen âm gió, âm bật và phản xạ chào hỏi
-          </p>
-
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center space-x-2 text-xs text-emerald-400">
-            <i data-lucide="target" class="w-4 h-4 flex-shrink-0"></i>
-            <span><strong>Ngữ cảnh áp dụng:</strong> <span id="currentLessonContext" class="text-slate-300">Gặp người nước ngoài, chào hỏi tự nhiên, cảm ơn chân thành.</span></span>
+            
+            <button onclick="toggleFreedomMode()" id="freedomModeBtn" class="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-emerald-300 bg-slate-900 border border-slate-800 transition flex items-center space-x-1">
+              <i data-lucide="unlock" class="w-3.5 h-3.5"></i>
+              <span id="freedomModeStatus">Chế Độ Tự Do: TẮT</span>
+            </button>
           </div>
         </div>
 
