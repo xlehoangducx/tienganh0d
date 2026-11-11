@@ -253,10 +253,184 @@ window.switchMainView = function(viewId) {
   }
 };
 
-window.switchLessonModule = function(moduleId) {
+// ==============================================================
+// 2.5. HỆ THỐNG ĐIỀU PHỐI ÂM THANH TRUNG TÂM & KHÓA TUẦN TỰ NƠ-RON
+// ==============================================================
+let activeGlobalAudio = null;
+let currentSlideAudio = null;
+let currentGuideAudio = null;
+let currentStoryAudio = null;
+
+window.stopAllAudios = function() {
+  if (activeGlobalAudio) {
+    activeGlobalAudio.pause();
+    activeGlobalAudio = null;
+  }
+  if (currentSlideAudio) {
+    currentSlideAudio.pause();
+    currentSlideAudio = null;
+  }
+  if (currentGuideAudio) {
+    currentGuideAudio.pause();
+    currentGuideAudio = null;
+  }
+  if (currentStoryAudio) {
+    currentStoryAudio.pause();
+    currentStoryAudio = null;
+  }
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+};
+
+window.playTrack = function(audioPath, onEnded, onError) {
+  window.stopAllAudios();
+  const audio = new Audio(audioPath);
+  activeGlobalAudio = audio;
+  audio.onended = () => {
+    activeGlobalAudio = null;
+    if (onEnded) onEnded();
+  };
+  audio.onerror = (e) => {
+    activeGlobalAudio = null;
+    if (onError) onError(e);
+  };
+  audio.play().catch(e => {
+    activeGlobalAudio = null;
+    if (onError) onError(e);
+  });
+  return audio;
+};
+
+export const MODULE_FLOW = [
+  { id: 'moduleLecture', step: 0, title: '0. Thuyết Giảng Khai Mở', icon: 'book-open' },
+  { id: 'moduleMouth', step: 1, title: '1. Khẩu Hình & Phát Âm', icon: 'mic', guideAudio: 'assets/audio/guide-buoi-01-step-1.mp3' },
+  { id: 'moduleChunks', step: 2, title: '2. Cụm Từ & Phản Xạ', icon: 'volume-2', guideAudio: 'assets/audio/guide-buoi-01-step-2.mp3' },
+  { id: 'moduleQuiz', step: 3, title: '3. Trắc Nghiệm', icon: 'help-circle', guideAudio: 'assets/audio/guide-buoi-01-step-3.mp3' },
+  { id: 'moduleFlashcard', step: 4, title: '4. Sổ Thẻ 3D', icon: 'layers', guideAudio: 'assets/audio/guide-buoi-01-step-4.mp3' },
+  { id: 'moduleSpeaking', step: 5, title: '5. Đối Thoại AI 2 Chiều', icon: 'radio', guideAudio: 'assets/audio/guide-buoi-01-step-5.mp3' },
+  { id: 'moduleTyping', step: 6, title: '6. Gõ Phản Xạ & Ghép Khối', icon: 'keyboard', guideAudio: 'assets/audio/guide-buoi-01-step-6.mp3' }
+];
+
+let internalUnlockedStep = 0; // 0: chỉ mở moduleLecture, 1: mở đến moduleMouth, ..., 6: mở tất cả
+let isFreeMode = false;
+
+// Đọc trạng thái từ localStorage
+try {
+  const savedGating = localStorage.getItem('tienganh0d_step_gating_buoi_01');
+  if (savedGating) {
+    const parsed = JSON.parse(savedGating);
+    if (typeof parsed.unlockedStep === 'number') internalUnlockedStep = parsed.unlockedStep;
+    if (typeof parsed.isFreeMode === 'boolean') isFreeMode = parsed.isFreeMode;
+  }
+} catch (e) {
+  console.warn('Lỗi đọc step gating từ localStorage:', e);
+}
+
+function saveStepGatingState() {
+  try {
+    localStorage.setItem('tienganh0d_step_gating_buoi_01', JSON.stringify({
+      unlockedStep: internalUnlockedStep,
+      isFreeMode: isFreeMode
+    }));
+  } catch (e) {}
+}
+
+window.unlockStep = function(stepNumber, autoSwitch = false) {
+  if (stepNumber > internalUnlockedStep) {
+    internalUnlockedStep = Math.min(stepNumber, 6);
+    saveStepGatingState();
+    window.updateModuleTabsUI();
+  }
+  if (autoSwitch) {
+    const targetMod = MODULE_FLOW[stepNumber];
+    if (targetMod) {
+      window.switchLessonModule(targetMod.id, true);
+    }
+  }
+};
+
+window.toggleFreeMode = function() {
+  isFreeMode = !isFreeMode;
+  saveStepGatingState();
+  window.updateModuleTabsUI();
+  if (isFreeMode) {
+    alert("🔓 Đã BẬT Chế Độ Tự Do Ôn Tập!
+Bạn có thể tự do mở xem và ôn tập bất kỳ bước nào trong 7 module.");
+  } else {
+    alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!
+Các module sẽ tuân theo lộ trình tiếp thu khoa học thần kinh từng bước.");
+  }
+};
+
+window.resetGatingFlow = function() {
+  internalUnlockedStep = 0;
+  isFreeMode = false;
+  saveStepGatingState();
+  window.updateModuleTabsUI();
+  window.switchLessonModule('moduleLecture', false);
+  window.scrollTo({ top: 100, behavior: 'smooth' });
+};
+
+window.updateModuleTabsUI = function() {
+  MODULE_FLOW.forEach((mod, idx) => {
+    const btn = document.getElementById(`btn-${mod.id}`);
+    if (!btn) return;
+    const isUnlocked = isFreeMode || idx <= internalUnlockedStep;
+    const isCompleted = !isFreeMode && idx < internalUnlockedStep;
+
+    if (isUnlocked) {
+      btn.classList.remove("opacity-50", "cursor-not-allowed");
+      btn.innerHTML = `
+        <i data-lucide="${mod.icon || 'star'}" class="w-4 h-4"></i>
+        <span>${mod.title}</span>
+        ${isCompleted ? '<span class="text-[10px] text-emerald-400 ml-1 font-bold">✓</span>' : ''}
+      `;
+    } else {
+      btn.classList.add("opacity-50", "cursor-not-allowed");
+      btn.innerHTML = `
+        <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
+        <span class="text-slate-500">${mod.title}</span>
+      `;
+    }
+  });
+
+  const label = document.getElementById('freeModeLabel');
+  if (label) {
+    label.textContent = isFreeMode ? 'Chế Độ Tự Do: BẬT' : 'Chế Độ Tự Do: TẮT';
+  }
+  const btnFree = document.getElementById('btnToggleFreeMode');
+  if (btnFree) {
+    if (isFreeMode) {
+      btnFree.className = "px-2.5 py-1 rounded-lg text-xs font-bold border border-cyan-500/50 text-cyan-300 bg-cyan-500/10 transition flex items-center space-x-1.5 cursor-pointer";
+    } else {
+      btnFree.className = "px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600 transition flex items-center space-x-1.5 cursor-pointer";
+    }
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.switchLessonModule = function(moduleId, autoPlayGuide = false) {
+  const targetStepIndex = MODULE_FLOW.findIndex(m => m.id === moduleId);
+  if (targetStepIndex === -1) return;
+
+  const isUnlocked = isFreeMode || targetStepIndex <= internalUnlockedStep;
+  if (!isUnlocked) {
+    playIncorrectSound();
+    const prevMod = MODULE_FLOW[targetStepIndex - 1];
+    alert(`🔒 Bước này đang tạm khóa!
+
+Thầy giáo khuyên bạn hãy hoàn thành xong "${prevMod ? prevMod.title : 'bước trước'}" để bộ não tiếp thu kiến thức một cách tự nhiên và bền vững nhất nhé!`);
+    return;
+  }
+
+  // Dừng mọi âm thanh đang phát để tránh chồng âm
+  window.stopAllAudios();
+
   document.querySelectorAll(".module-content").forEach(el => el.classList.add("hidden"));
   document.querySelectorAll(".module-tab-btn").forEach(btn => {
-    btn.classList.remove("bg-emerald-500/15", "text-emerald-400", "border-emerald-500/30");
+    btn.classList.remove("bg-emerald-500/15", "text-emerald-400", "border-emerald-500/30", "active");
     btn.classList.add("text-slate-400", "border-transparent");
   });
 
@@ -266,11 +440,18 @@ window.switchLessonModule = function(moduleId) {
   if (activeMod) activeMod.classList.remove("hidden");
   if (activeBtn) {
     activeBtn.classList.remove("text-slate-400", "border-transparent");
-    activeBtn.classList.add("bg-emerald-500/15", "text-emerald-400", "border-emerald-500/30");
+    activeBtn.classList.add("bg-emerald-500/15", "text-emerald-400", "border-emerald-500/30", "active");
   }
 
   if (window.lucide) window.lucide.createIcons();
   if (window.reinit3DTilt) window.reinit3DTilt();
+
+  // Tự động phát âm thanh hướng dẫn của thầy giáo nếu được kích hoạt
+  if (autoPlayGuide && targetStepIndex >= 1 && targetStepIndex <= 6) {
+    setTimeout(() => {
+      window.playTeacherGuideAudio(targetStepIndex);
+    }, 400);
+  }
 };
 
 // ==============================================================
@@ -391,8 +572,11 @@ window.selectLesson = function(lessonId) {
   setupDialogueModule(lesson);
   renderTypingChallenges(lesson.typingChallenges || []);
 
+  // Cập nhật trạng thái khóa tuần tự các tabs
+  window.updateModuleTabsUI();
+
   // Mặc định mở Tab 0: Thuyết Giảng Khai Mở
-  switchLessonModule('moduleLecture');
+  switchLessonModule('moduleLecture', false);
 
   // Đóng sidebar trên Mobile sau khi chọn bài
   const sidebar = document.getElementById("curriculumSidebar");
@@ -405,53 +589,88 @@ window.selectLesson = function(lessonId) {
 };
 
 // ==============================================================
-// 5.5. MODULE 0: BÀI THUYẾT GIẢNG KHAI MỞ TÂM TRÍ & CĂN CỨ KHOA HỌC
+// 5.5. MODULE 0: TRÌNH CHIẾU SLIDE THUYẾT GIẢNG TƯƠNG TÁC (SLIDE PRESENTATION SHOW)
 // ==============================================================
-let currentLectureAudio = null;
+let currentSlideIndex = 0;
+let isSlideAutoAdvance = true;
+let isSlideAudioPlaying = false;
+let currentPlayingGuideStep = null;
 
-window.narrateMasterLecture = function() {
-  const audioPath = `assets/audio/lecture-${currentActiveLessonId}.mp3`;
-  const btn = document.getElementById("btnNarrateLecture");
+// Reusable Helper: Render Teacher Guide Banner ở đầu mỗi module (Steps 1 to 6)
+window.renderTeacherGuideBanner = function(stepNum, title, instruction) {
+  const isPlaying = currentPlayingGuideStep === stepNum;
+  return `
+    <div class="mb-5 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner">
+      <div class="flex items-start space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5 border border-emerald-500/30">
+          <i data-lucide="headphones" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white flex items-center space-x-2">
+            <span>${title}</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Gia Sư Hải Đăng • 48kHz</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${instruction}</p>
+        </div>
+      </div>
+      <button id="btnGuideAudio-${stepNum}" onclick="playTeacherGuideAudio(${stepNum})" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold ${isPlaying ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40'} transition flex items-center space-x-1.5 cursor-pointer">
+        <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-3.5 h-3.5 fill-current"></i>
+        <span>${isPlaying ? 'Tạm Dừng' : '🎧 Nghe Lời Thầy Hướng Dẫn'}</span>
+      </button>
+    </div>
+  `;
+};
 
-  if (currentLectureAudio) {
-    currentLectureAudio.pause();
-    currentLectureAudio = null;
+// Reusable Helper: Render Next Step Transition CTA
+window.renderNextStepCTA = function(nextStepNum, label, tip) {
+  return `
+    <div class="mt-6 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="text-xs text-slate-400 flex items-center space-x-1.5">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+        <span>${tip}</span>
+      </div>
+      <button onclick="unlockStep(${nextStepNum}, true); window.scrollTo({top: 120, behavior: 'smooth'});" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
+        <span>${label}</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  `;
+};
+
+window.playTeacherGuideAudio = function(stepNum) {
+  const audioFile = `assets/audio/guide-buoi-01-step-${stepNum}.mp3`;
+  const btn = document.getElementById(`btnGuideAudio-${stepNum}`);
+
+  if (currentPlayingGuideStep === stepNum) {
+    window.stopAllAudios();
+    currentPlayingGuideStep = null;
     if (btn) {
-      btn.innerHTML = `<i data-lucide="headphones" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Thuyết Giảng Bài Học</span>`;
+      btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i><span>🎧 Nghe Lời Thầy Hướng Dẫn</span>`;
+      btn.className = "flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition flex items-center space-x-1.5 cursor-pointer";
       if (window.lucide) window.lucide.createIcons();
     }
     return;
   }
 
-  window.speechSynthesis.cancel();
-  const audio = new Audio(audioPath);
-  currentLectureAudio = audio;
-
+  currentPlayingGuideStep = stepNum;
   if (btn) {
-    btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời giảng... (Bấm dừng)</span>`;
+    btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời thầy... (Bấm dừng)</span>`;
+    btn.className = "flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition flex items-center space-x-1.5 cursor-pointer";
     if (window.lucide) window.lucide.createIcons();
   }
 
-  audio.onended = function() {
-    currentLectureAudio = null;
+  window.playTrack(audioFile, () => {
+    currentPlayingGuideStep = null;
     if (btn) {
-      btn.innerHTML = `<i data-lucide="headphones" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Thuyết Giảng Bài Học</span>`;
+      btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i><span>🎧 Nghe Lời Thầy Hướng Dẫn</span>`;
+      btn.className = "flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition flex items-center space-x-1.5 cursor-pointer";
       if (window.lucide) window.lucide.createIcons();
     }
-  };
-
-  audio.onerror = function() {
-    currentLectureAudio = null;
+  }, () => {
+    currentPlayingGuideStep = null;
     if (btn) {
-      btn.innerHTML = `<i data-lucide="headphones" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Thuyết Giảng Bài Học</span>`;
-      if (window.lucide) window.lucide.createIcons();
-    }
-  };
-
-  audio.play().catch(() => {
-    currentLectureAudio = null;
-    if (btn) {
-      btn.innerHTML = `<i data-lucide="headphones" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Thuyết Giảng Bài Học</span>`;
+      btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i><span>🎧 Nghe Lời Thầy Hướng Dẫn</span>`;
+      btn.className = "flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition flex items-center space-x-1.5 cursor-pointer";
       if (window.lucide) window.lucide.createIcons();
     }
   });
@@ -462,98 +681,116 @@ function renderMasterLecture(lesson) {
   if (!container) return;
 
   const lec = lesson.masterLecture;
-  if (!lec) {
+  if (!lec || !lec.slides || lec.slides.length === 0) {
     container.innerHTML = `<div class="p-6 text-sm text-slate-400">Bài thuyết giảng đang được cập nhật...</div>`;
     return;
   }
 
+  const slides = lec.slides;
+  const currentSlide = slides[currentSlideIndex] || slides[0];
+  const isFirst = currentSlideIndex === 0;
+  const isLast = currentSlideIndex === slides.length - 1;
+
   container.innerHTML = `
-    <div class="cyber-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-      <!-- Background glow -->
+    <div class="cyber-card p-6 sm:p-8 rounded-2xl relative overflow-hidden transition-all duration-300">
+      <!-- Glow background -->
       <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      <!-- Header Section -->
-      <div class="relative z-10 border-b border-slate-800 pb-5 mb-6">
-        <div class="flex flex-wrap items-center gap-2 mb-3">
-          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center space-x-1.5">
-            <i data-lucide="award" class="w-3.5 h-3.5"></i>
-            <span>Bài Thuyết Giảng Khai Mở Tâm Trí</span>
-          </span>
-          <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/30">
-            ${lec.author || "Gia Sư Trí Tuệ Nhân Tạo"}
-          </span>
-          <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono text-slate-400 bg-slate-900 border border-slate-800">
-            ⏱️ ${lec.duration || "3 phút"}
-          </span>
+      <!-- Top Header & Slide Progress Dots -->
+      <div class="relative z-10 border-b border-slate-800 pb-4 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center space-x-1.5">
+              <i data-lucide="award" class="w-3.5 h-3.5"></i>
+              <span>Bài Thuyết Giảng Khai Mở Tâm Trí</span>
+            </span>
+            <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/30">
+              ${lec.author || "Gia Sư Hải Đăng (Nam · Miền Bắc)"}
+            </span>
+          </div>
+
+          <!-- Slide Step Progress Dots/Pills -->
+          <div class="flex items-center space-x-1.5">
+            ${slides.map((s, idx) => `
+              <button onclick="goToSlide(${idx})" class="h-2 rounded-full transition-all duration-300 ${idx === currentSlideIndex ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-500/50' : idx < currentSlideIndex ? 'w-3 bg-emerald-700 hover:bg-emerald-600' : 'w-3 bg-slate-800 hover:bg-slate-700'}" title="Slide ${idx + 1}: ${s.title}"></button>
+            `).join("")}
+            <span class="text-xs font-mono text-slate-400 ml-2">Slide ${currentSlideIndex + 1}/${slides.length}</span>
+          </div>
         </div>
 
-        <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-wide mb-2 leading-snug">
-          ${lec.title}
+        <h2 class="text-xl sm:text-2xl font-black text-white tracking-wide mb-1 leading-snug">
+          ${currentSlide.title}
         </h2>
-        <p class="text-sm text-emerald-400/90 font-medium leading-relaxed">
-          ${lec.subtitle}
+        <p class="text-xs sm:text-sm text-emerald-400 font-medium">
+          ${currentSlide.subtitle}
         </p>
+      </div>
 
-        <!-- Audio Player Button -->
-        <div class="mt-4 flex flex-wrap items-center gap-3">
-          <button id="btnNarrateLecture" onclick="narrateMasterLecture()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-950/60 transition flex items-center space-x-2 border border-emerald-400/30">
-            <i data-lucide="headphones" class="w-4 h-4"></i>
-            <span>🎧 Nghe Gia Sư Thuyết Giảng Bài Học</span>
-          </button>
-          <span class="text-xs text-slate-400 italic">
-            (Bật tai nghe để cảm nhận sâu sắc mục đích của bài học hôm nay)
+      <!-- Slide Main Visual Card (Animated) -->
+      <div class="relative z-10 mb-6 p-6 sm:p-7 rounded-2xl bg-slate-900/90 border border-slate-800/90 shadow-2xl transition-all duration-300 transform" id="activeSlideCard">
+        <div class="flex items-start justify-between gap-3 mb-4 border-b border-slate-800/70 pb-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30">
+              <i data-lucide="${currentSlide.icon || 'sparkles'}" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">${currentSlide.badge || 'Trọng Tâm Nơ-ron'}</span>
+              <h3 class="text-base sm:text-lg font-bold text-white">${currentSlide.title}</h3>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-mono bg-slate-800/80 text-slate-300 border border-slate-700">
+            Slide ${currentSlideIndex + 1}
           </span>
         </div>
-      </div>
 
-      <!-- 4 Key Takeaways Grid -->
-      <div class="relative z-10 mb-8">
-        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center space-x-2">
-          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-          <span>Bốn Trụ Cột Nơ-ron Bạn Sẽ Làm Chủ Hôm Nay</span>
-        </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          ${(lec.keyPoints || []).map(kp => `
-            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-emerald-500/30 transition">
-              <div class="flex items-start space-x-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5 border border-emerald-500/30">
-                  <i data-lucide="${kp.icon || 'star'}" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <h4 class="text-xs sm:text-sm font-bold text-white mb-1">${kp.title}</h4>
-                  <p class="text-xs text-slate-400 leading-relaxed">${kp.desc}</p>
-                </div>
-              </div>
-            </div>
-          `).join("")}
+        <div class="slide-content-body">
+          ${currentSlide.cardContent}
         </div>
       </div>
 
-      <!-- Deep Explanation Essay -->
-      <div class="relative z-10 mb-8">
-        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center space-x-2">
-          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
-          <span>Luận Giải Khoa Học Sư Phạm Dựa Trên Bằng Chứng (Evidence-Based SLA)</span>
-        </h3>
-        ${lec.deepExplanationHtml || ''}
+      <!-- Slide Audio Player & Auto-Advance Control -->
+      <div class="relative z-10 mb-6 p-4 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+          <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 flex-shrink-0 cursor-pointer">
+            <i data-lucide="${isSlideAudioPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
+            <span>${isSlideAudioPlaying ? 'Tạm Dừng Lời Giảng' : '🎧 Nghe Thầy Thuyết Giảng Slide Này'}</span>
+          </button>
+          
+          <div class="flex items-center space-x-1.5 ${isSlideAudioPlaying ? 'opacity-100' : 'opacity-30'} transition">
+            <span class="w-1.5 h-4 bg-emerald-400 rounded-full animate-pulse"></span>
+            <span class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse" style="animation-delay: 150ms"></span>
+            <span class="w-1.5 h-3 bg-teal-400 rounded-full animate-pulse" style="animation-delay: 300ms"></span>
+            <span class="w-1.5 h-5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 450ms"></span>
+          </div>
+        </div>
+
+        <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer select-none">
+          <input type="checkbox" id="chkAutoAdvance" onchange="toggleAutoAdvance(this.checked)" ${isSlideAutoAdvance ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 focus:ring-offset-slate-950 bg-slate-900 border-slate-700">
+          <span>Tự động chuyển slide khi hết lời giảng (Mô phỏng video)</span>
+        </label>
       </div>
 
-      <!-- Action Call to Action Button to step into Practice -->
-      <div class="relative z-10 p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-cyan-950/30 to-slate-900/60 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h4 class="text-sm font-bold text-white flex items-center space-x-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span>Bạn đã nắm trọn bản đồ tư duy của buổi học hôm nay?</span>
-          </h4>
-          <p class="text-xs text-slate-400 mt-1">
-            Hãy kích hoạt cơ miệng và bước vào phòng luyện tập đa giác quan ngay bây giờ.
-          </p>
-        </div>
-        <button onclick="switchLessonModule('moduleMouth'); window.scrollTo({top: 200, behavior: 'smooth'});" class="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-2 flex-shrink-0 cursor-pointer">
-          <span>Bắt Đầu Bước 1: Khẩu Hình & Phát Âm</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      <!-- Slide Navigation Footer -->
+      <div class="relative z-10 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="prevSlide()" ${isFirst ? 'disabled class="opacity-40 cursor-not-allowed px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 text-slate-500 border border-slate-800 flex items-center space-x-1.5"' : 'class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center space-x-1.5 transition cursor-pointer"'}>
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          <span>Slide Trước</span>
         </button>
+
+        ${isLast ? `
+          <div class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2">
+            <button onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer">
+              <span>🚀 Hoàn Thành Bài Thuyết Giảng • Mở Khóa Bước 1: Khẩu Hình</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        ` : `
+          <button onclick="nextSlide()" class="w-full sm:w-auto px-5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-emerald-500/40 flex items-center justify-center space-x-1.5 transition cursor-pointer">
+            <span>Slide Tiếp Theo</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        `}
       </div>
     </div>
   `;
@@ -561,11 +798,97 @@ function renderMasterLecture(lesson) {
   if (window.lucide) window.lucide.createIcons();
 }
 
+window.goToSlide = function(idx) {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  if (!lesson?.masterLecture?.slides) return;
+  window.stopAllAudios();
+  isSlideAudioPlaying = false;
+  currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+  renderMasterLecture(lesson);
+};
+
+window.nextSlide = function() {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  if (!lesson?.masterLecture?.slides) return;
+  if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
+    window.goToSlide(currentSlideIndex + 1);
+  }
+};
+
+window.prevSlide = function() {
+  if (currentSlideIndex > 0) {
+    window.goToSlide(currentSlideIndex - 1);
+  }
+};
+
+window.toggleAutoAdvance = function(checked) {
+  isSlideAutoAdvance = !!checked;
+};
+
+window.toggleSlideAudio = function() {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
+  if (!slide || !slide.audioFile) return;
+
+  if (isSlideAudioPlaying) {
+    window.stopAllAudios();
+    isSlideAudioPlaying = false;
+    renderMasterLecture(lesson);
+    return;
+  }
+
+  isSlideAudioPlaying = true;
+  renderMasterLecture(lesson);
+
+  window.playTrack(slide.audioFile, () => {
+    isSlideAudioPlaying = false;
+    renderMasterLecture(lesson);
+
+    // Nếu bật tự động chuyển slide và chưa phải slide cuối
+    if (isSlideAutoAdvance) {
+      if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
+        setTimeout(() => {
+          window.nextSlide();
+          setTimeout(() => {
+            window.toggleSlideAudio();
+          }, 400);
+        }, 800);
+      } else {
+        // Slide cuối kết thúc: tự động mở khóa Bước 1
+        window.unlockStep(1, false);
+      }
+    } else {
+      if (currentSlideIndex === lesson.masterLecture.slides.length - 1) {
+        window.unlockStep(1, false);
+      }
+    }
+  }, () => {
+    isSlideAudioPlaying = false;
+    renderMasterLecture(lesson);
+  });
+};
+
+window.finishMasterLectureAndUnlockStep1 = function() {
+  window.stopAllAudios();
+  isSlideAudioPlaying = false;
+  window.unlockStep(1, true); // Mở khóa Bước 1 và tự động chuyển sang kèm phát âm thanh hướng dẫn
+  window.scrollTo({ top: 120, behavior: 'smooth' });
+};
+
 // ==============================================================
 // 6. MODULE 1: KHẨU HÌNH, ÂM VỊ & ĐỒNG BỘ 100% TỪ LUYỆN NÓI
 // Đã khắc phục triệt để lỗi bấm "Nghe lại" bị phát sai từ
 // ==============================================================
 function renderMouthTechniques(techniques) {
+  const guideBanner = document.getElementById("mouthGuideBanner");
+  if (guideBanner) {
+    guideBanner.innerHTML = window.renderTeacherGuideBanner(1, "Hướng Dẫn Bước 1: Khẩu Hình & Phát Âm", "Làm chủ 3 âm then chốt /θ/, /s/ và /t/. Bấm loa nghe mẫu và bấm micro để AI chấm điểm từng âm nhé!");
+  }
+  const nextStepArea = document.getElementById("mouthNextStepArea");
+  if (nextStepArea) {
+    nextStepArea.innerHTML = window.renderNextStepCTA(2, "✓ Hoàn Thành Bước 1 • Chuyển Sang Bước 2: Cụm Từ & Phản Xạ", "Sau khi đã luyện qua khẩu hình 3 âm /θ/, /s/, /t/, hãy chuyển sang cụm từ giao tiếp!");
+  }
+
   const container = document.getElementById("mouthTechniquesContainer");
   if (!container) return;
 
@@ -720,6 +1043,15 @@ function renderChunks(chunks) {
     </div>
   `;
 
+  const chunksGuide = document.getElementById("chunksGuideBanner");
+  if (chunksGuide) {
+    chunksGuide.innerHTML = window.renderTeacherGuideBanner(2, "Hướng Dẫn Bước 2: Cụm Từ & Phản Xạ Đời Thường", "Làm chủ 3 cụm từ phản xạ cốt lõi. Hãy lắng nghe và luyện nói để hoàn thành mục tiêu 7 lần lặp đa giác quan nhé!");
+  }
+  const chunksNextArea = document.getElementById("chunksNextStepArea");
+  if (chunksNextArea) {
+    chunksNextArea.innerHTML = window.renderNextStepCTA(3, "✓ Hoàn Thành Bước 2 • Chuyển Sang Bước 3: Luyện Tập Trắc Nghiệm", "Đã tích lũy các lần lặp đa giác quan cho 3 cụm từ hạt nhân.");
+  }
+
   container.innerHTML = guideHeader + chunks.map((c, idx) => {
     const data = getChunkRepetitionData(c.phrase);
     const score = calculateRepetitionScore(data);
@@ -789,6 +1121,11 @@ window.handleListenChunk = function(phrase) {
 // 8. MODULE 3: TRẮC NGHIỆM PHẢN XẠ & MỞ KHÓA BÀI HỌC
 // ==============================================================
 function renderQuizzes(quizzes) {
+  const quizGuide = document.getElementById("quizGuideBanner");
+  if (quizGuide) {
+    quizGuide.innerHTML = window.renderTeacherGuideBanner(3, "Hướng Dẫn Bước 3: Luyện Tập Trắc Nghiệm Phản Xạ", "Bước 3 là bài trắc nghiệm phản xạ tình huống. Bạn cần đạt từ 70% trở lên để mở khóa tiếp nhé!");
+  }
+
   const quizContainer = document.getElementById("quizContainer");
   if (!quizContainer) return;
 
@@ -881,17 +1218,35 @@ window.selectQuizAnswer = async function(quizId, selectedIdx, correctIdx, explan
     const finishBanner = document.getElementById("quizFinishBanner");
     if (finishBanner) {
       finishBanner.classList.remove("hidden");
-      if (!isPassed) {
+      if (isPassed) {
+        window.unlockStep(4, false); // Mở khóa Bước 4: Sổ Thẻ 3D
+        finishBanner.innerHTML = `
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
+            <div class="flex items-center space-x-3 text-xs text-slate-300">
+              <span class="text-2xl">🎉</span>
+              <div>
+                <div class="font-bold text-emerald-400">Xuất sắc! Bạn đã đạt ${userQuizScore}/${totalQuizzes} câu và vượt qua bài kiểm tra.</div>
+                <p class="text-slate-400 text-[11px] mt-0.5">Bước 4: Sổ Thẻ 3D đã sẵn sàng để bạn tiếp tục!</p>
+              </div>
+            </div>
+            <button onclick="window.unlockStep(4, true); window.scrollTo({top: 120, behavior: 'smooth'});" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/20 flex items-center space-x-1.5 cursor-pointer flex-shrink-0">
+              <span>Chuyển Sang Bước 4: Sổ Thẻ 3D</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+      } else {
         finishBanner.innerHTML = `
           <div class="flex items-center space-x-3 text-xs text-amber-300">
             <span class="text-2xl">💡</span>
             <div>
-              <div class="font-bold text-amber-400">Bạn đạt ${userQuizScore}/${totalQuizzes} câu (cần ≥ 70% để mở khóa Buổi tiếp theo).</div>
-              <p class="text-slate-400 text-[11px] mt-0.5">Hãy tải lại trang và làm lại để kích hoạt nơ-ron nhé!</p>
+              <div class="font-bold text-amber-400">Bạn đạt ${userQuizScore}/${totalQuizzes} câu (cần ≥ 70% để mở khóa Bước tiếp theo).</div>
+              <p class="text-slate-400 text-[11px] mt-0.5">Hãy bấm chọn lại đáp án đúng để khắc sâu nơ-ron nhé!</p>
             </div>
           </div>
         `;
       }
+      if (window.lucide) window.lucide.createIcons();
     }
   }
 };
@@ -900,6 +1255,15 @@ window.selectQuizAnswer = async function(quizId, selectedIdx, correctIdx, explan
 // 9. MODULE 4: FLASHCARDS 3D
 // ==============================================================
 function renderFlashcards(chunks) {
+  const flashGuide = document.getElementById("flashcardGuideBanner");
+  if (flashGuide) {
+    flashGuide.innerHTML = window.renderTeacherGuideBanner(4, "Hướng Dẫn Bước 4: Sổ Thẻ Ghi Nhớ 3D", "Bước 4 là Sổ thẻ 3D. Hãy chạm vào các thẻ để lật mặt xem giải nghĩa và nghe phát âm chuẩn nhé!");
+  }
+  const flashNextArea = document.getElementById("flashcardNextStepArea");
+  if (flashNextArea) {
+    flashNextArea.innerHTML = window.renderNextStepCTA(5, "✓ Hoàn Thành Bước 4 • Chuyển Sang Bước 5: Đối Thoại AI 2 Chiều", "Chạm lật tất cả các thẻ để neo ngữ nghĩa vào trí nhớ không gian.");
+  }
+
   const container = document.getElementById("flashcardsContainer");
   if (!container) return;
 
@@ -959,6 +1323,15 @@ function setupDialogueModule(lesson) {
     const speakContainer = document.getElementById("moduleSpeaking");
     if (speakContainer) speakContainer.innerHTML = `<div class="text-xs text-slate-400 p-4">Buổi này tập trung vào phản xạ câu trực tiếp.</div>`;
     return;
+  }
+
+  const speakGuide = document.getElementById("speakingGuideBanner");
+  if (speakGuide) {
+    speakGuide.innerHTML = window.renderTeacherGuideBanner(5, "Hướng Dẫn Bước 5: Đối Thoại AI 2 Chiều Cùng David", "Nhập vai đối thoại trực tiếp 2 chiều với David tại sân bay New York. Lắng nghe David mở lời và bấm micro đáp lại thật tự tin!");
+  }
+  const speakNextArea = document.getElementById("speakingNextStepArea");
+  if (speakNextArea) {
+    speakNextArea.innerHTML = window.renderNextStepCTA(6, "✓ Hoàn Thành Bước 5 • Chuyển Sang Bước 6: Thử Thách Gõ Câu", "Tự tin đối thoại với người bản xứ ngoài đời thực.");
   }
 
   const titleEl = document.getElementById("dialogueScenarioTitle");
@@ -1028,13 +1401,12 @@ let currentStoryAudio = null;
 
 window.narrateCurrentScenario = function() {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
-  const audioPath = `assets/audio/story-${currentActiveLessonId}.mp3`;
+  const audioPath = lesson?.dialogueScenario?.storyAudioFile || `assets/audio/story-${currentActiveLessonId}.mp3`;
+  const btn = document.querySelector('[onclick="narrateCurrentScenario()"]');
 
-  // Nếu đang phát thì bấm lại sẽ tạm dừng
   if (currentStoryAudio) {
-    currentStoryAudio.pause();
+    window.stopAllAudios();
     currentStoryAudio = null;
-    const btn = document.querySelector('[onclick="narrateCurrentScenario()"]');
     if (btn) {
       btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
       if (window.lucide) window.lucide.createIcons();
@@ -1042,17 +1414,12 @@ window.narrateCurrentScenario = function() {
     return;
   }
 
-  window.speechSynthesis.cancel();
-  const audio = new Audio(audioPath);
-  currentStoryAudio = audio;
-
-  const btn = document.querySelector('[onclick="narrateCurrentScenario()"]');
   if (btn) {
     btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời kể... (Bấm dừng)</span>`;
     if (window.lucide) window.lucide.createIcons();
   }
 
-  audio.onended = function() {
+  currentStoryAudio = window.playTrack(audioPath, () => {
     currentStoryAudio = null;
     const noticeEl = document.getElementById("voiceNoticeTip");
     if (noticeEl) noticeEl.classList.add("hidden");
@@ -1060,20 +1427,7 @@ window.narrateCurrentScenario = function() {
       btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
       if (window.lucide) window.lucide.createIcons();
     }
-  };
-
-  audio.onerror = function() {
-    currentStoryAudio = null;
-    if (lesson?.dialogueScenario?.storyNarrativeVi) {
-      speakVietnamese(lesson.dialogueScenario.storyNarrativeVi);
-    }
-    if (btn) {
-      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
-      if (window.lucide) window.lucide.createIcons();
-    }
-  };
-
-  audio.play().catch(() => {
+  }, () => {
     currentStoryAudio = null;
     if (lesson?.dialogueScenario?.storyNarrativeVi) {
       speakVietnamese(lesson.dialogueScenario.storyNarrativeVi);
@@ -1093,7 +1447,11 @@ window.triggerAiPartnerPrompt = function() {
   const aiTurn = userIdx > 0 ? currentDialogueScenario.turns[userIdx - 1] : currentDialogueScenario.turns[0];
 
   if (aiTurn && aiTurn.role === 'ai') {
-    speakText(aiTurn.text);
+    if (aiTurn.audioFile) {
+      window.playTrack(aiTurn.audioFile);
+    } else {
+      speakText(aiTurn.text);
+    }
   }
 };
 
@@ -1104,29 +1462,39 @@ window.playFullConversationLoop = function() {
 
   function playTurn() {
     if (idx >= turns.length) {
-      alert("🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên!");
+      alert("🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên cùng David!");
       return;
     }
 
     const turn = turns[idx];
-    const phrase = turn.role === 'ai' ? turn.text : turn.targetText;
-
     // Highlight bubble
     document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400'));
     const bubble = document.getElementById(`dialogueBubble-${idx}`);
     if (bubble) bubble.classList.add('ring-2', 'ring-cyan-400');
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(phrase);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.88;
+    if (turn.role === 'ai' && turn.audioFile) {
+      window.playTrack(turn.audioFile, () => {
+        idx++;
+        setTimeout(playTurn, 900);
+      }, () => {
+        speakText(turn.text);
+        idx++;
+        setTimeout(playTurn, 1000);
+      });
+    } else {
+      const phrase = turn.role === 'ai' ? turn.text : turn.targetText;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(phrase);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.88;
 
-    utterance.onend = function() {
-      idx++;
-      setTimeout(playTurn, 1000);
-    };
+      utterance.onend = function() {
+        idx++;
+        setTimeout(playTurn, 1000);
+      };
 
-    window.speechSynthesis.speak(utterance);
+      window.speechSynthesis.speak(utterance);
+    }
   }
 
   playTurn();
@@ -1248,6 +1616,33 @@ window.toggleDialogueSpeechRecording = function() {
 const typingUserState = {};
 
 function renderTypingChallenges(challenges) {
+  const typeGuide = document.getElementById("typingGuideBanner");
+  if (typeGuide) {
+    typeGuide.innerHTML = window.renderTeacherGuideBanner(6, "Hướng Dẫn Bước 6: Thử Thách Gõ Phản Xạ & Ghép Khối Câu", "Bước cuối cùng là Gõ và ghép khối câu phản xạ. Hoàn thành bước này là bạn đã hoàn tất 100% Buổi 1 xuất sắc!");
+  }
+  const typeNextArea = document.getElementById("typingNextStepArea");
+  if (typeNextArea) {
+    typeNextArea.innerHTML = `
+      <div class="mt-8 p-6 rounded-2xl bg-gradient-to-tr from-emerald-950/40 via-slate-900 to-cyan-950/40 border border-emerald-500/40 text-center">
+        <div class="text-3xl mb-2">🎉</div>
+        <h3 class="text-lg font-black text-white mb-1">Chúc Mừng Bạn Đã Hoàn Thành Toàn Diện Buổi 01!</h3>
+        <p class="text-xs text-emerald-300 max-w-lg mx-auto mb-4 leading-relaxed">
+          Bạn đã kích hoạt trọn vẹn 6 giác quan: Thuyết giảng mở đầu, Khẩu hình 3 âm /θ/, /s/, /t/, Phản xạ 3 cụm từ, Trắc nghiệm, Thẻ 3D, Đối thoại cùng David và Gõ câu tái tạo!
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <button onclick="resetGatingFlow()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-1.5 cursor-pointer">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Bắt Đầu Lại Lộ Trình (Có Hướng Dẫn)</span>
+          </button>
+          <button onclick="toggleFreeMode()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 cursor-pointer">
+            <i data-lucide="unlock" class="w-4 h-4"></i>
+            <span>Mở Khóa Tự Do Ôn Tập (Xem Mọi Bước)</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   const container = document.getElementById("typingChallengeContainer");
   if (!container) return;
 

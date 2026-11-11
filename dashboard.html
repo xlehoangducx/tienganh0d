@@ -181,41 +181,51 @@
         </div>
 
         <!-- 7 TABS MODULE HỌC THUẬT ĐA GIÁC QUAN (MULTIMODAL LEARNING) -->
-        <div class="border-b border-slate-800 flex flex-wrap gap-2 pb-2">
-          <button onclick="switchLessonModule('moduleLecture')" id="btn-moduleLecture" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
-            <span>0. Thuyết Giảng Khai Mở</span>
-          </button>
+        <div class="border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 pb-2">
+          <div class="flex flex-wrap gap-2">
+            <button onclick="switchLessonModule('moduleLecture')" id="btn-moduleLecture" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+              <span>0. Thuyết Giảng Khai Mở</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
-            <i data-lucide="mic" class="w-4 h-4"></i>
-            <span>1. Khẩu Hình & Phát Âm</span>
-          </button>
+            <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+              <i data-lucide="mic" class="w-4 h-4"></i>
+              <span>1. Khẩu Hình & Phát Âm</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
-            <i data-lucide="volume-2" class="w-4 h-4"></i>
-            <span>2. Cụm Từ & Phản Xạ</span>
-          </button>
+            <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+              <i data-lucide="volume-2" class="w-4 h-4"></i>
+              <span>2. Cụm Từ & Phản Xạ</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
-            <i data-lucide="help-circle" class="w-4 h-4"></i>
-            <span>3. Trắc Nghiệm</span>
-          </button>
+            <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+              <i data-lucide="help-circle" class="w-4 h-4"></i>
+              <span>3. Trắc Nghiệm</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
-            <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>4. Sổ Thẻ 3D</span>
-          </button>
+            <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+              <span>4. Sổ Thẻ 3D</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleSpeaking')" id="btn-moduleSpeaking" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-purple-400 hover:text-purple-300 border border-transparent">
-            <i data-lucide="radio" class="w-4 h-4"></i>
-            <span>5. Đối Thoại AI 2 Chiều</span>
-          </button>
+            <button onclick="switchLessonModule('moduleSpeaking')" id="btn-moduleSpeaking" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-purple-400 hover:text-purple-300 border border-transparent">
+              <i data-lucide="radio" class="w-4 h-4"></i>
+              <span>5. Đối Thoại AI 2 Chiều</span>
+            </button>
 
-          <button onclick="switchLessonModule('moduleTyping')" id="btn-moduleTyping" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 border border-transparent">
-            <i data-lucide="keyboard" class="w-4 h-4"></i>
-            <span>6. Gõ Phản Xạ & Ghép Khối</span>
-          </button>
+            <button onclick="switchLessonModule('moduleTyping')" id="btn-moduleTyping" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-amber-400 hover:text-amber-300 border border-transparent">
+              <i data-lucide="keyboard" class="w-4 h-4"></i>
+              <span>6. Gõ Phản Xạ & Ghép Khối</span>
+            </button>
+          </div>
+
+          <!-- Nút chuyển chế độ Tự Do Ôn Tập -->
+          <div class="flex items-center space-x-2">
+            <button id="btnToggleFreeMode" onclick="toggleFreeMode()" class="px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600 transition flex items-center space-x-1.5 cursor-pointer" title="Chuyển đổi giữa khóa tuần tự và mở tất cả để ôn tập">
+              <i data-lucide="unlock" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span id="freeModeLabel">Chế Độ Tự Do: TẮT</span>
+            </button>
+          </div>
         </div>
 
         <!-- MODULE 0: BÀI THUYẾT GIẢNG KHAI MỞ TÂM TRÍ & CĂN CỨ KHOA HỌC NÃO BỘ -->
@@ -226,6 +236,7 @@
         <!-- MODULE 1: KHẨU HÌNH, ÂM VỊ & LUYỆN PHÁT ÂM CÓ AI CHẤM ĐIỂM -->
         <div id="moduleMouth" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
+            <div id="mouthGuideBanner"></div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 border-b border-slate-800 pb-3">
               <div class="flex items-center space-x-2 text-cyan-400 font-bold">
                 <i data-lucide="mic" class="w-5 h-5"></i>
@@ -237,12 +248,14 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="mouthTechniquesContainer"></div>
+            <div id="mouthNextStepArea"></div>
           </div>
         </div>
 
         <!-- MODULE 2: CỤM TỪ PHẢN XẠ CHUNKS VỚI CHỈ SỐ KHẮC SÂU NƠ-RON -->
         <div id="moduleChunks" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
+            <div id="chunksGuideBanner"></div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
               <div class="flex items-center space-x-2 text-emerald-400 font-bold">
                 <i data-lucide="volume-2" class="w-5 h-5"></i>
@@ -253,12 +266,14 @@
               </span>
             </div>
             <div class="space-y-3" id="chunksContainer"></div>
+            <div id="chunksNextStepArea"></div>
           </div>
         </div>
 
         <!-- MODULE 3: BÀI TẬP TRẮC NGHIỆM PHẢN XẠ -->
         <div id="moduleQuiz" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
+            <div id="quizGuideBanner"></div>
             <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
               <div>
                 <h3 class="text-base font-bold text-white">Kiểm Tra Phản Xạ Ngữ Cảnh</h3>
@@ -290,17 +305,20 @@
         <!-- MODULE 4: FLASHCARDS 3D -->
         <div id="moduleFlashcard" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl">
+            <div id="flashcardGuideBanner"></div>
             <div class="mb-4">
               <h3 class="text-base font-bold text-white">Sổ Từ Vựng Lật Thẻ Không Gian 3D</h3>
               <p class="text-xs text-slate-400 mt-0.5">Chạm vào thẻ để lật mặt nghĩa và nghe phát âm chuẩn</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="flashcardsContainer"></div>
+            <div id="flashcardNextStepArea"></div>
           </div>
         </div>
 
         <!-- MODULE 5: ĐỐI THOẠI NÓI 2 CHIỀU CÙNG AI COACH VỚI BỐI CẢNH THỰC TẾ -->
         <div id="moduleSpeaking" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl border-purple-500/30">
+            <div id="speakingGuideBanner"></div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">
@@ -329,7 +347,7 @@
                   <i data-lucide="book-open" class="w-4 h-4"></i>
                   <span>Bối Cảnh Thực Tế Do Gia Sư AI Kể Chuyện</span>
                 </div>
-                <button onclick="narrateCurrentScenario()" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-purple-900/30 transition self-start sm:self-auto">
+                <button onclick="narrateCurrentScenario()" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-purple-900/30 transition self-start sm:self-auto cursor-pointer">
                   <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
                   <span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>
                 </button>
@@ -402,12 +420,14 @@
                 </button>
               </div>
             </div>
+            <div id="speakingNextStepArea"></div>
           </div>
         </div>
 
         <!-- MODULE 6: THỬ THÁCH GÕ PHẢN XẠ & GHÉP KHỐI TỪ (ACTIVE RECALL TYPING) -->
         <div id="moduleTyping" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl border-amber-500/30">
+            <div id="typingGuideBanner"></div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-4">
               <div class="flex items-center space-x-2 text-amber-400 font-bold">
                 <i data-lucide="keyboard" class="w-5 h-5"></i>
@@ -420,6 +440,7 @@
 
             <!-- Khu vực thử thách gõ câu -->
             <div id="typingChallengeContainer" class="space-y-4"></div>
+            <div id="typingNextStepArea"></div>
           </div>
         </div>
 

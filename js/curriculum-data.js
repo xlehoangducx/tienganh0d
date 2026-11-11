@@ -86,66 +86,93 @@ export const CURRICULUM_DATA = {
       practicalContext: "Gặp gỡ làm quen người nước ngoài, chào hỏi xã giao, cảm ơn chân thành và tạm biệt vui vẻ.",
       status: "unlocked",
 
-      // Module 0: Bài Thuyết Giảng Khai Mở Tâm Trí & Căn Cứ Khoa Học Não Bộ
+      // Module 0: Bài Thuyết Giảng Khai Mở Tương Tác 5 Slide
       masterLecture: {
         title: "Bản Đồ Khai Mở Buổi 01: Tại Sao Học Như Vậy Là Chuẩn Xác Nhất?",
-        subtitle: "Giải mã cơ chế thần kinh học: 3 âm vị bẻ gãy tật nói bồi và tam giác sinh tồn xã hội",
-        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
-        duration: "3 phút đọc sâu",
-        audioStory: "Bạn có từng tự hỏi: Tại sao 10 năm qua học tiếng Anh vẫn không mở miệng được, và tại sao hôm nay ta lại bắt đầu bằng 3 âm vị kỳ lạ này?",
-        keyPoints: [
+        subtitle: "Chuỗi thuyết giảng đa phương tiện có giọng nói Gia Sư AI hướng dẫn từng slide",
+        author: "Gia Sư Trí Tuệ Nhân Tạo (Hải Đăng)",
+        slides: [
           {
+            id: 1,
+            title: "Khởi Đầu: Bản Năng Kết Nối Con Người",
+            subtitle: "Vì sao không học bảng chữ cái A-B-C hay công thức ngữ pháp trước?",
+            audioFile: "assets/audio/lecture-buoi-01-slide-1.mp3",
             icon: "sparkles",
-            title: "Trị Dứt Điểm Tật Nói Tiếng Anh Bồi Của Người Việt",
-            desc: "99% người Việt biến 'Thank you' thành 'Thanh-kiu' và nuốt sạch âm đuôi /s/, /t/ (Nice thành Nai). 3 âm /θ/, /s/, /t/ là liệu pháp tái cấu trúc cơ miệng ngay từ ngày đầu."
+            badge: "Góc Nhìn Khai Sáng",
+            cardContent: `
+              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                <p>95% người học thất bại vì bắt đầu bằng công thức ngữ pháp khô khan. Não bộ con người không được tiến hóa để học quy tắc trừu tượng trước khi có cảm xúc và trải nghiệm xã hội.</p>
+                <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 font-medium">
+                  💡 Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A. Ở Buổi 1, chúng ta kích hoạt lại chính bản năng nguyên thủy: <strong>Kết nối và sinh tồn xã hội</strong>.
+                </div>
+              </div>
+            `
           },
           {
+            id: 2,
+            title: "Giải Mã 3 Âm Vị: Theta, Gió S, Bật T",
+            subtitle: "Bẻ gãy triệt để 3 tật nói tiếng Anh bồi của người Việt",
+            audioFile: "assets/audio/lecture-buoi-01-slide-2.mp3",
+            icon: "mic",
+            badge: "Cơ Sinh Học Khẩu Hình",
+            cardContent: `
+              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                <p>Tiếng Việt không có âm kẹp lưỡi /θ/, không có âm đuôi /s/, và không có âm bật /t/. Người Việt hay 'rụt lưỡi' nói Thank you thành Thanh-kiu và nuốt sạch âm đuôi biến Nice thành Nai.</p>
+                <div class="p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-cyan-300 font-medium">
+                  🎯 3 âm này là liệu pháp 'Tái cấu trúc cơ quan phát âm', đánh thức các nhóm cơ lưỡi và hàm chưa từng hoạt động.
+                </div>
+              </div>
+            `
+          },
+          {
+            id: 3,
+            title: "Bí Mật Thống Kê COCA: 65% Ngữ Pháp Mỹ",
+            subtitle: "Định luật Pareto 80/20 - Xây xong móng nhà kiên cố",
+            audioFile: "assets/audio/lecture-buoi-01-slide-3.mp3",
             icon: "pie-chart",
-            title: "Định Luật Pareto 80/20 & Corpus COCA 1 Tỷ Từ",
-            desc: "Âm /s/ và /t/ chiếm hơn 65% toàn bộ hệ thống danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi thứ 3. Nắm 2 âm này là làm chủ cái móng cho toàn bộ ngữ pháp sau này."
+            badge: "Kho Ngữ Liệu 1 Tỷ Từ",
+            cardContent: `
+              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                <p>Âm gió /s/ và âm bật /t/ xuất hiện trong hơn 65% toàn bộ hệ thống danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi thứ 3 của người Mỹ.</p>
+                <div class="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 text-amber-300 font-medium">
+                  🏗️ Làm chủ 2 âm này ở Buổi 1 là xây xong cái móng nhà kiên cố cho toàn bộ ngữ pháp sau này mà không bao giờ phải sửa lại!
+                </div>
+              </div>
+            `
           },
           {
+            id: 4,
+            title: "Tam Giác Sinh Tồn: Vũ Khí Đập Tan Nỗi Sợ",
+            subtitle: "Chào hỏi làm quen → Biết ơn chân thành → Chúc lành tạm biệt",
+            audioFile: "assets/audio/lecture-buoi-01-slide-4.mp3",
             icon: "shield-check",
-            title: "Tam Giác Sinh Tồn Xã Hội: Vũ Khí Đập Tan Nỗi Sợ",
-            desc: "Bộ ba: Chào hỏi (Hi, nice to meet you!) → Cảm ơn (Thank you so much!) → Tạm biệt (Have a great day!) là chiếc chìa khóa vạn năng khiến người bản xứ mỉm cười và đón nhận bạn."
+            badge: "Ứng Xử Xã Hội Thực Tế",
+            cardContent: `
+              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                <p>Bộ ba: <strong>Hi, nice to meet you!</strong> → <strong>Thank you so much!</strong> → <strong>Have a great day!</strong> là nghi thức ứng xử phổ quát trong văn hóa phương Tây.</p>
+                <div class="p-3 rounded-xl bg-purple-950/30 border border-purple-500/30 text-purple-300 font-medium">
+                  🤝 Dù ở sân bay JFK, quán cà phê hay ngoài phố: Chỉ cần nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn, kích hoạt Dopamine xóa tan nỗi sợ nói!
+                </div>
+              </div>
+            `
           },
           {
+            id: 5,
+            title: "Chiến Lược Não Bộ: 6 Bước & 7 Lần Khắc Sâu",
+            subtitle: "Chinh phục 25 phút hôm nay qua các giác quan",
+            audioFile: "assets/audio/lecture-buoi-01-slide-5.mp3",
             icon: "cpu",
-            title: "Nguyên Lý Attention Khóa Nơ-ron (Như Cách Huấn Luyện AI)",
-            desc: "Giới hạn nhận thức tối ưu 3 cụm câu trong 25 phút. Hoàn thành 6 bước đa giác quan để chạm mốc 7/7 lần khắc sâu vĩnh viễn vào vỏ não dài hạn."
+            badge: "Lộ Trình Đa Giác Quan",
+            cardContent: `
+              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                <p>Khóa tuần tự từng bước: Soi gương cơ miệng → Nghe âm chuẩn → Nói micro AI chấm điểm → Trắc nghiệm → Thẻ 3D → Đối thoại → Gõ câu.</p>
+                <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 font-medium text-center">
+                  ✨ Chạm mốc <strong>7/7 lần khắc sâu</strong> để ghi nhớ vĩnh viễn vào vỏ não dài hạn. Hãy cùng bắt đầu!
+                </div>
+              </div>
+            `
           }
-        ],
-        deepExplanationHtml: `
-          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-amber-300 mb-2 flex items-center space-x-2">
-                <span>❓ Bạn có từng thắc mắc: Tại sao không học Bảng chữ cái A-B-C hay Công thức ngữ pháp trước?</span>
-              </h4>
-              <p>Hầu hết các phương pháp truyền thống bắt người học bắt đầu bằng bảng chữ cái rời rạc hoặc công thức S + V + O khô khan. Nhưng kết quả thực tế: Sau nhiều năm, 95% người học vẫn sợ hãi và câm nín khi gặp người nước ngoài ngoài đời thực. Bộ não con người không được tiến hóa để học công thức trừu tượng trước khi có trải nghiệm cảm xúc. Trẻ em bản xứ nói lưu loát hàng nghìn câu trước khi biết viết chữ A. Ở Buổi 1 này, chúng ta kích hoạt chính bản năng ngôn ngữ nguyên thủy: <strong>Kết nối và sinh tồn xã hội</strong>.</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-cyan-300 mb-2 flex items-center space-x-2">
-                <span>🧠 Tại sao lại là 3 âm /θ/, /s/, /t/ mà không phải âm khác?</span>
-              </h4>
-              <p>Tiếng Việt là ngôn ngữ đơn lập, không có âm cọ xát kẽ răng <code>/θ/</code>, không có âm xì gió đuôi <code>/s/</code>, và không có âm tắc bật hơi dứt khoát <code>/t/</code>. Nếu bắt đầu bằng các âm dễ như /m/, /p/, /b/ (vốn tiếng Việt đã có), cơ miệng bạn sẽ tiếp tục lười biếng và nói giọng bồi. Bắt đầu ngay với <code>/θ/</code>, <code>/s/</code>, <code>/t/</code> là liệu pháp <em>"Tái cấu trúc cơ quan phát âm"</em> (Speech Motor Kinematics), ép cơ hàm và lưỡi thoát khỏi quán tính tiếng mẹ đẻ ngay từ phút đầu tiên!</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-emerald-300 mb-2 flex items-center space-x-2">
-                <span>🤝 Tam Giác Sinh Tồn: Chiếc Chìa Khóa Vàng Hạ Thấp Bộ Lọc Lo Âu</span>
-              </h4>
-              <p>Theo Thuyết Bộ lọc Cảm xúc (GS. Stephen Krashen), kẻ thù lớn nhất của người bắt đầu từ số 0 là <strong>nỗi sợ bị đánh giá</strong>. Bộ ba: <em>Chào hỏi kết nối</em> (Hi, nice to meet you!) → <em>Biết ơn chân thành</em> (Thank you so much!) → <em>Chúc lành tạm biệt</em> (Have a great day!) là nghi thức ứng xử phổ quát trong văn hóa phương Tây. Dù ở sân bay JFK, quầy cà phê hay ngoài đường phố, chỉ cần bạn mỉm cười và thốt ra 3 câu này với ngữ điệu tự tin, người bản xứ sẽ lập tức cởi mở và đối xử nồng nhiệt với bạn. Dopamine tiết ra trong não sẽ xóa tan hoàn toàn nỗi sợ tiếng Anh!</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-purple-300 mb-2 flex items-center space-x-2">
-                <span>🎯 Lộ Trình 25 Phút Chinh Phục Buổi 1 Của Bạn</span>
-              </h4>
-              <p>Hãy tự tin và chậm rãi đi qua 6 bước bên dưới: Bật gương camera soi khẩu hình → Nghe loa Mỹ chuẩn → Nói vào micro để AI chấm điểm → Làm trắc nghiệm → Lật thẻ 3D → Đối thoại nhập vai cùng David tại sân bay JFK → Gõ chữ phản xạ. Đạt đủ <strong>7/7 lần khắc sâu</strong> là bạn đã hoàn thành xuất sắc ngày đầu tiên!</p>
-            </div>
-          </div>
-        `
+        ]
       },
 
       // Module 1: Khẩu hình cơ miệng chuẩn xác kèm nghĩa & ngữ cảnh từng từ
@@ -317,6 +344,46 @@ export const CURRICULUM_DATA = {
         }
       ],
 
+      // Step Guide Audios: Giọng Gia Sư AI Hải Đăng thuyết minh cho từng bước
+      stepGuideAudios: {
+        moduleMouth: {
+          stepNum: 1,
+          name: "Bước 1: Khẩu Hình & Phát Âm",
+          audioFile: "assets/audio/guide-buoi-01-step-1.mp3",
+          instruction: "Làm chủ khẩu hình 3 âm /θ/, /s/ và /t/. Bấm loa nghe mẫu và bấm micro để AI chấm điểm."
+        },
+        moduleChunks: {
+          stepNum: 2,
+          name: "Bước 2: Cụm Từ & Phản Xạ Đời Thường",
+          audioFile: "assets/audio/guide-buoi-01-step-2.mp3",
+          instruction: "Làm chủ 3 cụm từ phản xạ cốt lõi và tích lũy đủ 7 lần lặp đa giác quan."
+        },
+        moduleQuiz: {
+          stepNum: 3,
+          name: "Bước 3: Luyện Tập Trắc Nghiệm Phản Xạ",
+          audioFile: "assets/audio/guide-buoi-01-step-3.mp3",
+          instruction: "Vượt qua bài trắc nghiệm phản xạ tình huống đạt tối thiểu 70% điểm số."
+        },
+        moduleFlashcard: {
+          stepNum: 4,
+          name: "Bước 4: Sổ Thẻ Ghi Nhớ 3D",
+          audioFile: "assets/audio/guide-buoi-01-step-4.mp3",
+          instruction: "Chạm lật tất cả thẻ 3D để neo ngữ nghĩa và nghe phát âm chuẩn."
+        },
+        moduleSpeaking: {
+          stepNum: 5,
+          name: "Bước 5: Đối Thoại AI 2 Chiều Cùng David",
+          audioFile: "assets/audio/guide-buoi-01-step-5.mp3",
+          instruction: "Nhập vai đối thoại trực tiếp 2 chiều với David tại sân bay New York."
+        },
+        moduleTyping: {
+          stepNum: 6,
+          name: "Bước 6: Thử Thách Gõ Phản Xạ & Ghép Khối Câu",
+          audioFile: "assets/audio/guide-buoi-01-step-6.mp3",
+          instruction: "Tái tạo câu tiếng Anh bằng cách ghép khối từ để khắc sâu trật tự từ vào vỏ não."
+        }
+      },
+
       // Module 5: Kịch bản đối thoại nhập vai sống động có âm thanh kể chuyện bối cảnh
       dialogueScenario: {
         title: "Cuộc Gặp Gỡ Tình Cờ Tại Sân Bay Quốc Tế New York",
@@ -324,13 +391,15 @@ export const CURRICULUM_DATA = {
         characterAvatar: "👨‍💼",
         roleContext: "Hành khách người Mỹ thân thiện tại quầy lấy hành lý",
         storyNarrativeVi: "Bối cảnh thực tế: Bạn vừa hạ cánh xuống sân bay quốc tế JFK New York sau chuyến bay dài. Bạn đang đứng đợi lấy hành lý bên băng chuyền thì một người đàn ông Mỹ thân thiện tên David đứng cạnh quay sang nhìn bạn, mỉm cười và cởi mở chào hỏi. Trong văn hóa phương Tây, bạn hãy mỉm cười và đáp lại câu chào làm quen, cảm ơn khi anh ấy giúp bạn nhấc vali, và chúc anh ấy một ngày tuyệt vời nhé!",
+        storyAudioFile: "assets/audio/story-buoi-01.mp3",
         turns: [
           {
             role: "ai",
             speaker: "David",
             text: "Hi there! Nice day, isn't it?",
             ipa: "/haɪ ðer! naɪs deɪ, ˈɪznt ɪt?/",
-            meaning: "Chào bạn! Hôm nay trời đẹp thật nhỉ?"
+            meaning: "Chào bạn! Hôm nay trời đẹp thật nhỉ?",
+            audioFile: "assets/audio/david-buoi-01-turn-1.mp3"
           },
           {
             role: "user",
@@ -345,7 +414,8 @@ export const CURRICULUM_DATA = {
             speaker: "David",
             text: "Here, let me help you with your bag!",
             ipa: "/hɪr, let miː help juː wɪð jɔːr bæɡ!/",
-            meaning: "Để tôi giúp bạn nhấc chiếc vali này xuống nhé!"
+            meaning: "Để tôi giúp bạn nhấc chiếc vali này xuống nhé!",
+            audioFile: "assets/audio/david-buoi-01-turn-2.mp3"
           },
           {
             role: "user",
@@ -360,7 +430,8 @@ export const CURRICULUM_DATA = {
             speaker: "David",
             text: "You're welcome! Enjoy your trip!",
             ipa: "/jʊr ˈwelkəm! ɪnˈdʒɔɪ jɔːr trɪp!/",
-            meaning: "Không có chi! Chúc bạn có chuyến đi thật vui vẻ nhé!"
+            meaning: "Không có chi! Chúc bạn có chuyến đi thật vui vẻ nhé!",
+            audioFile: "assets/audio/david-buoi-01-turn-3.mp3"
           },
           {
             role: "user",
@@ -398,300 +469,6 @@ export const CURRICULUM_DATA = {
           targetWords: ["Have", "a", "great", "day!"],
           fullSentence: "Have a great day!",
           distractorWords: ["nice", "trip", "weekend"]
-        }
-      ]
-    },
-
-    {
-      id: "buoi-02",
-      sessionNumber: 2,
-      phaseId: 0,
-      title: "Làm Chủ Âm Đuôi Gió /s/, /z/ & 5 Đại Từ Sống Còn",
-      topic: "Khắc phục triệt để lỗi nuốt âm đuôi và phản xạ các đại từ xưng hô I, You, We, They, He, She",
-      duration: "25 phút",
-      practicalContext: "Xác định rõ ràng ai đang làm gì, giới thiệu người đi cùng và diễn đạt danh tính.",
-      status: "locked",
-
-      // Module 0: Bài Thuyết Giảng Khai Mở Buổi 02
-      masterLecture: {
-        title: "Bản Đồ Khai Mở Buổi 02: Lan Tỏa Mạng Nơ-ron Sang Âm Rung /z/ & Giới Thiệu Bản Thân",
-        subtitle: "Kế thừa 35% nguyên liệu từ Buổi 1: Từ âm gió /s/ bước sang âm rung /z/ và đại từ xưng hô",
-        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
-        duration: "3 phút đọc sâu",
-        audioStory: "Buổi 02 là bước tiến tự nhiên tiếp theo. Chúng ta không học rời rạc mà kế thừa trực tiếp cơ hàm của Buổi 1.",
-        keyPoints: [
-          {
-            icon: "repeat",
-            title: "Kế Thừa Khẩu Hình Răng Từ Buổi 1",
-            desc: "Âm rung /z/ có khẩu hình răng hệt như âm /s/ của Buổi 1, chỉ cần bật rung dây thanh quản ở cổ họng (như tiếng ong vo ve)."
-          },
-          {
-            icon: "users",
-            title: "5 Đại Từ Sống Còn Trong Mọi Cuộc Giao Tiếp",
-            desc: "Làm chủ phản xạ ai làm gì (I, You, We, They, He, She) và cấu trúc giới thiệu người đồng hành: This is my friend."
-          },
-          {
-            icon: "shield-alert",
-            title: "Cắt Đứt Tật Nuốt Âm Đuôi Của Người Việt",
-            desc: "Từ 'Is' và 'Please' luôn có âm đuôi /z/. Nói rõ âm này giúp người bản xứ nghe rõ mồn một không còn bị lẫn lộn."
-          }
-        ],
-        deepExplanationHtml: `
-          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-cyan-300 mb-2">🔗 Nguyên Lý Lan Tỏa: Buổi 02 Kế Thừa Gì Từ Buổi 01?</h4>
-              <p>Trong thuyết mạng nơ-ron (Spreading Activation), một bài học mới chỉ được tiếp thu nhanh nhất khi nó có ít nhất 30% giàn giáo cũ. Ở Buổi 01, bạn đã khép 2 hàm răng để tạo âm gió <code>/s/</code>. Hôm nay ở Buổi 02, bạn vẫn giữ nguyên vị trí răng đó, nhưng thêm độ rung của thanh quản để tạo ra âm <code>/z/</code>. Khẩu hình không cần học lại, chỉ nâng cấp thêm một tầng nơ-ron mới!</p>
-            </div>
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-emerald-300 mb-2">🎯 Tình Huống Thực Chiến: Thu Hút Sự Chú Ý Văn Minh</h4>
-              <p>Câu <code>Excuse me, please!</code> kết hợp âm /s/ và /z/ vừa học, giúp bạn lịch sự nhờ người khác nhường đường, gọi phục vụ bàn, hoặc mở lời trước khi hỏi đường một cách trang trọng.</p>
-            </div>
-          </div>
-        `
-      },
-
-      mouthTechniques: [
-        {
-          sound: "/z/",
-          example: "Is, Please, Because",
-          words: [
-            { word: "Is", ipa: "/ɪz/", meaning: "Thì / Là (động từ to-be)", context: "Xác định danh tính: This is my friend" },
-            { word: "Please", ipa: "/pliːz/", meaning: "Làm ơn / Xin vui lòng", context: "Lời đề nghị lịch sự: Excuse me, please" },
-            { word: "Because", ipa: "/bɪˈkɔːz/", meaning: "Bởi vì", context: "Giải thích nguyên nhân" }
-          ],
-          guide: "Khẩu hình giống hệt âm /s/ nhưng đặt tay lên cổ họng sẽ cảm nhận dây thanh quản rung mạnh.",
-          tip: "Rung thanh quản như tiếng ong vo ve: zzzzz."
-        }
-      ],
-      chunks: [
-        {
-          phrase: "Excuse me, please!",
-          ipa: "/ɪkˈskjuːz miː, pliːz/",
-          meaning: "Xin lỗi làm phiền một chút ạ!",
-          context: "Khi muốn hỏi đường hoặc gọi phục vụ một cách lịch thiệp",
-          audioText: "Excuse me, please!",
-          type: "core",
-          repetitionTarget: 7
-        },
-        {
-          phrase: "This is my friend.",
-          ipa: "/ðɪs ɪz maɪ frend/",
-          meaning: "Đây là bạn của tôi.",
-          context: "Khi giới thiệu người đi cùng với người đối diện",
-          audioText: "This is my friend.",
-          type: "core",
-          repetitionTarget: 7
-        }
-      ],
-      quizzes: [
-        {
-          id: "q2_1",
-          question: "Khi muốn chen ngang lịch sự hoặc gọi người phục vụ, bạn nói gì?",
-          options: ["Excuse me, please!", "Stop here!", "Give me food!"],
-          correctIndex: 0,
-          explanation: "'Excuse me, please!' là cách gọi lịch thiệp nhất của người bản xứ."
-        }
-      ],
-      dialogueScenario: {
-        title: "Hỏi Đường Tại Ga Tàu Điện Ngầm Trung Tâm",
-        characterName: "Sarah",
-        characterAvatar: "👩‍💼",
-        roleContext: "Nhân viên trực quầy thông tin nhà ga",
-        storyNarrativeVi: "Bối cảnh thực tế: Bạn đang ở nhà ga điện ngầm Grand Central đông đúc. Bạn muốn gọi nhân viên thông tin một cách lịch thiệp để nhờ họ hướng dẫn đường đi cho bạn và bạn của bạn.",
-        turns: [
-          {
-            role: "user",
-            speaker: "Bạn",
-            targetText: "Excuse me, please!",
-            ipa: "/ɪkˈskjuːz miː, pliːz/",
-            meaning: "Xin lỗi làm phiền một chút ạ!",
-            hint: "Bật rõ âm đuôi /z/ ở cuối 'Excuse' và 'please'."
-          },
-          {
-            role: "ai",
-            speaker: "Sarah",
-            text: "Yes, how can I help you today?",
-            ipa: "/jes, haʊ kæn aɪ help juː təˈdeɪ?/",
-            meaning: "Vâng, tôi có thể hỗ trợ gì cho bạn hôm nay ạ?"
-          },
-          {
-            role: "user",
-            speaker: "Bạn",
-            targetText: "This is my friend.",
-            ipa: "/ðɪs ɪz maɪ frend/",
-            meaning: "Đây là bạn của tôi.",
-            hint: "Giới thiệu người bạn đồng hành của bạn."
-          },
-          {
-            role: "ai",
-            speaker: "Sarah",
-            text: "Welcome both of you! Which train are you looking for?",
-            ipa: "/ˈwelkəm boʊθ əv juː! wɪtʃ treɪn ɑːr juː ˈlʊkɪŋ fər?/",
-            meaning: "Chào mừng cả hai bạn! Bạn đang tìm chuyến tàu nào ạ?"
-          }
-        ]
-      },
-      typingChallenges: [
-        {
-          id: "tc2_1",
-          vietnameseCue: "Xin lỗi làm phiền một chút ạ!",
-          audioText: "Excuse me, please!",
-          targetWords: ["Excuse", "me,", "please!"],
-          fullSentence: "Excuse me, please!",
-          distractorWords: ["sorry", "help", "this"]
-        },
-        {
-          id: "tc2_2",
-          vietnameseCue: "Đây là bạn của tôi.",
-          audioText: "This is my friend.",
-          targetWords: ["This", "is", "my", "friend."],
-          fullSentence: "This is my friend.",
-          distractorWords: ["are", "your", "name"]
-        }
-      ]
-    },
-
-    {
-      id: "buoi-03",
-      sessionNumber: 3,
-      phaseId: 0,
-      title: "Nhu Cầu Thiết Yếu: Diễn Đạt Mong Muốn Trực Tiếp (I want / I need)",
-      topic: "Khung câu phản xạ diễn đạt mong muốn trực tiếp: Tôi cần nước, tôi cần sự giúp đỡ",
-      duration: "25 phút",
-      practicalContext: "Khi bị mệt, khát nước, đói bụng hoặc cần sự trợ giúp khẩn cấp.",
-      status: "locked",
-
-      // Module 0: Bài Thuyết Giảng Khai Mở Buổi 03
-      masterLecture: {
-        title: "Bản Đồ Khai Mở Buổi 03: Giải Tỏa Nhu Cầu Sinh Tồn Với 'I need' & 'I want'",
-        subtitle: "Đan kết 3 buổi học thành chuỗi hành động hoàn chỉnh: Yêu cầu trợ giúp và nói lời cảm ơn",
-        author: "Gia Sư Trí Tuệ Nhân Tạo (Cognitive AI Mentor)",
-        duration: "3 phút đọc sâu",
-        audioStory: "Buổi 03 đưa bạn vào tình huống sinh tồn: khi cần nước, cần chỉ đường hay cần bác sĩ cấp cứu.",
-        keyPoints: [
-          {
-            icon: "heart-handshake",
-            title: "Khung Câu Nhu Cầu Thiết Yếu: I need / I want",
-            desc: "Nói thẳng nhu cầu cấp thiết mà không vòng vo: I need some water, please. / I need help, please."
-          },
-          {
-            icon: "repeat",
-            title: "Tái Kích Hoạt 2 Mắt Xích Cũ",
-            desc: "Dùng 'please' của Buổi 2 để tạo sự lịch sự, và dùng 'Thank you so much!' của Buổi 1 để kết thúc màn tương tác."
-          },
-          {
-            icon: "smile",
-            title: "Khẩu Hình Âm Cười /iː/ (Long E)",
-            desc: "Kéo mép môi sang hai bên như mỉm cười để phát âm sáng vang trong các từ Need, Please, Meet."
-          }
-        ],
-        deepExplanationHtml: `
-          <div class="space-y-4 text-sm text-slate-300 leading-relaxed">
-            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-              <h4 class="text-base font-bold text-emerald-300 mb-2">🌊 Vòng Tròn Phản Xạ Khép Kín</h4>
-              <p>Một người du lịch bản lĩnh chỉ cần 3 buổi học là có thể tự sinh tồn: Mở lời văn minh (<code>Excuse me, please!</code>) → Nêu nhu cầu cấp bách (<code>I need some water, please</code>) → Nhận đồ và tri ân (<code>Thank you so much!</code>). Toàn bộ 3 bài học đan cài thành một sợi dây thừng nơ-ron không thể đứt gãy!</p>
-            </div>
-          </div>
-        `
-      },
-
-      mouthTechniques: [
-        {
-          sound: "/iː/",
-          example: "Need, Please, Meet",
-          words: [
-            { word: "Need", ipa: "/niːd/", meaning: "Cần thiết", context: "Bày tỏ nhu cầu cấp bách: I need help" },
-            { word: "Please", ipa: "/pliːz/", meaning: "Làm ơn", context: "Lịch sự khi yêu cầu" },
-            { word: "Meet", ipa: "/miːt/", meaning: "Gặp gỡ", context: "Gặp gỡ làm quen" }
-          ],
-          guide: "Kéo khóe miệng sang hai bên như đang mỉm cười, kéo dài âm 'i' sâu trong khoang miệng.",
-          tip: "Cười tươi khi phát âm để âm sáng và vang."
-        }
-      ],
-      chunks: [
-        {
-          phrase: "I need some water, please.",
-          ipa: "/aɪ niːd sʌm ˈwɔːtər, pliːz/",
-          meaning: "Làm ơn cho tôi xin một ít nước.",
-          context: "Khi khát nước ở nhà hàng, máy bay hoặc khách sạn",
-          audioText: "I need some water, please.",
-          type: "core",
-          repetitionTarget: 7
-        },
-        {
-          phrase: "I need help!",
-          ipa: "/aɪ niːd help/",
-          meaning: "Tôi cần sự giúp đỡ!",
-          context: "Khi gặp sự cố hoặc cần người hỗ trợ khẩn cấp",
-          audioText: "I need help!",
-          type: "core",
-          repetitionTarget: 7
-        }
-      ],
-      quizzes: [
-        {
-          id: "q3_1",
-          question: "Khi bạn cần ai đó giúp đỡ ngay lập tức, bạn hô câu gì?",
-          options: ["I need help!", "Nice to meet you!", "Thank you!"],
-          correctIndex: 0,
-          explanation: "'I need help!' là phản xạ giao tiếp ngắn gọn, rõ ràng và hiệu quả nhất."
-        }
-      ],
-      dialogueScenario: {
-        title: "Yêu Cầu Nước Uống Trên Chuyến Bay Quốc Tế",
-        characterName: "Emma",
-        characterAvatar: "👩‍✈️",
-        roleContext: "Tiếp viên hàng không",
-        storyNarrativeVi: "Bối cảnh thực tế: Máy bay đang bay qua vùng trời quốc tế. Bạn cảm thấy cổ họng khô rát sau nhiều giờ bay và muốn xin một ly nước ấm từ cô tiếp viên hàng không đang đẩy xe qua.",
-        turns: [
-          {
-            role: "ai",
-            speaker: "Emma",
-            text: "Hello, would you like something to drink?",
-            ipa: "/həˈloʊ, wʊd juː laɪk ˈsʌmθɪŋ tuː drɪŋk?/",
-            meaning: "Xin chào, bạn có muốn dùng chút đồ uống gì không ạ?"
-          },
-          {
-            role: "user",
-            speaker: "Bạn",
-            targetText: "I need some water, please.",
-            ipa: "/aɪ niːd sʌm ˈwɔːtər, pliːz/",
-            meaning: "Làm ơn cho tôi xin một ít nước.",
-            hint: "Kéo dài âm /iː/ trong từ 'need' và 'please' với tông giọng nhẹ nhàng."
-          },
-          {
-            role: "ai",
-            speaker: "Emma",
-            text: "Here is your water. Is everything alright?",
-            ipa: "/hɪr ɪz jɔːr ˈwɔːtər. ɪz ˈevriθɪŋ ɔːlˈraɪt?/",
-            meaning: "Nước của bạn đây ạ. Mọi thứ vẫn ổn chứ ạ?"
-          },
-          {
-            role: "user",
-            speaker: "Bạn",
-            targetText: "Thank you so much!",
-            ipa: "/ˈθæŋk juː soʊ mʌtʃ/",
-            meaning: "Cảm ơn bạn rất nhiều!",
-            hint: "Cảm ơn khi nhận ly nước."
-          }
-        ]
-      },
-      typingChallenges: [
-        {
-          id: "tc3_1",
-          vietnameseCue: "Làm ơn cho tôi xin một ít nước.",
-          audioText: "I need some water, please.",
-          targetWords: ["I", "need", "some", "water,", "please."],
-          fullSentence: "I need some water, please.",
-          distractorWords: ["want", "give", "food"]
-        },
-        {
-          id: "tc3_2",
-          vietnameseCue: "Tôi cần sự giúp đỡ!",
-          audioText: "I need help!",
-          targetWords: ["I", "need", "help!"],
-          fullSentence: "I need help!",
-          distractorWords: ["water", "you", "please"]
         }
       ]
     }
