@@ -81,7 +81,7 @@ function renderLessonContent() {
   const mouthContainer = document.getElementById("mouthTechniquesContainer");
   if (mouthContainer) {
     mouthContainer.innerHTML = lesson.mouthTechniques.map(m => `
-      <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80">
+      <div class="p-4 rounded-xl cyber-card card-3d">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xl font-extrabold text-cyan-400">${m.sound}</span>
           <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">${m.example}</span>
@@ -98,7 +98,7 @@ function renderLessonContent() {
   const chunksContainer = document.getElementById("chunksContainer");
   if (chunksContainer) {
     chunksContainer.innerHTML = lesson.chunks.map(c => `
-      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition flex items-center justify-between gap-3">
+      <div class="p-4 rounded-xl cyber-card card-3d flex items-center justify-between gap-3">
         <div class="flex-grow">
           <div class="flex flex-wrap items-baseline gap-2 mb-1">
             <span class="text-base sm:text-lg font-bold text-white tracking-wide">${c.phrase}</span>
@@ -121,6 +121,7 @@ function renderLessonContent() {
   renderFlashcards(lesson.chunks);
 
   if (window.lucide) window.lucide.createIcons();
+  if (window.reinit3DTilt) window.reinit3DTilt();
 }
 
 // ==============================================================
@@ -131,7 +132,7 @@ function renderQuizzes(quizzes) {
   if (!quizContainer) return;
 
   quizContainer.innerHTML = quizzes.map((q, idx) => `
-    <div class="p-5 rounded-2xl bg-slate-950/80 border border-slate-800" id="quiz-block-${q.id}">
+    <div class="p-5 rounded-2xl cyber-card card-3d" id="quiz-block-${q.id}">
       <div class="flex items-start justify-between gap-2 mb-3">
         <h4 class="font-bold text-sm sm:text-base text-white">
           <span class="text-emerald-400 mr-1.5">Câu ${idx + 1}:</span> ${q.question}
