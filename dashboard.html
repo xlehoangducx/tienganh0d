@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI English Hub - Không Gian Học Tập Cá Nhân Chuẩn Khoa Học</title>
+  <title>OmniLang AI - Không Gian Học Tập Cá Nhân Chuẩn Khoa Học</title>
   
   <!-- Tailwind CSS, Lucide Icons & Confetti -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -47,8 +47,8 @@
             <i data-lucide="sparkles" class="w-5 h-5"></i>
           </div>
           <div>
-            <span class="font-bold text-base tracking-tight text-white hidden sm:inline">AI English Platform</span>
-            <span class="text-[10px] block text-emerald-400 font-mono">Cognitive Learning OS v2.0</span>
+            <span class="font-bold text-base tracking-tight text-white hidden sm:inline">OmniLang AI</span>
+            <span class="text-[10px] block text-emerald-400 font-mono">Cognitive Multilingual Hub • English First</span>
           </div>
         </a>
       </div>
@@ -154,6 +154,30 @@
 
       <!-- ================= VIEW 1: BÀI HỌC HIỆN TẠI ================= -->
       <div id="curriculumView" class="space-y-6">
+
+        <!-- TRACK INDICATOR BAR -->
+        <div id="trackIndicatorBar" class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div class="flex items-center space-x-2.5">
+            <div id="trackIconBadge" class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base border border-emerald-500/30">
+              🟢
+            </div>
+            <div>
+              <div id="trackTitleBadge" class="text-xs font-bold text-white flex items-center space-x-2">
+                <span>Lộ Trình: Tiếng Anh Giao Tiếp Đời Thường</span>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono font-normal">0đ Miễn Phí Cộng Đồng</span>
+              </div>
+              <div id="trackSubBadge" class="text-[11px] text-slate-400">
+                Khung chuẩn Cambridge & CEFR (Pre-A1 → B2) • 5 Chặng 600 giờ • Không cần Key
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <a href="index.html#languageMatrixSection" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-300 hover:text-white transition flex items-center space-x-1.5 border border-slate-700/80 cursor-pointer">
+              <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Đổi Lộ Trình / Chuyên Ngành</span>
+            </a>
+          </div>
+        </div>
 
         <!-- Header bài học hiện tại -->
         <div class="cyber-card card-3d p-6 rounded-2xl relative overflow-hidden">
@@ -448,6 +472,65 @@
 
       <!-- ================= VIEW 2: QUẢN TRỊ ADMIN (DUYỆT USER) ================= -->
       <div id="adminView" class="hidden space-y-6">
+        
+        <!-- ESP LICENSE KEY MANAGER (CẤP KEY CHUYÊN NGÀNH THEO GMAIL) -->
+        <div class="cyber-card p-6 rounded-2xl border-purple-500/40 bg-gradient-to-b from-purple-950/20 to-slate-900/60 shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center border border-purple-500/30">
+                <i data-lucide="key" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white">Quản Lý & Cấp License Key Chuyên Ngành (ESP Manager)</h3>
+                <p class="text-xs text-purple-300/80 mt-0.5">Tạo Key bản quyền cấp riêng cho từng Gmail học viên để mở khóa đúng chuyên ngành đó</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form cấp Key -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Gmail Học Viên Được Cấp:</label>
+              <input type="email" id="adminStudentEmail" placeholder="student@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-purple-400 font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">Chọn Chuyên Ngành Muốn Mở:</label>
+              <select id="adminStudentField" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-purple-400 cursor-pointer">
+                <option value="it">💻 CNTT & Kỹ Sư Phần Mềm (IT)</option>
+                <option value="medical">🩺 Y Khoa & Điều Dưỡng (Healthcare)</option>
+                <option value="business">📊 Kinh Doanh & Đàm Phán (Business)</option>
+                <option value="tourism">✈️ Khách Sạn & Du Lịch (Tourism)</option>
+                <option value="logistics">🚢 Xuất Nhập Khẩu & Logistics (Logistics)</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button onclick="handleAdminGenerateEspKey()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs transition shadow-lg shadow-purple-900/40 flex items-center justify-center space-x-1.5 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Sinh Mã & Cấp Key</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bảng các Key đã cấp -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead class="text-xs uppercase bg-slate-800/80 text-slate-400">
+                <tr>
+                  <th class="px-4 py-3 rounded-l-lg">Gmail Học Viên</th>
+                  <th class="px-4 py-3">Chuyên Ngành</th>
+                  <th class="px-4 py-3 font-mono">Mã License Key</th>
+                  <th class="px-4 py-3">Ngày Cấp</th>
+                  <th class="px-4 py-3 text-right rounded-r-lg">Hành Động</th>
+                </tr>
+              </thead>
+              <tbody id="espKeysTableBody" class="divide-y divide-slate-800 text-xs">
+                <tr>
+                  <td colspan="5" class="px-4 py-4 text-center text-slate-500">Chưa có License Key nào được sinh.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         <div class="cyber-card p-6 rounded-2xl border-amber-500/30">
           <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
             <div class="flex items-center space-x-3">

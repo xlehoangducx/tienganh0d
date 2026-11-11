@@ -1971,6 +1971,7 @@ function updateProgressUI(progress) {
 // 14. QUẢN TRỊ ADMIN (DUYỆT HỌC VIÊN)
 // ==============================================================
 async function loadAdminStudents() {
+  window.renderAdminEspKeysTable();
   const tbody = document.getElementById("studentsTableBody");
   if (!tbody) return;
 
@@ -2024,7 +2025,59 @@ if (refreshBtn) {
 }
 
 // ==============================================================
+
+// ==============================================================
+// 14.5. KIỂM SOÁT PHÂN KHÚC LỘ TRÌNH (TRACK & ESP LICENSE)
+// ==============================================================
+function initDashboardTrack() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const track = urlParams.get('track');
+  const field = urlParams.get('field');
+
+  const iconBadge = document.getElementById('trackIconBadge');
+  const titleBadge = document.getElementById('trackTitleBadge');
+  const subBadge = document.getElementById('trackSubBadge');
+
+  if (track === 'specialized' && field) {
+    const fieldNames = {
+      it: 'CNTT & Kỹ Sư Phần Mềm (IT)',
+      medical: 'Y Khoa & Điều Dưỡng (Healthcare)',
+      business: 'Kinh Doanh & Đàm Phán (Business)',
+      tourism: 'Khách Sạn & Du Lịch (Tourism)',
+      logistics: 'Xuất Nhập Khẩu & Logistics (Logistics)'
+    };
+    const fieldName = fieldNames[field] || field.toUpperCase();
+    
+    let unlocked = [];
+    try {
+      unlocked = JSON.parse(localStorage.getItem('tienganh0d_unlocked_fields') || '[]');
+    } catch(e) {}
+
+    const isUnlocked = unlocked.includes(field);
+
+    if (iconBadge) {
+      iconBadge.textContent = '💼';
+      iconBadge.className = 'w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-base border border-purple-500/30';
+    }
+    if (titleBadge) {
+      if (isUnlocked) {
+        titleBadge.innerHTML = `<span>Chuyên Ngành: ${fieldName}</span><span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 font-mono font-bold">ĐÃ MỞ KHÓA BẢN QUYỀN</span>`;
+      } else {
+        titleBadge.innerHTML = `<span>Chuyên Ngành: ${fieldName}</span><span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 font-mono font-bold">CHƯA KÍCH HOẠT KEY</span>`;
+      }
+    }
+    if (subBadge) {
+      if (isUnlocked) {
+        subBadge.innerHTML = `License Key hợp lệ • Chương trình tiếng Anh nghề nghiệp chuyên sâu đang được đồng bộ bài học`;
+      } else {
+        subBadge.innerHTML = `⚠️ Chuyên ngành này cần mã License Key do Admin cấp riêng cho Gmail của bạn. <a href="index.html#languageMatrixSection" class="text-cyan-400 underline">Kích hoạt ngay</a>`;
+      }
+    }
+  }
+}
+
 // 15. BOOTSTRAP HỆ THỐNG
+initDashboardTrack();
 // ==============================================================
 selectLesson("buoi-01");
 
@@ -2069,3 +2122,66 @@ setupAuthUI(async (user, profile) => {
 
   if (window.lucide) window.lucide.createIcons();
 });
+
+// ==============================================================
+// 15. QUẢN LÝ LICENSE KEY CHUYÊN NGÀNH (ESP LICENSE MANAGER)
+// ==============================================================
+window.handleAdminGenerateEspKey = function() {
+  const email = document.getElementById("adminStudentEmail")?.value.trim().toLowerCase();
+  const field = document.getElementById("adminStudentField")?.value;
+  if (!email || !field) {
+    alert("⚠️ Vui lòng nhập đầy đủ Gmail của học viên!");
+    return;
+  }
+
+  const rand1 = Math.floor(1000 + Math.random() * 9000);
+  const rand2 = Math.floor(1000 + Math.random() * 9000);
+  const key = `KEY-${field.toUpperCase()}-${rand1}-${rand2}`;
+  const now = new Date().toLocaleDateString('vi-VN');
+
+  let keys = [];
+  try {
+    keys = JSON.parse(localStorage.getItem("tienganh0d_esp_keys") || "[]");
+  } catch (e) {}
+
+  keys.unshift({
+    email: email,
+    field: field,
+    key: key,
+    createdAt: now,
+    status: 'active'
+  });
+
+  localStorage.setItem("tienganh0d_esp_keys", JSON.stringify(keys));
+  window.renderAdminEspKeysTable();
+  alert(`🎉 Đã cấp License Key thành công cho ${email}!\nMã Key: ${key}\nChuyên ngành: ${field.toUpperCase()}`);
+};
+
+window.renderAdminEspKeysTable = function() {
+  const tbody = document.getElementById("espKeysTableBody");
+  if (!tbody) return;
+  let keys = [];
+  try {
+    keys = JSON.parse(localStorage.getItem("tienganh0d_esp_keys") || "[]");
+  } catch (e) {}
+
+  if (keys.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-slate-500">Chưa có License Key nào được sinh.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = keys.map((k) => `
+    <tr class="hover:bg-slate-900/60 transition">
+      <td class="px-4 py-3 font-semibold text-white">${k.email}</td>
+      <td class="px-4 py-3 text-cyan-300 font-bold uppercase">${k.field}</td>
+      <td class="px-4 py-3 font-mono font-bold text-amber-300">${k.key}</td>
+      <td class="px-4 py-3 text-slate-400">${k.createdAt || ''}</td>
+      <td class="px-4 py-3 text-right">
+        <button onclick="navigator.clipboard.writeText('${k.key}'); alert('Đã sao chép mã Key: ${k.key}');" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-semibold transition cursor-pointer">
+          Sao Chép
+        </button>
+      </td>
+    </tr>
+  `).join("");
+  if (window.lucide) window.lucide.createIcons();
+};
