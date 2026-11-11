@@ -165,11 +165,12 @@ window.selectLesson = function(lessonId) {
   if (durationEl) durationEl.textContent = lesson.duration || "20 phút";
   if (phaseBadge && milestone) phaseBadge.textContent = milestone.badge;
 
-  // Render 4 Module
+  // Render 5 Module
   renderMouthTechniques(lesson.mouthTechniques);
   renderChunks(lesson.chunks);
   renderQuizzes(lesson.quizzes);
   renderFlashcards(lesson.chunks);
+  setupSpeakingModule(lesson);
 
   // Mặc định về module 1
   switchLessonModule('moduleMouth');
@@ -193,19 +194,52 @@ function renderMouthTechniques(techniques) {
     return;
   }
 
-  container.innerHTML = techniques.map(m => `
+  container.innerHTML = techniques.map(m => {
+    const firstWord = m.example.split(',')[0].trim();
+    return `
     <div class="p-4 rounded-xl cyber-card card-3d">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-xl font-extrabold text-cyan-400 font-mono">${m.sound}</span>
-        <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">${m.example}</span>
+        <span class="text-2xl font-extrabold text-cyan-400 font-mono">${m.sound}</span>
+        <button onclick="speakText('${firstWord}')" class="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500 text-cyan-300 hover:text-white transition flex items-center space-x-1.5" title="Bấm nghe phát âm từ mẫu: ${firstWord}">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          <span class="text-xs font-mono font-bold">${m.example}</span>
+        </button>
       </div>
       <p class="text-xs text-slate-300 leading-relaxed mb-2">${m.guide}</p>
       <div class="text-[11px] text-emerald-400/90 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
-        💡 <strong>Mẹo:</strong> ${m.tip}
+        💡 <strong>Mẹo cơ miệng:</strong> ${m.tip}
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
+  if (window.lucide) window.lucide.createIcons();
 }
+
+window.toggleMouthMirror = async function() {
+  const container = document.getElementById("mouthMirrorContainer");
+  const video = document.getElementById("mouthMirrorVideo");
+  const btnLabel = document.getElementById("btnMirrorLabel");
+  if (!container || !video) return;
+
+  if (window.mouthMirrorStream) {
+    window.mouthMirrorStream.getTracks().forEach(track => track.stop());
+    window.mouthMirrorStream = null;
+    video.srcObject = null;
+    container.classList.add("hidden");
+    if (btnLabel) btnLabel.textContent = "Bật Gương Soi Cơ Miệng (Camera)";
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+    window.mouthMirrorStream = stream;
+    video.srcObject = stream;
+    container.classList.remove("hidden");
+    if (btnLabel) btnLabel.textContent = "Tắt Gương Soi Cơ Miệng";
+  } catch (err) {
+    alert("Không thể mở camera. Hãy đảm bảo bạn đã cấp quyền sử dụng camera trên trình duyệt nhé!");
+  }
+};
 
 function renderChunks(chunks) {
   const container = document.getElementById("chunksContainer");
@@ -478,7 +512,161 @@ window.copySTKModal = function() {
 };
 
 // ==============================================================
-// 8. BOOTSTRAP HỆ THỐNG
+// 8. MODULE 5: PHÒNG LUYỆN NÓI ĐỐI THOẠI 2 CHIỀU (WEB SPEECH API 0Đ)
+// ==============================================================
+let speakingItems = [];
+let currentSpeakingIndex = 0;
+let speechRecognizer = null;
+let isSpeakingRecording = false;
+
+function setupSpeakingModule(lesson) {
+  speakingItems = (lesson.chunks || []).filter(c => c.type === 'core');
+  if (speakingItems.length === 0) speakingItems = lesson.chunks || [];
+  currentSpeakingIndex = 0;
+  updateSpeakingUI();
+}
+
+function updateSpeakingUI() {
+  if (speakingItems.length === 0) return;
+  const item = speakingItems[currentSpeakingIndex];
+
+  const targetPhraseEl = document.getElementById("speakingTargetPhrase");
+  const targetMeaningEl = document.getElementById("speakingTargetMeaning");
+  const indicatorEl = document.getElementById("speakingRoundIndicator");
+  const resultBox = document.getElementById("speechResultBox");
+  const micStatus = document.getElementById("micStatusText");
+
+  if (targetPhraseEl) targetPhraseEl.textContent = item.phrase;
+  if (targetMeaningEl) targetMeaningEl.textContent = item.meaning;
+  if (indicatorEl) indicatorEl.textContent = `Tình huống: ${currentSpeakingIndex + 1} / ${speakingItems.length}`;
+  if (resultBox) resultBox.classList.add("hidden");
+  if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới rồi nói to câu tiếng Anh trên vào micro";
+}
+
+window.replaySpeakingTarget = function() {
+  if (speakingItems.length === 0) return;
+  speakText(speakingItems[currentSpeakingIndex].phrase);
+};
+
+window.prevSpeakingItem = function() {
+  if (currentSpeakingIndex > 0) {
+    currentSpeakingIndex--;
+    updateSpeakingUI();
+    speakText(speakingItems[currentSpeakingIndex].phrase);
+  }
+};
+
+window.nextSpeakingItem = function() {
+  if (currentSpeakingIndex < speakingItems.length - 1) {
+    currentSpeakingIndex++;
+    updateSpeakingUI();
+    speakText(speakingItems[currentSpeakingIndex].phrase);
+  } else {
+    alert("Tuyệt vời! Bạn đã hoàn thành toàn bộ kịch bản luyện nói của buổi học hôm nay!");
+    playVictorySound();
+  }
+};
+
+function normalizeText(str) {
+  return (str || "").toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
+}
+
+function calculateSimilarity(str1, str2) {
+  const s1 = normalizeText(str1);
+  const s2 = normalizeText(str2);
+  if (s1 === s2) return 1.0;
+  if (!s1 || !s2) return 0.0;
+
+  const words1 = s1.split(/\s+/);
+  const words2 = s2.split(/\s+/);
+  let matches = 0;
+  words1.forEach(w => {
+    if (words2.includes(w)) matches++;
+  });
+  return Math.min(1.0, (matches / Math.max(words1.length, words2.length)));
+}
+
+window.toggleSpeechRecording = function() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Bạn hãy sử dụng Google Chrome hoặc Microsoft Edge để luyện nói cùng AI 0đ nhé!");
+    return;
+  }
+
+  if (isSpeakingRecording && speechRecognizer) {
+    speechRecognizer.stop();
+    isSpeakingRecording = false;
+    return;
+  }
+
+  speechRecognizer = new SpeechRecognition();
+  speechRecognizer.lang = 'en-US';
+  speechRecognizer.continuous = false;
+  speechRecognizer.interimResults = false;
+
+  const micBtn = document.getElementById("btnRecordVoice");
+  const micStatus = document.getElementById("micStatusText");
+
+  speechRecognizer.onstart = function() {
+    isSpeakingRecording = true;
+    if (micBtn) micBtn.classList.add("animate-pulse", "ring-4", "ring-purple-400");
+    if (micStatus) micStatus.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe... Hãy phát âm câu mẫu ngay!</span>`;
+  };
+
+  speechRecognizer.onresult = function(event) {
+    isSpeakingRecording = false;
+    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
+
+    const transcript = event.results[0][0].transcript;
+    const targetItem = speakingItems[currentSpeakingIndex];
+    const similarity = calculateSimilarity(transcript, targetItem.phrase);
+    const percentScore = Math.round(similarity * 100);
+
+    const resultBox = document.getElementById("speechResultBox");
+    const transcribedEl = document.getElementById("speechTranscribedText");
+    const accuracyBadge = document.getElementById("speechAccuracyBadge");
+    const feedbackEl = document.getElementById("speechFeedbackText");
+
+    if (resultBox) resultBox.classList.remove("hidden");
+    if (transcribedEl) transcribedEl.textContent = `"${transcript}"`;
+    if (accuracyBadge) {
+      accuracyBadge.textContent = `Độ chính xác: ${percentScore}%`;
+      if (percentScore >= 75) {
+        accuracyBadge.className = "text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+      } else {
+        accuracyBadge.className = "text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30";
+      }
+    }
+
+    if (percentScore >= 75) {
+      playCorrectSound();
+      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-emerald-400 font-semibold">🎉 Xuất sắc!</span> Phát âm của bạn rất chuẩn xác và đúng ngữ điệu. Hãy bấm <strong>Câu tiếp theo</strong>!`;
+    } else {
+      playIncorrectSound();
+      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-amber-400 font-semibold">Gần đúng rồi!</span> Hãy chú ý bật rõ âm đuôi và phát âm lại: <em>"${targetItem.phrase}"</em>.`;
+    }
+  };
+
+  speechRecognizer.onerror = function(event) {
+    isSpeakingRecording = false;
+    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
+    if (micStatus) micStatus.textContent = "Chưa nhận được âm thanh. Hãy bấm lại micro và nói to hơn nhé!";
+  };
+
+  speechRecognizer.onend = function() {
+    isSpeakingRecording = false;
+    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
+  };
+
+  try {
+    speechRecognizer.start();
+  } catch (err) {
+    console.warn("Lỗi khởi động nhận diện giọng nói:", err);
+  }
+};
+
+// ==============================================================
+// 9. BOOTSTRAP HỆ THỐNG
 // ==============================================================
 selectLesson("buoi-01");
 
