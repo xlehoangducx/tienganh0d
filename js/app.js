@@ -1013,7 +1013,7 @@ window.selectMouthWord = function(techIdx, wordIdx) {
   if (!wordObj) return;
 
   selectedMouthWords[techIdx] = wordObj;
-  speakText(wordObj.word);
+  if (wordObj.audioFile) { window.playTrack(wordObj.audioFile); } else { speakText(wordObj.word); }
 
   // Cập nhật DOM trực tiếp không lo bị lệch từ
   const wordEl = document.getElementById(`mouthTargetWord-${techIdx}`);
@@ -1152,7 +1152,13 @@ function renderChunks(chunks) {
 }
 
 window.handleListenChunk = function(phrase) {
-  speakText(phrase);
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const chunkObj = lesson?.chunks?.find(c => c.phrase === phrase);
+  if (chunkObj && chunkObj.audioFile) {
+    window.playTrack(chunkObj.audioFile);
+  } else {
+    speakText(phrase);
+  }
   markChunkListened(phrase);
 };
 

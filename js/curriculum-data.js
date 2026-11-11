@@ -181,8 +181,8 @@ export const CURRICULUM_DATA = {
           sound: "/θ/ (Âm Theta kẹp lưỡi)",
           example: "Thank you, Think",
           words: [
-            { word: "Thank you", ipa: "/ˈθæŋk juː/", meaning: "Cảm ơn bạn", context: "Bày tỏ lòng biết ơn chân thành khi nhận trợ giúp" },
-            { word: "Think", ipa: "/θɪŋk/", meaning: "Suy nghĩ / Tôi nghĩ", context: "Bày tỏ ý kiến cá nhân: I think so (Tôi nghĩ vậy)" }
+            { word: "Thank you", ipa: "/ˈθæŋk juː/", meaning: "Cảm ơn bạn", context: "Bày tỏ lòng biết ơn chân thành khi nhận trợ giúp", audioFile: "assets/audio/thank-you.mp3" },
+            { word: "Think", ipa: "/θɪŋk/", meaning: "Suy nghĩ / Tôi nghĩ", context: "Bày tỏ ý kiến cá nhân: I think so (Tôi nghĩ vậy)", audioFile: "assets/audio/think.mp3" }
           ],
           guide: "Ký hiệu /θ/ chính là chữ Theta (θ). Người Việt hay nghe nhầm thành 'Th' tiếng Việt, 'S' hoặc 'T'. Cách làm đúng: Thè nhẹ đầu lưỡi ra giữa 2 hàm răng cửa (kẹp nhẹ, không cắn), đẩy luồng gió mát trượt trên bề mặt lưỡi rồi mới phát âm. Tuyệt đối không thụt lưỡi vào trong biến thành 'Thanh-kiu'!",
           tip: "💡 Mẹo vàng: Cắn nhẹ đầu lưỡi, thổi hơi gió mát ra mu bàn tay. Lưỡi phải lộ ra ngoài răng thì mới đúng âm chuẩn người Mỹ!"
@@ -191,9 +191,9 @@ export const CURRICULUM_DATA = {
           sound: "/s/ (Âm xì răng khép)",
           example: "Nice, Thanks, See",
           words: [
-            { word: "Nice", ipa: "/naɪs/", meaning: "Tốt đẹp / Dễ mến", context: "Lời khen ngợi: Nice to meet you" },
-            { word: "Thanks", ipa: "/θæŋks/", meaning: "Cảm ơn nha (thân mật)", context: "Dùng với bạn bè đồng trang lứa" },
-            { word: "See", ipa: "/siː/", meaning: "Nhìn thấy / Gặp lại", context: "Gặp lại người quen: See you soon" }
+            { word: "Nice", ipa: "/naɪs/", meaning: "Tốt đẹp / Dễ mến", context: "Lời khen ngợi: Nice to meet you", audioFile: "assets/audio/nice.mp3" },
+            { word: "Thanks", ipa: "/θæŋks/", meaning: "Cảm ơn nha (thân mật)", context: "Dùng với bạn bè đồng trang lứa", audioFile: "assets/audio/thanks.mp3" },
+            { word: "See", ipa: "/siː/", meaning: "Nhìn thấy / Gặp lại", context: "Gặp lại người quen: See you soon", audioFile: "assets/audio/see.mp3" }
           ],
           guide: "Khác với /θ/, âm /s/ yêu cầu lưỡi nằm hoàn toàn BÊN TRONG sau răng cửa dưới. Khép 2 hàm răng lại gần nhau, xì luồng hơi mạnh qua kẽ răng như tiếng xì lốp xe.",
           tip: "💡 Mẹo vàng: Răng khép chặt, lưỡi thụt vào trong, không thè lưỡi như âm /θ/. Mất âm đuôi /s/ giống như tiếng Việt bị mất dấu thanh."
@@ -202,9 +202,9 @@ export const CURRICULUM_DATA = {
           sound: "/t/ (Âm gõ bật dứt khoát)",
           example: "Meet, Great, Wait",
           words: [
-            { word: "Meet", ipa: "/miːt/", meaning: "Gặp gỡ", context: "Gặp ai đó lần đầu hoặc hẹn gặp" },
-            { word: "Great", ipa: "/ɡreɪt/", meaning: "Tuyệt vời", context: "Cảm xúc hào hứng: Have a great day!" },
-            { word: "Wait", ipa: "/weɪt/", meaning: "Chờ đợi", context: "Nhờ người khác nán lại: Wait a minute" }
+            { word: "Meet", ipa: "/miːt/", meaning: "Gặp gỡ", context: "Gặp ai đó lần đầu hoặc hẹn gặp", audioFile: "assets/audio/meet.mp3" },
+            { word: "Great", ipa: "/ɡreɪt/", meaning: "Tuyệt vời", context: "Cảm xúc hào hứng: Have a great day!", audioFile: "assets/audio/great.mp3" },
+            { word: "Wait", ipa: "/weɪt/", meaning: "Chờ đợi", context: "Nhờ người khác nán lại: Wait a minute", audioFile: "assets/audio/wait.mp3" }
           ],
           guide: "Khác với /θ/ và /s/ (luồng hơi trượt dài), âm /t/ là âm TẮC BẬT: Đặt đầu lưỡi chạm vào phần nướu hàm trên sau răng cửa, nén hơi lại rồi bật mạnh xuống dứt khoát như tiếng gõ 'tách'.",
           tip: "💡 Mẹo vàng: Bật dứt khoát, gọn gàng, có luồng gió nhỏ bật ra làm rung tờ giấy trước miệng."
@@ -218,6 +218,7 @@ export const CURRICULUM_DATA = {
           ipa: "/haɪ, naɪs tuː miːt juː/",
           meaning: "Chào bạn, rất vui được gặp bạn!",
           context: "Mẫu câu cốt lõi: Bắt tay làm quen người mới lần đầu tiên",
+          audioFile: "assets/audio/hi-nice-to-meet-you.mp3",
           audioText: "Hi, nice to meet you!",
           type: "core",
           repetitionTarget: 7
@@ -227,6 +228,7 @@ export const CURRICULUM_DATA = {
           ipa: "/haɪ, ɡreɪt tuː miːt juː/",
           meaning: "Chào bạn, thật tuyệt khi được gặp bạn!",
           context: "Cách nói mở rộng: Tạo cảm giác nhiệt tình, hào hứng hơn",
+          audioFile: "assets/audio/hi-great-to-meet-you.mp3",
           audioText: "Hi, great to meet you!",
           type: "permutation",
           repetitionTarget: 7
@@ -236,6 +238,7 @@ export const CURRICULUM_DATA = {
           ipa: "/ɡʊd tuː siː juː əˈɡen/",
           meaning: "Rất vui được gặp lại bạn!",
           context: "Cách nói mở rộng: Khi gặp lại người quen từ lần thứ hai trở đi",
+          audioFile: "assets/audio/good-to-see-you-again.mp3",
           audioText: "Good to see you again!",
           type: "permutation",
           repetitionTarget: 7
@@ -245,6 +248,7 @@ export const CURRICULUM_DATA = {
           ipa: "/ˈθæŋk juː soʊ mʌtʃ/",
           meaning: "Cảm ơn bạn rất nhiều!",
           context: "Mẫu câu cốt lõi: Khi nhận sự giúp đỡ, nói với giọng trầm ấm",
+          audioFile: "assets/audio/thank-you-so-much.mp3",
           audioText: "Thank you so much!",
           type: "core",
           repetitionTarget: 7
@@ -254,6 +258,7 @@ export const CURRICULUM_DATA = {
           ipa: "/ˈθæŋk juː fər jɔːr help/",
           meaning: "Cảm ơn bạn đã nhiệt tình giúp đỡ tôi!",
           context: "Cách nói mở rộng: Cụ thể hóa lời cảm ơn cho sự trợ giúp vừa nhận",
+          audioFile: "assets/audio/thank-you-for-your-help.mp3",
           audioText: "Thank you for your help!",
           type: "permutation",
           repetitionTarget: 7
@@ -263,6 +268,7 @@ export const CURRICULUM_DATA = {
           ipa: "/θæŋks ə lɑːt/",
           meaning: "Cảm ơn nhiều nhé! (Thân mật)",
           context: "Cách nói mở rộng: Nói nhanh gọn với bạn bè đồng trang lứa",
+          audioFile: "assets/audio/thanks-a-lot.mp3",
           audioText: "Thanks a lot!",
           type: "permutation",
           repetitionTarget: 7
@@ -272,6 +278,7 @@ export const CURRICULUM_DATA = {
           ipa: "/hæv ə ɡreɪt deɪ/",
           meaning: "Chúc bạn một ngày tuyệt vời nhé!",
           context: "Mẫu câu cốt lõi: Khi chào tạm biệt lúc ra về hoặc kết thúc trò chuyện",
+          audioFile: "assets/audio/have-a-great-day.mp3",
           audioText: "Have a great day!",
           type: "core",
           repetitionTarget: 7
@@ -449,6 +456,7 @@ export const CURRICULUM_DATA = {
         {
           id: "tc1",
           vietnameseCue: "Chào bạn, rất vui được gặp bạn!",
+          audioFile: "assets/audio/hi-nice-to-meet-you.mp3",
           audioText: "Hi, nice to meet you!",
           targetWords: ["Hi,", "nice", "to", "meet", "you!"],
           fullSentence: "Hi, nice to meet you!",
@@ -457,6 +465,7 @@ export const CURRICULUM_DATA = {
         {
           id: "tc2",
           vietnameseCue: "Cảm ơn bạn rất nhiều!",
+          audioFile: "assets/audio/thank-you-so-much.mp3",
           audioText: "Thank you so much!",
           targetWords: ["Thank", "you", "so", "much!"],
           fullSentence: "Thank you so much!",
@@ -465,6 +474,7 @@ export const CURRICULUM_DATA = {
         {
           id: "tc3",
           vietnameseCue: "Chúc bạn một ngày tuyệt vời nhé!",
+          audioFile: "assets/audio/have-a-great-day.mp3",
           audioText: "Have a great day!",
           targetWords: ["Have", "a", "great", "day!"],
           fullSentence: "Have a great day!",
