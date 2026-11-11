@@ -89,7 +89,7 @@
         </h1>
 
         <p class="max-w-3xl mx-auto text-sm sm:text-base text-slate-300 mb-8 leading-relaxed">
-          Không nhồi ngữ pháp công thức. Không dịch thầm trung gian. Mô phỏng 100% cách mô hình trí tuệ nhân tạo Gemini hấp thụ ngôn ngữ: từ <strong>Đồng bộ âm vị</strong> $\rightarrow$ <strong>Không gian vector đa chiều</strong> $\rightarrow$ <strong>Cụm từ đời thực (Chunks)</strong> $\rightarrow$ <strong>Căn chỉnh phản xạ tự nhiên (RLHF)</strong>.
+          Không nhồi ngữ pháp công thức. Không dịch thầm trung gian. Mô phỏng 100% cách mô hình trí tuệ nhân tạo Gemini hấp thụ ngôn ngữ: từ <strong>Đồng bộ âm vị</strong> → <strong>Không gian ngữ nghĩa trực tiếp</strong> → <strong>Cụm từ đời thực (Chunks)</strong> → <strong>Căn chỉnh phản xạ tự nhiên (RLHF)</strong>.
         </p>
 
         <!-- Live Metrics Bar -->
@@ -214,16 +214,16 @@
           <div class="p-6 rounded-2xl cyber-card card-3d border-emerald-500/30">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
               <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 px-2.5 py-0.5 rounded border border-emerald-500/20">
-                Giai đoạn 1 • 10% → 30% (Sinh Tồn)
+                Giai đoạn 1 • 10% → 30% (Giao Tiếp Đời Thường)
               </span>
               <span class="text-xs font-mono text-slate-400">Ước tính: 65 Giờ • Buổi 11 → 35</span>
             </div>
-            <h4 class="text-lg font-bold text-white mb-1">Không Gian Ngữ Nghĩa Sinh Tồn (Semantic Space)</h4>
+            <h4 class="text-lg font-bold text-white mb-1">Giao Tiếp Đời Thường & Nền Tảng Thực Chiến (Everyday Contexts)</h4>
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
               Nạp 500 cụm từ cố định (Chunks) cho mọi ngữ cảnh đời thực. Gắn từ ngữ trực tiếp với hình ảnh và cảm xúc, cắt bỏ hoàn toàn việc dịch thầm trong đầu.
             </p>
             <div class="text-[11px] text-emerald-300 bg-emerald-950/30 p-2.5 rounded-xl border border-emerald-500/20">
-              🎯 <strong>Kỹ năng đạt được:</strong> Sinh tồn độc lập khi đi du lịch nước ngoài: Gọi món, mua sắm, hỏi đường, khách sạn, sân bay. Phản xạ câu dưới 2 giây.
+              🎯 <strong>Kỹ năng đạt được:</strong> Tự tin giao tiếp trôi chảy khi đi du lịch nước ngoài hoặc gặp người bản xứ: Gọi món ăn, mua sắm, hỏi đường, khách sạn, sân bay. Phản xạ câu hỏi-đáp dưới 2 giây.
             </div>
           </div>
 
@@ -322,24 +322,39 @@
   </footer>
 
   <!-- SCRIPT LOGIC -->
-  <script type="module">
-    import { setupAuthUI } from "./js/auth.js";
-    import { DONATE_CONFIG } from "./donate-config.js";
-
-    lucide.createIcons();
-
+  <script>
+    // Định nghĩa hàm mở Modal và sao chép toàn cục ngay lập tức (không phụ thuộc module)
     window.openDonateModal = function() {
-      document.getElementById("donateModal").classList.remove("hidden");
+      const modal = document.getElementById("donateModal");
+      if (modal) modal.classList.remove("hidden");
     };
 
     window.closeDonateModal = function() {
-      document.getElementById("donateModal").classList.add("hidden");
+      const modal = document.getElementById("donateModal");
+      if (modal) modal.classList.add("hidden");
     };
 
     window.copySTK = function() {
-      navigator.clipboard.writeText(DONATE_CONFIG.banking.accountNumber);
-      alert("Đã sao chép số tài khoản!");
+      navigator.clipboard.writeText("0941958090");
+      alert("Đã sao chép số tài khoản MB Bank: 0941958090 (LE HOANG DUC)!");
     };
+
+    // Render Lucide icons ngay khi trang load
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+
+  <script type="module">
+    import { setupAuthUI } from "./js/auth.js";
+    import { DONATE_CONFIG } from "./js/donate-config.js";
+
+    if (window.lucide) window.lucide.createIcons();
 
     setupAuthUI((user, profile) => {
       const btnDashboardLink = document.getElementById("btnDashboardLink");
@@ -355,6 +370,7 @@
         if (btnGoogleLogin) btnGoogleLogin.classList.remove("hidden");
         if (btnDashboardLink) btnDashboardLink.classList.add("hidden");
       }
+      if (window.lucide) window.lucide.createIcons();
     });
   </script>
   <script src="js/cyber-effects.js"></script>

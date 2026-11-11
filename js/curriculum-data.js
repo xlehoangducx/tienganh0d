@@ -29,14 +29,14 @@ export const CURRICULUM_DATA = {
     },
     {
       id: 1,
-      phaseName: "Giai đoạn 1: Không Gian Ngữ Nghĩa Sinh Tồn (Semantic Embedding Space)",
+      phaseName: "Giai đoạn 1: Giao Tiếp Đời Thường & Nền Tảng Thực Chiến (Everyday Real-Life Contexts)",
       targetProgress: "10% → 30%",
       estimatedHours: 65,
       sessionsRange: "Buổi 11 → 35",
       description: "Nạp 500 cụm từ cố định (Chunks) cho mọi ngữ cảnh đời thực. Gắn từ ngữ trực tiếp với hình ảnh và cảm xúc, cắt bỏ hoàn toàn việc dịch thầm.",
-      targetCompetency: "Tự tin sinh tồn khi đi du lịch: Gọi món, mua sắm, hỏi đường, khách sạn, sân bay. Phản xạ câu hỏi-đáp dưới 2 giây.",
+      targetCompetency: "Tự tin giao tiếp khi đi du lịch và đời sống: Gọi món, mua sắm, hỏi đường, khách sạn, sân bay. Phản xạ câu hỏi-đáp dưới 2 giây.",
       color: "from-emerald-500 to-teal-500",
-      badge: "Cấp độ 1: Sinh Tồn"
+      badge: "Cấp độ 1: Đời Thường"
     },
     {
       id: 2,
@@ -79,7 +79,7 @@ export const CURRICULUM_DATA = {
       id: "buoi-01",
       sessionNumber: 1,
       phaseId: 0,
-      title: "Đánh Thức Cơ Miệng & 3 Khối Phản Xạ Sinh Tồn Đầu Đời",
+      title: "Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường Đầu Tiên",
       topic: "Mở khóa khẩu hình cơ miệng, làm quen âm gió, âm bật và phản xạ chào hỏi",
       duration: "20 phút",
       practicalContext: "Gặp gỡ làm quen người nước ngoài, chào hỏi xã giao, cảm ơn chân thành và tạm biệt vui vẻ.",
@@ -224,7 +224,7 @@ export const CURRICULUM_DATA = {
       id: "buoi-03",
       sessionNumber: 3,
       phaseId: 0,
-      title: "Bản Năng Sinh Tồn: Diễn Đạt Nhu Cầu Cấp Thiết (I want / I need)",
+      title: "Nhu Cầu Thiết Yếu: Diễn Đạt Mong Muốn Trực Tiếp (I want / I need)",
       topic: "Khung câu phản xạ diễn đạt mong muốn trực tiếp: Tôi cần nước, tôi cần sự giúp đỡ",
       duration: "25 phút",
       practicalContext: "Khi bị mệt, khát nước, đói bụng hoặc cần sự trợ giúp khẩn cấp.",
@@ -259,7 +259,7 @@ export const CURRICULUM_DATA = {
           question: "Khi bạn cần ai đó giúp đỡ ngay lập tức, bạn hô câu gì?",
           options: ["I need help!", "Nice to meet you!", "Thank you!"],
           correctIndex: 0,
-          explanation: "'I need help!' là phản xạ sinh tồn ngắn gọn và hiệu quả nhất."
+          explanation: "'I need help!' là phản xạ giao tiếp ngắn gọn, rõ ràng và hiệu quả nhất."
         }
       ]
     }

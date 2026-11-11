@@ -165,7 +165,7 @@
           </div>
 
           <h2 id="currentLessonTitle" class="text-xl sm:text-2xl font-extrabold text-white">
-            Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Từ Sinh Tồn
+            Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường
           </h2>
           <p id="currentLessonTopic" class="text-xs sm:text-sm text-slate-400 mt-1">
             Chủ đề: Mở khóa khẩu hình cơ miệng, làm quen âm gió, âm bật và phản xạ chào hỏi
@@ -217,7 +217,7 @@
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center space-x-2 text-emerald-400 font-bold">
                 <i data-lucide="volume-2" class="w-5 h-5"></i>
-                <h3 class="text-base text-white">Khối Phản Xạ Sinh Tồn (Bấm Loa Nghe Giọng Mỹ Bản Xứ 0đ)</h3>
+                <h3 class="text-base text-white">Cụm Từ Phản Xạ Giao Tiếp Đời Thường (Bấm Loa Nghe Giọng Mỹ Bản Xứ 0đ)</h3>
               </div>
             </div>
             <div class="space-y-3" id="chunksContainer"></div>
@@ -353,6 +353,29 @@
   </div>
 
   <!-- SCRIPTS -->
+  <script>
+    // Định nghĩa hàm Modal và sao chép số tài khoản toàn cục
+    window.openDonateModal = function() {
+      const modal = document.getElementById("donateModal");
+      if (modal) modal.classList.remove("hidden");
+    };
+
+    window.closeDonateModal = function() {
+      const modal = document.getElementById("donateModal");
+      if (modal) modal.classList.add("hidden");
+    };
+
+    window.copySTKModal = function() {
+      navigator.clipboard.writeText("0941958090");
+      alert("Đã sao chép số tài khoản MB Bank: 0941958090 (LE HOANG DUC)!");
+    };
+
+    // Render Lucide icons ngay khi tải DOM
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.lucide) window.lucide.createIcons();
+    });
+    if (window.lucide) window.lucide.createIcons();
+  </script>
   <script type="module" src="js/app.js"></script>
   <script src="js/cyber-effects.js"></script>
 </body>
