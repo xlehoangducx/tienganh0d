@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phòng Học Tiếng Anh AI - Cổng Luyện Tập Tương Tác</title>
+  <title>AI English Hub - Không Gian Học Tập Cá Nhân Chuẩn Khoa Học</title>
   
   <!-- Tailwind CSS, Lucide Icons & Confetti -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -28,30 +28,33 @@
 </head>
 <body class="bg-[#07080d] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
 
-  <!-- ================= CYBER CANVASES (MẠNG NƠ-RON AI & VỆT CHUỘT PHÁT QUANG) ================= -->
+  <!-- ================= CYBER CANVASES ================= -->
   <canvas id="neuralCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
   <canvas id="pointerTrailCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
-  <!-- ================= TOP BAR ================= -->
-  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="border-b border-slate-800 bg-[#0b0e17]/90 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       
-      <!-- Brand & Back -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <a href="index.html" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition" title="Về trang chủ">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </a>
-        <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-            AI
+      <!-- Brand & Mobile Menu Button -->
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <a href="index.html" class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
           </div>
-          <span class="font-bold text-base tracking-tight text-white hidden sm:inline">Phòng Học Cá Nhân</span>
-        </div>
+          <div>
+            <span class="font-bold text-base tracking-tight text-white hidden sm:inline">AI English Platform</span>
+            <span class="text-[10px] block text-emerald-400 font-mono">Cognitive Learning OS v2.0</span>
+          </div>
+        </a>
       </div>
 
       <!-- User Profile & Action -->
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Nút mời cà phê tinh tế -->
         <button onclick="openDonateModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-850 hover:bg-slate-800 text-amber-300 border border-amber-500/25 transition">
           <span>☕</span>
           <span class="hidden sm:inline">Mời Cà Phê</span>
@@ -70,221 +73,246 @@
         </button>
       </div>
     </div>
-
-    <!-- ================= TABS NAVIGATION (MOBILE-OPTIMIZED) ================= -->
-    <div class="border-t border-slate-800/80 bg-slate-900/60 overflow-x-auto scrollbar-none">
-      <div class="max-w-7xl mx-auto px-4 flex space-x-1 sm:space-x-3">
-        <button onclick="switchTab('lessonsTab')" id="tabBtn-lessonsTab" class="tab-btn active px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 flex items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="book-open" class="w-4 h-4"></i>
-          <span>Bài Học Hôm Nay</span>
-        </button>
-
-        <button onclick="switchTab('quizTab')" id="tabBtn-quizTab" class="tab-btn px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="help-circle" class="w-4 h-4"></i>
-          <span>Luyện Tập & Phản Xạ</span>
-        </button>
-
-        <button onclick="switchTab('vocabTab')" id="tabBtn-vocabTab" class="tab-btn px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>Sổ Flashcard 3D</span>
-        </button>
-
-        <button onclick="switchTab('adminTab')" id="tabBtn-adminTab" class="tab-btn hidden px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-amber-400 hover:text-amber-300 items-center space-x-1.5 whitespace-nowrap">
-          <i data-lucide="shield-check" class="w-4 h-4"></i>
-          <span>Duyệt Học Viên (Admin)</span>
-        </button>
-      </div>
-    </div>
   </header>
 
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <!-- ================= WORKSPACE LAYOUT (2-COLUMN ARCHITECTURE) ================= -->
+  <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex gap-6 relative z-10">
 
-    <!-- CẢNH BÁO CHỐNG QUÊN (SPACED REPETITION) NẾU HỌC VIÊN NGHỈ LÂU MỚI VÀO LẠI -->
-    <div id="spacedReviewAlert" class="hidden p-5 rounded-2xl bg-gradient-to-r from-amber-950/50 via-slate-900 to-slate-900 border border-amber-500/40 text-amber-200 shadow-lg">
-      <div class="flex items-start space-x-3.5">
-        <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 flex-shrink-0">
-          <i data-lucide="alarm-clock" class="w-6 h-6"></i>
-        </div>
-        <div class="flex-grow">
-          <h4 class="font-bold text-base text-white">Chào mừng bạn quay lại! Hãy khởi động 3 phút chống quên</h4>
-          <p class="text-xs sm:text-sm text-amber-300/90 mt-1 leading-relaxed">
-            Hệ thống phát hiện bạn đã <strong id="inactiveDaysCount">2</strong> ngày chưa ôn bài. Theo nguyên lý <em>Đường cong quên lãng</em>, nơ-ron của bạn đang có nguy cơ rơi rụng một phần từ vựng cũ. Hãy bấm làm lại bài tập phản xạ để kích hoạt lại trí nhớ trước khi sang bài mới nhé!
-          </p>
-          <button onclick="switchTab('quizTab')" class="mt-3 px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
-            Ôn tập bài cũ ngay (3 phút)
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ALERT NẾU TÀI KHOẢN CHỜ DUYỆT -->
-    <div id="pendingAlert" class="hidden p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
-      <div class="flex items-start space-x-3">
-        <i data-lucide="clock" class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5"></i>
-        <div>
-          <h4 class="font-bold text-base text-amber-200 mb-1">Tài khoản của bạn đang ở trạng thái chờ duyệt!</h4>
-          <p class="text-xs sm:text-sm text-amber-300/90 leading-relaxed">
-            Để đảm bảo chất lượng học tập 1-1 tối ưu, mỗi tài khoản cần được Quản trị viên (Admin) phê duyệt. Vui lòng chờ vài phút để được mở khóa quyền học tập miễn phí.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- TAB 1: BÀI HỌC HÔM NAY (LESSONS TAB) -->
-    <!-- ========================================== -->
-    <section id="lessonsTab" class="tab-content block space-y-6">
+    <!-- ================= CỘT TRÁI: DANH MỤC LỘ TRÌNH & BÀI HỌC (CURRICULUM NAVIGATOR) ================= -->
+    <aside id="curriculumSidebar" class="fixed inset-y-0 left-0 z-50 w-80 bg-[#0b0e17] border-r border-slate-800 p-5 transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 lg:z-0 lg:bg-transparent lg:border-r-0 lg:p-0 flex-shrink-0 flex flex-col space-y-4">
       
-      <!-- BẢNG ĐO TIẾN ĐỘ ĐỘC LẬP TỪNG TÀI KHOẢN -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
-            <span>Giai đoạn 0: Giải Mã Âm Vị & 100 Token Cốt Lõi</span>
-          </div>
-          <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1">Buổi 01: Đánh Thức Cơ Miệng & 3 Câu Sinh Tồn</h2>
-          <p class="text-xs sm:text-sm text-slate-400 mt-1">Mục tiêu: Làm quen âm /θ/, âm gió /s/, âm bật /t/ và phản xạ chào hỏi tự nhiên.</p>
+      <!-- Close button on Mobile -->
+      <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-800">
+        <span class="font-bold text-sm text-white">Danh Mục Giáo Trình</span>
+        <button onclick="toggleSidebar()" class="p-1.5 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Box đo tiến độ tổng thể -->
+      <div class="cyber-card p-4 rounded-2xl">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-slate-300">Tiến Độ Thông Thạo</span>
+          <span id="personalProgressText" class="text-xs font-mono font-bold text-emerald-400">0%</span>
         </div>
-        <div class="flex items-center space-x-4 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800">
-          <div class="text-right">
-            <div class="text-[11px] text-slate-400">Tiến độ cá nhân của bạn</div>
-            <div id="personalProgressText" class="text-lg font-extrabold text-emerald-400">0% Hoàn thành</div>
-            <div id="personalCompletedCount" class="text-[10px] text-slate-500">Đã học: 0/100 buổi</div>
-          </div>
-          <div class="relative w-12 h-12 flex items-center justify-center">
-            <div id="progressCircle" class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-emerald-400 flex items-center justify-center font-bold text-xs text-white">
-              0%
-            </div>
-          </div>
+        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden mb-2">
+          <div id="personalProgressBar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-slate-400">
+          <span id="personalCompletedCount">Đã học: 0/100 buổi</span>
+          <span class="text-cyan-400 font-mono">Mục tiêu: 100%</span>
         </div>
       </div>
 
-      <!-- HƯỚNG DẪN KHẨU HÌNH CƠ MIỆNG -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
-        <div class="flex items-center space-x-2 text-emerald-400 font-bold mb-4">
-          <i data-lucide="mic" class="w-5 h-5"></i>
-          <h3 class="text-base sm:text-lg text-white">1. Kỹ Thuật Đặt Cơ Miệng Chuẩn Người Mỹ</h3>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="mouthTechniquesContainer">
-          <!-- Render từ curriculum-data.js -->
-        </div>
+      <!-- Navigation Tabs: Lộ trình vs Admin -->
+      <div class="flex space-x-1 border-b border-slate-800 pb-2">
+        <button onclick="switchMainView('curriculumView')" id="tabBtn-curriculumView" class="view-tab-btn active px-3 py-1.5 text-xs font-semibold rounded-lg text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+          Danh Mục Bài Học
+        </button>
+        <button onclick="switchMainView('adminView')" id="tabBtn-adminView" class="view-tab-btn hidden px-3 py-1.5 text-xs font-semibold rounded-lg text-amber-400 hover:bg-amber-500/10 border border-transparent">
+          Quản Trị Admin
+        </button>
       </div>
 
-      <!-- 3 KHỐI PHẢN XẠ CỐT LÕI (CHUNKS) CÓ LOA GIỌNG MỸ -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center space-x-2 text-emerald-400 font-bold">
-            <i data-lucide="volume-2" class="w-5 h-5"></i>
-            <h3 class="text-base sm:text-lg text-white">2. Cụm Từ Phản Xạ Sinh Tồn (Bấm Loa Nghe Giọng Mỹ 0đ)</h3>
-          </div>
-          <span class="text-xs text-slate-400 hidden sm:inline">Phát âm chuẩn bản xứ</span>
-        </div>
-
-        <div class="space-y-3" id="chunksContainer">
-          <!-- Render từ curriculum-data.js -->
-        </div>
+      <!-- Danh sách bài học theo cây thư mục (Accordion Lessons) -->
+      <div class="flex-grow overflow-y-auto space-y-4 pr-1 scrollbar-none" id="lessonTreeContainer">
+        <!-- Render động từ curriculum-data.js -->
       </div>
-    </section>
+    </aside>
 
-    <!-- ========================================== -->
-    <!-- TAB 2: LUYỆN TẬP & PHẢN XẠ (QUIZ TAB) -->
-    <!-- ========================================== -->
-    <section id="quizTab" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+    <!-- ================= CỘT PHẢI: KHÔNG GIAN BÀI HỌC ĐA MODULE (LEARNING HUB) ================= -->
+    <main class="flex-grow min-w-0 space-y-6">
+
+      <!-- ALERT NẾU TÀI KHOẢN CHỜ DUYỆT -->
+      <div id="pendingAlert" class="hidden p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+        <div class="flex items-start space-x-3">
+          <i data-lucide="clock" class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
           <div>
-            <h3 class="text-lg sm:text-xl font-bold text-white">Luyện Tập Phản Xạ Nhanh</h3>
-            <p class="text-xs sm:text-sm text-slate-400 mt-1">Kết quả được tự động lưu vào tài khoản cá nhân của bạn</p>
+            <h4 class="font-bold text-sm text-amber-200">Tài khoản đang chờ duyệt</h4>
+            <p class="text-xs text-amber-300/80 mt-0.5">Vui lòng chờ Admin kích hoạt để ghi nhận điểm số bài tập vào Firestore.</p>
           </div>
-          <span id="quizScoreBadge" class="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-xl border border-emerald-500/30">
-            Điểm: 0/3
-          </span>
         </div>
+      </div>
 
-        <div id="quizContainer" class="space-y-6">
-          <!-- Render quizzes -->
+      <!-- ALERT CHỐNG QUÊN (SPACED REPETITION) -->
+      <div id="spacedReviewAlert" class="hidden p-4 rounded-2xl cyber-card border-amber-500/40 text-amber-200 shadow-lg">
+        <div class="flex items-start space-x-3">
+          <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400 flex-shrink-0">
+            <i data-lucide="alarm-clock" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-white">Khởi động 3 phút chống quên</h4>
+            <p class="text-xs text-amber-300/80 mt-0.5">
+              Đã <strong id="inactiveDaysCount">2</strong> ngày bạn chưa luyện tập. Hãy làm nhanh bài trắc nghiệm dưới đây để kích hoạt nơ-ron cũ nhé!
+            </p>
+          </div>
         </div>
+      </div>
 
-        <!-- THẺ XEN KẼ KHÍCH LỆ NHẸ NHÀNG KHI HOÀN THÀNH BÀI TẬP -->
-        <div id="quizFinishBanner" class="hidden mt-6 p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div class="flex items-center space-x-3 text-xs text-slate-300">
-            <span class="text-xl">🎉</span>
-            <div>
-              <div class="font-bold text-emerald-400">Xuất sắc! Bạn đã hoàn thành phần luyện tập hôm nay.</div>
-              <p class="text-slate-400 text-[11px] mt-0.5">Tiến độ đã được lưu vào tài khoản. Hãy tiếp tục duy trì thói quen mỗi ngày nhé!</p>
+      <!-- ================= VIEW 1: BÀI HỌC HIỆN TẠI ================= -->
+      <div id="curriculumView" class="space-y-6">
+
+        <!-- Header bài học hiện tại -->
+        <div class="cyber-card card-3d p-6 rounded-2xl relative overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+            <span id="currentPhaseBadge" class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20">
+              Giai đoạn 0: Căn Chỉnh Âm Vị
+            </span>
+            <div class="flex items-center space-x-2 text-xs text-slate-400 font-mono">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              <span id="currentLessonDuration">20 phút</span>
             </div>
           </div>
-          <button onclick="openDonateModal()" class="flex-shrink-0 text-xs px-3 py-1.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-amber-300 border border-amber-500/20 transition flex items-center space-x-1.5">
-            <span>☕</span>
-            <span>Mời cà phê tác giả (Tùy tâm)</span>
+
+          <h2 id="currentLessonTitle" class="text-xl sm:text-2xl font-extrabold text-white">
+            Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Từ Sinh Tồn
+          </h2>
+          <p id="currentLessonTopic" class="text-xs sm:text-sm text-slate-400 mt-1">
+            Chủ đề: Mở khóa khẩu hình cơ miệng, làm quen âm gió, âm bật và phản xạ chào hỏi
+          </p>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center space-x-2 text-xs text-emerald-400">
+            <i data-lucide="target" class="w-4 h-4 flex-shrink-0"></i>
+            <span><strong>Ngữ cảnh áp dụng:</strong> <span id="currentLessonContext" class="text-slate-300">Gặp người nước ngoài, chào hỏi tự nhiên, cảm ơn chân thành.</span></span>
+          </div>
+        </div>
+
+        <!-- 4 TABS MODULE HỌC THUẬT RÀNH MẠCH -->
+        <div class="border-b border-slate-800 flex space-x-2 sm:space-x-4 overflow-x-auto scrollbar-none pb-2">
+          <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" class="module-tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+            <i data-lucide="mic" class="w-4 h-4"></i>
+            <span>1. Khẩu Hình & Âm Vị</span>
+          </button>
+
+          <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+            <span>2. Cụm Từ Phản Xạ (Audio Mỹ)</span>
+          </button>
+
+          <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+            <i data-lucide="help-circle" class="w-4 h-4"></i>
+            <span>3. Luyện Tập Trắc Nghiệm</span>
+          </button>
+
+          <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" class="module-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span>4. Thẻ Ghi Nhớ 3D</span>
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- ========================================== -->
-    <!-- TAB 3: SỔ FLASHCARD (VOCAB TAB) -->
-    <!-- ========================================== -->
-    <section id="vocabTab" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
-        <div class="mb-6">
-          <h3 class="text-lg sm:text-xl font-bold text-white">Sổ Từ Vựng Thông Minh (Flashcard 3D)</h3>
-          <p class="text-xs sm:text-sm text-slate-400 mt-1">Chạm vào thẻ trên điện thoại để lật xem nghĩa và bấm loa nghe phát âm</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="flashcardsContainer">
-          <!-- Render Flashcards -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- TAB 4: DUYỆT HỌC VIÊN DÀNH CHO ADMIN -->
-    <!-- ========================================== -->
-    <section id="adminTab" class="tab-content hidden space-y-6">
-      <div class="bg-slate-900 border border-amber-500/30 rounded-2xl p-5 sm:p-6">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-              <i data-lucide="shield-check" class="w-6 h-6"></i>
+        <!-- MODULE 1: KHẨU HÌNH & ÂM VỊ -->
+        <div id="moduleMouth" class="module-content block space-y-4">
+          <div class="cyber-card p-5 rounded-2xl">
+            <div class="flex items-center space-x-2 text-cyan-400 font-bold mb-4">
+              <i data-lucide="mic" class="w-5 h-5"></i>
+              <h3 class="text-base text-white">Kỹ Thuật Đặt Cơ Miệng & Hơi Thở Người Mỹ</h3>
             </div>
-            <div>
-              <h3 class="text-lg sm:text-xl font-bold text-white">Quản Trị Duyệt Học Viên (Admin)</h3>
-              <p class="text-xs text-amber-400 mt-0.5">Duyệt kích hoạt cho các học viên đăng ký qua Google</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="mouthTechniquesContainer"></div>
+          </div>
+        </div>
+
+        <!-- MODULE 2: CỤM TỪ PHẢN XẠ CHUNKS -->
+        <div id="moduleChunks" class="module-content hidden space-y-4">
+          <div class="cyber-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2 text-emerald-400 font-bold">
+                <i data-lucide="volume-2" class="w-5 h-5"></i>
+                <h3 class="text-base text-white">Khối Phản Xạ Sinh Tồn (Bấm Loa Nghe Giọng Mỹ Bản Xứ 0đ)</h3>
+              </div>
+            </div>
+            <div class="space-y-3" id="chunksContainer"></div>
+          </div>
+        </div>
+
+        <!-- MODULE 3: BÀI TẬP TRẮC NGHIỆM PHẢN XẠ -->
+        <div id="moduleQuiz" class="module-content hidden space-y-4">
+          <div class="cyber-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+              <div>
+                <h3 class="text-base font-bold text-white">Kiểm Tra Phản Xạ Ngữ Cảnh</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Điểm số sẽ tự động lưu vào hồ sơ học viên của bạn</p>
+              </div>
+              <span id="quizScoreBadge" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg font-mono">
+                Điểm: 0/3
+              </span>
+            </div>
+            <div id="quizContainer" class="space-y-4"></div>
+
+            <!-- Khích lệ khi hoàn thành -->
+            <div id="quizFinishBanner" class="hidden mt-6 p-4 rounded-xl cyber-card border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center space-x-3 text-xs text-slate-300">
+                <span class="text-2xl">🎉</span>
+                <div>
+                  <div class="font-bold text-emerald-400">Xuất sắc! Bạn đã hoàn thành bài tập buổi học này.</div>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Tiến độ đã được đồng bộ lên máy chủ đám mây.</p>
+                </div>
+              </div>
+              <button onclick="openDonateModal()" class="flex-shrink-0 text-xs px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/25 transition flex items-center space-x-1.5">
+                <span>☕</span>
+                <span>Mời cà phê tác giả (Tùy tâm)</span>
+              </button>
             </div>
           </div>
-          <button id="btnRefreshStudents" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span>Làm Mới</span>
-          </button>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="text-xs uppercase bg-slate-800/80 text-slate-400">
-              <tr>
-                <th class="px-4 py-3 rounded-l-lg">Học viên</th>
-                <th class="px-4 py-3">Email Google</th>
-                <th class="px-4 py-3">Trạng thái</th>
-                <th class="px-4 py-3 text-right rounded-r-lg">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="studentsTableBody" class="divide-y divide-slate-800">
-              <tr>
-                <td colspan="4" class="px-4 py-6 text-center text-slate-500">Đang tải danh sách học viên...</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- MODULE 4: FLASHCARDS 3D -->
+        <div id="moduleFlashcard" class="module-content hidden space-y-4">
+          <div class="cyber-card p-5 rounded-2xl">
+            <div class="mb-4">
+              <h3 class="text-base font-bold text-white">Sổ Từ Vựng Lật Thẻ Không Gian 3D</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Chạm vào thẻ để lật mặt nghĩa và nghe phát âm chuẩn</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="flashcardsContainer"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= VIEW 2: QUẢN TRỊ ADMIN (DUYỆT USER) ================= -->
+      <div id="adminView" class="hidden space-y-6">
+        <div class="cyber-card p-6 rounded-2xl border-amber-500/30">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white">Quản Trị Duyệt Học Viên (Super Admin)</h3>
+                <p class="text-xs text-amber-400 mt-0.5">Dành riêng cho: xlehoangducx@gmail.com</p>
+              </div>
+            </div>
+            <button id="btnRefreshStudents" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Làm Mới</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead class="text-xs uppercase bg-slate-800/80 text-slate-400">
+                <tr>
+                  <th class="px-4 py-3 rounded-l-lg">Học viên</th>
+                  <th class="px-4 py-3">Email Google</th>
+                  <th class="px-4 py-3">Trạng thái</th>
+                  <th class="px-4 py-3 text-right rounded-r-lg">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody" class="divide-y divide-slate-800">
+                <tr>
+                  <td colspan="4" class="px-4 py-6 text-center text-slate-500">Đang tải danh sách học viên...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </section>
 
-  </main>
+    </main>
+  </div>
 
-  <!-- ================= MODAL MỜI CÀ PHÊ (TÙY TÂM) ================= -->
+  <!-- ================= MODAL MỜI CÀ PHÊ ================= -->
   <div id="donateModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 max-w-md w-full rounded-3xl p-6 relative shadow-2xl">
+    <div class="cyber-card border-slate-700 max-w-md w-full rounded-3xl p-6 relative shadow-2xl">
       <button onclick="closeDonateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
@@ -299,21 +327,20 @@
         </p>
       </div>
 
-      <div class="bg-white p-3 rounded-2xl text-center mb-4">
-        <img id="qrImageModal" src="assets/qr-donate.jpg" 
-             alt="Mã QR Chuyển khoản" class="w-48 h-auto mx-auto rounded-xl object-contain">
-        <span class="text-[11px] text-slate-600 block mt-1.5 font-medium">Quét bằng ứng dụng ngân hàng hoặc MoMo</span>
+      <div class="bg-white p-3.5 rounded-2xl text-center mb-4">
+        <img id="qrImageModal" src="assets/qr-donate.jpg" alt="Mã QR MB Bank" class="w-48 h-auto mx-auto rounded-xl object-contain">
+        <span class="text-[11px] text-slate-600 block mt-1.5 font-medium">Quét bằng ứng dụng MB Bank hoặc mọi App ngân hàng</span>
       </div>
 
       <div class="space-y-1.5 text-xs bg-slate-950 p-3 rounded-xl border border-slate-800 mb-4">
         <div class="flex justify-between">
           <span class="text-slate-400">Ngân hàng:</span>
-          <span class="font-bold text-slate-200" id="donateBankModal">MB Bank</span>
+          <span class="font-bold text-slate-200" id="donateBankModal">MB Bank (Quân Đội)</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-slate-400">Số tài khoản:</span>
           <div class="flex items-center space-x-1.5">
-            <span class="font-mono font-bold text-cyan-400 text-sm" id="donateNumberModal">0900000000</span>
+            <span class="font-mono font-bold text-cyan-400 text-sm" id="donateNumberModal">0941958090</span>
             <button onclick="copySTKModal()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300">Copy</button>
           </div>
         </div>
