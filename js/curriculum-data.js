@@ -94,38 +94,40 @@ export const CURRICULUM_DATA = {
         slides: [
           {
             id: 1,
-            title: "Khởi Đầu: Bản Năng Kết Nối Con Người",
+            title: "Khởi Đầu: Bản Năng Tiếp Nhận Tự Nhiên",
             subtitle: "Vì sao không học bảng chữ cái A-B-C hay công thức ngữ pháp trước?",
             audioFile: "assets/audio/lecture-buoi-01-slide-1.mp3",
             icon: "sparkles",
             badge: "Góc Nhìn Khai Sáng",
             scenes: [
               {
+                badge: "👋 GIA SƯ AI KHAI MỞ",
+                title: "Lời Chào Mở Đầu & Định Hướng Buổi Học",
+                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
+                visualType: "intro-welcome",
+                insight: "Đánh thức các nhóm cơ miệng và làm chủ ngay 3 cụm từ giao tiếp sinh tồn đầu tiên mà không cần nhồi nhét ngữ pháp khô khan.",
+                callout: "✨ Chào mừng bạn đến với Buổi 01: Hành trình đánh thức phản xạ giao tiếp tự nhiên cùng Trí Tuệ Nhân Tạo!",
+                icon: "sparkles",
+                theme: "emerald"
+              },
+              {
                 badge: "🔍 THỰC TRẠNG & CĂN CỨ KHOA HỌC",
                 title: "Rào Cản Khi Bắt Đầu Bằng Ngữ Pháp Trừu Tượng",
-                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
+                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
                 visualType: "neural-blockade",
-                points: [
-                  { icon: "shield-alert", text: "Học công thức ngữ pháp trừu tượng làm tăng Bộ Lọc Lo Âu (Affective Filter - GS. Stephen Krashen)." },
-                  { icon: "zap-off", text: "Vùng hạch hạnh nhân (Amygdala) phát tín hiệu phòng vệ, gây tê liệt phản xạ nói tự nhiên." },
-                  { icon: "activity", text: "Não bộ rơi vào vòng lặp dịch nhẩm ngữ pháp từng từ thay vì phản xạ trực tiếp từ ngữ cảnh." }
-                ],
+                insight: "Học công thức khô khan kích hoạt hạch hạnh nhân (Amygdala) phát tín hiệu phòng vệ, làm tê liệt phản xạ nói tự nhiên của vùng Broca.",
                 callout: "⚠️ Bắt đầu bằng ngữ pháp khô khan sẽ kích hoạt phản ứng phòng vệ lo âu, làm rơi rụng khả năng tiếp thu tự nhiên!",
                 icon: "alert-triangle",
                 theme: "amber"
               },
               {
-                badge: "💡 BẢN NĂNG HẤP THỤ CỦA NÃO BỘ",
+                badge: "💡 BẢN NĂNG HẤP THỤ NÃO BỘ",
                 title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
-                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
+                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-2.mp3",
                 visualType: "human-connection",
-                points: [
-                  { icon: "smile", text: "Trẻ em bản xứ nghe và nói hàng nghìn câu đời thường từ cảm xúc trước khi học bất kỳ công thức nào." },
-                  { icon: "heart-handshake", text: "Ở Buổi 1, chúng ta kích hoạt lại chính bản năng nguyên thủy: Kết nối và sinh tồn xã hội." },
-                  { icon: "sparkles", text: "Chỉ cần 3 cụm từ hạt nhân là đủ để mở khóa vùng phản xạ giao tiếp Broca mà không cần suy nghĩ!" }
-                ],
-                callout: "✨ 3 Cụm sinh tồn xã hội mở khóa phản xạ kết nối đầu tiên với nụ cười đón nhận của người bản xứ!",
-                icon: "sparkles",
+                insight: "Trẻ em hấp thụ ngôn ngữ qua âm thanh và cảm xúc kết nối đời thường trước khi học bất kỳ công thức nào. Chỉ 3 cụm câu hạt nhân là đủ mở khóa phản xạ!",
+                callout: "💡 Mô phỏng 100% bản năng nguyên thủy: Tiếp thu qua cảm xúc và ngữ cảnh đời thực để nói tự nhiên không cần dịch nhẩm.",
+                icon: "heart-handshake",
                 theme: "emerald"
               }
             ]
@@ -143,13 +145,9 @@ export const CURRICULUM_DATA = {
                 title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-0.mp3",
                 visualType: "vietnamese-habit",
-                points: [
-                  { icon: "alert-circle", text: "Tiếng Việt là tiếng đơn âm, không có âm kẹp lưỡi /θ/, âm gió xì /s/ hay âm bật hơi /t/." },
-                  { icon: "mic-off", text: "Người Việt có quán tính rụt đầu lưỡi vào chân răng trong, biến Thank you thành 'Thanh-kiu'." },
-                  { icon: "volume-x", text: "Nuốt trọn toàn bộ âm đuôi khiến Nice biến thành 'Nai', Meet biến thành 'Mít' người Mỹ không hiểu." }
-                ],
-                callout: "⚠️ Quán tính rụt lưỡi vào chân răng trong sẽ biến âm /θ/ thành 'th/t' tiếng Việt bồi!",
-                icon: "alert-circle",
+                insight: "Quán tính rụt đầu lưỡi vào chân răng trong biến Thank you thành 'Thanh-kiu', và nuốt sạch âm đuôi /s/, /t/ khiến Nice thành 'Nai', Meet thành 'Mít' người Mỹ không hiểu.",
+                callout: "⚠️ Quán tính thụt đầu lưỡi vào chân răng trong là nguyên nhân số 1 biến phát âm tiếng Anh thành tiếng Việt bồi!",
+                icon: "mic-off",
                 theme: "amber"
               },
               {
@@ -157,12 +155,8 @@ export const CURRICULUM_DATA = {
                 title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-1.mp3",
                 visualType: "mouth-kinematics",
-                points: [
-                  { icon: "check-circle-2", text: "Âm /θ/: Thè nhẹ đầu lưỡi ra giữa 2 hàm răng cửa, thổi luồng gió mát trượt êm ái trên mặt lưỡi." },
-                  { icon: "check-circle-2", text: "Âm /s/: Hai hàm răng khép kín, đầu lưỡi nằm bên trong, xì hơi mạnh qua kẽ răng như lốp xe." },
-                  { icon: "check-circle-2", text: "Âm /t/: Đầu lưỡi nén hơi chạm nướu răng trên rồi bật xuống dứt khoát tiếng gõ 'tách' gọn gàng." }
-                ],
-                callout: "🎯 3 Âm vị này là bài tập vật lý trị liệu cho cơ miệng, đánh thức các nhóm cơ lưỡi chưa từng dùng!",
+                insight: "Kỹ thuật chuẩn: Âm /θ/ kẹp nhẹ đầu lưỡi thổi gió mát; Âm /s/ khép 2 hàm răng xì hơi lốp xe; Âm /t/ nén hơi nướu trên rồi bật tách dứt khoát.",
+                callout: "🎯 3 Âm vị này là bài tập vật lý trị liệu cho cơ miệng, đánh thức các nhóm cơ lưỡi chưa từng dùng trong tiếng Việt!",
                 icon: "mic",
                 theme: "cyan"
               }
@@ -181,28 +175,20 @@ export const CURRICULUM_DATA = {
                 title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Ngữ Pháp",
                 audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-0.mp3",
                 visualType: "pareto-chart",
-                points: [
-                  { icon: "bar-chart-2", text: "Theo ngữ liệu COCA (Corpus of Contemporary American English), /s/ và /t/ là 2 âm cốt lõi nhất." },
-                  { icon: "layers", text: "Bao phủ từ danh từ số nhiều (-s/es), ngôi thứ 3 số ít (-s), thì quá khứ (-ed) đến sở hữu cách ('s)." },
-                  { icon: "target", text: "Chỉ cần làm chủ 2 âm này ở Buổi 1 là bạn đã giải quyết dứt điểm 65% nền tảng phát âm ngữ pháp sau này." }
-                ],
-                callout: "📊 Hơn 65% danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi 3 đều kết thúc bằng /s/ hoặc /t/!",
+                insight: "Theo ngữ liệu COCA 1 tỷ từ, /s/ và /t/ xuất hiện ở hầu hết cấu trúc cốt lõi: số nhiều (-s/es), ngôi 3 (-s), quá khứ (-ed) và sở hữu cách ('s).",
+                callout: "📊 Làm chủ âm /s/ và /t/ ngay buổi đầu tiên là bạn đã giải quyết dứt điểm hơn 65% nền tảng ngữ pháp thực chiến!",
                 icon: "pie-chart",
-                theme: "amber"
+                theme: "emerald"
               },
               {
                 badge: "🏛️ MÓNG TRỤ KIÊN CỐ",
                 title: "Xây Móng Vững Chắc Trước Khi Dựng Nhà",
                 audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-1.mp3",
                 visualType: "foundation-pillar",
-                points: [
-                  { icon: "shield-check", text: "Không vội nhồi hàng nghìn từ vựng rời rạc khi cơ miệng chưa phát âm chuẩn xác 2 âm trụ cột này." },
-                  { icon: "zap", text: "Khi đã bật được /s/ và /t/ theo quán tính, bạn sẽ tự động nói đúng ngữ pháp thì quá khứ và số nhiều." },
-                  { icon: "award", text: "Đây là tư duy đào tạo tinh gọn của GS. Paul Nation: Tối ưu 20% cốt lõi tạo ra 80% kết quả." }
-                ],
-                callout: "🏛️ Làm chủ /s/ và /t/ ngay buổi đầu tiên là đặt 2 móng trụ kiên cố nhất cho toàn bộ chặng đường!",
+                insight: "Tối ưu 20% kỹ thuật cơ miệng cốt lõi sẽ tự động tạo ra 80% kết quả phản xạ ngữ pháp thì quá khứ và số nhiều mà không tốn công ghi nhớ.",
+                callout: "🏛️ GS. Paul Nation chứng minh: Đặt móng phát âm chuẩn xác ngay từ đầu giúp tiết kiệm 80% thời gian học sau này!",
                 icon: "layers",
-                theme: "emerald"
+                theme: "cyan"
               }
             ]
           },
@@ -219,12 +205,8 @@ export const CURRICULUM_DATA = {
                 title: "Hi, nice to meet you! → Thank you so much! → Have a great day!",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-0.mp3",
                 visualType: "social-trinity",
-                points: [
-                  { icon: "message-circle", text: "'Hi, nice to meet you!': Câu chào làm quen nụ cười, xóa tan rào cản xa lạ ban đầu." },
-                  { icon: "heart", text: "'Thank you so much!': Lời triân sâu sắc khi được người khác giúp đỡ nhấc hành lý, giữ thang máy." },
-                  { icon: "sun", text: "'Have a great day!': Lời chúc lành tích cực để lại ấn tượng ấm áp và lịch thiệp khi chia tay." }
-                ],
-                callout: "🤝 Bộ 3 câu sinh tồn xã hội giúp bạn tự tin hòa nhập và nhận được sự hỗ trợ ở bất kỳ đâu trên thế giới!",
+                insight: "Bộ ba câu sống còn xóa tan rào cản: Chào hỏi thân thiện nụ cười → Cảm ơn sâu sắc khi nhận trợ giúp → Lời chúc tốt lành để lại thiện cảm.",
+                callout: "🤝 Bộ 3 câu sinh tồn xã hội giúp bạn tự tin hòa nhập và nhận được sự hỗ trợ ở bất kỳ sân bay hay đường phố nào trên thế giới!",
                 icon: "heart",
                 theme: "emerald"
               },
@@ -233,12 +215,8 @@ export const CURRICULUM_DATA = {
                 title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-1.mp3",
                 visualType: "dopamine-spark",
-                points: [
-                  { icon: "smile", text: "Dù ở sân bay JFK hay ngoài phố: Nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn." },
-                  { icon: "sparkles", text: "Nụ cười đón nhận của đối phương kích hoạt hormone Dopamine trong não bộ, xóa bỏ nỗi sợ nói." },
-                  { icon: "check-circle-2", text: "Học xong Buổi 1 là bạn có thể dùng ngay ngoài đời thực với người nước ngoài mà không cần đợi 1 năm!" }
-                ],
-                callout: "⚡ Phản hồi ấm áp từ người bản xứ sẽ đánh tan vĩnh viễn rào cản sợ giao tiếp tiếng Anh!",
+                insight: "Chỉ cần phát âm đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn. Nụ cười đối phương kích hoạt Dopamine xóa tan 100% nỗi sợ nói tiếng Anh!",
+                callout: "⚡ Phản hồi ấm áp từ người bản xứ là liều thuốc tâm lý mạnh mẽ nhất giúp bạn tự tin nói tiếng Anh suốt đời!",
                 icon: "smile",
                 theme: "purple"
               }
@@ -257,12 +235,8 @@ export const CURRICULUM_DATA = {
                 title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-0.mp3",
                 visualType: "multimodal-flow",
-                points: [
-                  { icon: "camera", text: "Bước 1: Soi gương khẩu hình và nghe mẫu âm vị /θ/, /s/, /t/ chuẩn giọng bản xứ." },
-                  { icon: "mic", text: "Bước 2 & 5: Luyện nói 3 cụm câu vào micro cùng AI chấm điểm nhận diện giọng nói tức thì." },
-                  { icon: "edit-3", text: "Bước 3, 4 & 6: Chạm trắc nghiệm âm thanh, lật thẻ 3D không gian và ghép khối từ xáo trộn." }
-                ],
-                callout: "🔄 6 Giác quan đồng bộ kích hoạt đồng thời vùng vận động miệng, thính giác, thị giác và tái tạo chữ viết!",
+                insight: "Kích hoạt đồng thời 6 vùng thần kinh: Vận động miệng, thính giác, thị giác, phản hồi âm thanh tức thì, không gian 3D và tái tạo chữ viết.",
+                callout: "🔄 6 Giác quan đồng bộ giúp khắc phục triệt để thói quen học thụ động một chiều chỉ ngồi nhìn chữ!",
                 icon: "cpu",
                 theme: "blue"
               },
@@ -271,12 +245,8 @@ export const CURRICULUM_DATA = {
                 title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-1.mp3",
                 visualType: "synaptic-consolidation",
-                points: [
-                  { icon: "clock", text: "Não bộ cần 7 lần truy xuất ngắt quãng đa giác quan để chuyển 1 cụm từ sang vỏ não dài hạn." },
-                  { icon: "zap", text: "Đạt 7/7 lần lặp là chạm mốc cố định khớp thần kinh vĩnh viễn (Long-term Potentiation)." },
-                  { icon: "check-circle-2", text: "Tuyệt đối không học dồn dập 50 lần liên tục vì gây bão hòa nơ-ron và rơi rụng 85% sau 24h." }
-                ],
-                callout: "🧠 Đạt đủ 7/7 lần lặp đa giác quan để cố định kiến thức vào vỏ não dài hạn vĩnh viễn!",
+                insight: "Não bộ cần 7 lần truy xuất ngắt quãng đa giác quan để chuyển cụm từ sang vỏ não dài hạn (LTP), cố định phản xạ tự nhiên mà không bao giờ quên.",
+                callout: "🧠 Đạt đủ 7/7 lần lặp ngắt quãng đa giác quan để cố định kiến thức vào vỏ não dài hạn vĩnh viễn!",
                 icon: "zap",
                 theme: "emerald"
               }

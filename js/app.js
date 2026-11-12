@@ -830,10 +830,60 @@ function formatTime(sec) {
 // ==============================================================
 // 5.4. VISUAL MOTION GRAPHICS GENERATOR CHO TỪNG CẢNH THUYẾT GIẢNG
 // ==============================================================
+let currentLecturePlaybackSpeed = parseFloat(localStorage.getItem('lecturePlaybackSpeed')) || 1.0;
+
+window.setLecturePlaybackSpeed = function(speed) {
+  currentLecturePlaybackSpeed = speed;
+  localStorage.setItem('lecturePlaybackSpeed', speed);
+  if (currentAudioTrack) {
+    try {
+      currentAudioTrack.playbackRate = speed;
+    } catch(e) {}
+  }
+  updateSpeedButtonsUI();
+};
+
+function updateSpeedButtonsUI() {
+  const speeds = [0.75, 1.0, 1.25, 1.5];
+  speeds.forEach(s => {
+    const btn = document.getElementById(`speedBtn-${s.toString().replace('.', '')}`);
+    if (btn) {
+      if (Math.abs(s - currentLecturePlaybackSpeed) < 0.05) {
+        btn.className = "px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 transition cursor-pointer";
+      } else {
+        btn.className = "px-2 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer";
+      }
+    }
+  });
+}
+
 function getSceneVisualGraphicHTML(visualType, theme) {
+  if (visualType === 'intro-welcome') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-emerald-500/40 flex items-center justify-between gap-3 shadow-inner">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+            <span class="absolute inset-0 rounded-2xl bg-emerald-400/20 visual-pulse-ring"></span>
+            <i data-lucide="sparkles" class="w-5 h-5 relative z-10"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-emerald-300 block flex items-center space-x-1.5">
+              <span>Gia Sư Trí Tuệ Nhân Tạo (OmniLang AI)</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Live</span>
+            </span>
+            <span class="text-[11px] text-slate-300">Khởi đầu lộ trình 600h chuẩn Cambridge CEFR • Đánh thức phản xạ tự nhiên</span>
+          </div>
+        </div>
+        <div class="hidden sm:flex items-center space-x-1 text-emerald-400 text-xs font-mono bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/30">
+          <span>0đ Cộng Đồng</span>
+        </div>
+      </div>
+    `;
+  }
+
   if (visualType === 'neural-blockade') {
     return `
-      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 flex items-center justify-between gap-3 shadow-inner">
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/30 flex items-center justify-between gap-3 shadow-inner">
         <div class="flex items-center space-x-3">
           <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
             <span class="absolute inset-0 rounded-xl bg-amber-400/20 visual-pulse-ring"></span>
@@ -841,10 +891,10 @@ function getSceneVisualGraphicHTML(visualType, theme) {
           </div>
           <div>
             <span class="text-xs font-bold text-amber-300 block">Hiện Tượng Quá Tải Nhận Thức (Sweller 1988)</span>
-            <span class="text-[11px] text-slate-400">Ngữ pháp trừu tượng kích hoạt hạch hạnh nhân, đóng sập vùng Broca</span>
+            <span class="text-[11px] text-slate-300">Ngữ pháp trừu tượng kích hoạt hạch hạnh nhân, đóng sập cổng phản xạ Broca</span>
           </div>
         </div>
-        <div class="hidden sm:flex items-center space-x-1 text-amber-400/60 text-xs font-mono">
+        <div class="hidden sm:flex items-center space-x-1 text-amber-400/70 text-xs font-mono">
           <span>Khóa Phản Xạ</span>
           <i data-lucide="lock" class="w-3.5 h-3.5"></i>
         </div>
@@ -854,7 +904,7 @@ function getSceneVisualGraphicHTML(visualType, theme) {
 
   if (visualType === 'human-connection') {
     return `
-      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex items-center justify-between gap-3 shadow-inner">
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-emerald-500/30 flex items-center justify-between gap-3 shadow-inner">
         <div class="flex items-center space-x-3">
           <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
             <span class="absolute inset-0 rounded-xl bg-emerald-400/20 visual-pulse-ring"></span>
@@ -862,11 +912,11 @@ function getSceneVisualGraphicHTML(visualType, theme) {
           </div>
           <div>
             <span class="text-xs font-bold text-emerald-300 block">Bản Năng Sinh Tồn Xã Hội (Stephen Krashen)</span>
-            <span class="text-[11px] text-slate-400">Kết nối cảm xúc mở rộng tối đa vùng tiếp nhận ngôn ngữ tự nhiên</span>
+            <span class="text-[11px] text-slate-300">Trẻ em học nói qua cảm xúc và ngữ cảnh đời thực trước khi học công thức</span>
           </div>
         </div>
         <div class="hidden sm:flex items-center space-x-1 text-emerald-400/80 text-xs font-mono">
-          <span>Kích Hoạt Dopamine</span>
+          <span>Hấp Thụ Tự Nhiên</span>
           <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
         </div>
       </div>
@@ -875,18 +925,48 @@ function getSceneVisualGraphicHTML(visualType, theme) {
 
   if (visualType === 'vietnamese-habit') {
     return `
-      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 flex items-center justify-between gap-3 shadow-inner">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            <i data-lucide="mic-off" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <span class="text-xs font-bold text-amber-300 block">Quán Tính Phát Âm Đơn Âm Tiếng Việt</span>
-            <span class="text-[11px] text-slate-400">Tật thụt lưỡi vào chân răng trong & nuốt sạch âm đuôi /s/, /t/</span>
-          </div>
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/40 space-y-2.5 shadow-inner">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-amber-300 flex items-center space-x-1.5">
+            <i data-lucide="split" class="w-4 h-4 text-amber-400"></i>
+            <span>So Sánh Trực Quan: Chuẩn Bản Xứ Mỹ vs Nói Bồi Tiếng Việt</span>
+          </span>
+          <span class="text-[10px] font-mono text-amber-400/80">3 Tật Cố Hữu</span>
         </div>
-        <div class="hidden sm:block text-[11px] font-mono text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-500/30">
-          Nice → "Nai" ❌
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-mono uppercase text-emerald-400 font-bold">Chuẩn Mỹ 🇺🇸</span>
+              <span class="text-[10px] text-slate-400">Kẹp kẽ răng</span>
+            </div>
+            <span class="text-xs font-black text-emerald-300 font-mono">Thank you /θ/</span>
+            <div class="mt-1.5 pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
+              <span class="text-[10px] text-rose-400 font-mono line-through">"Thanh-kiu" ❌</span>
+              <span class="text-[9px] text-slate-500">Rụt lưỡi</span>
+            </div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-mono uppercase text-emerald-400 font-bold">Chuẩn Mỹ 🇺🇸</span>
+              <span class="text-[10px] text-slate-400">Xì kẽ răng</span>
+            </div>
+            <span class="text-xs font-black text-emerald-300 font-mono">Nice /s/</span>
+            <div class="mt-1.5 pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
+              <span class="text-[10px] text-rose-400 font-mono line-through">"Nai" ❌</span>
+              <span class="text-[9px] text-slate-500">Nuốt gió</span>
+            </div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-mono uppercase text-emerald-400 font-bold">Chuẩn Mỹ 🇺🇸</span>
+              <span class="text-[10px] text-slate-400">Bật nướu trên</span>
+            </div>
+            <span class="text-xs font-black text-emerald-300 font-mono">Meet /t/</span>
+            <div class="mt-1.5 pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
+              <span class="text-[10px] text-rose-400 font-mono line-through">"Mít" ❌</span>
+              <span class="text-[9px] text-slate-500">Mất bật</span>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -894,18 +974,21 @@ function getSceneVisualGraphicHTML(visualType, theme) {
 
   if (visualType === 'mouth-kinematics') {
     return `
-      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/60 border border-cyan-500/30 grid grid-cols-3 gap-2 text-center shadow-inner">
-        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/80 border border-cyan-500/30 grid grid-cols-3 gap-2 text-center shadow-inner">
+        <div class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
           <span class="text-xs font-black text-cyan-300 block font-mono">/θ/ (Theta)</span>
-          <span class="text-[10px] text-slate-400">Kẹp nhẹ đầu lưỡi</span>
+          <span class="text-[10px] text-slate-300 block mt-0.5">Kẹp nhẹ đầu lưỡi</span>
+          <span class="text-[9px] text-cyan-400/80 font-mono">Gió mát mặt lưỡi</span>
         </div>
-        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+        <div class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
           <span class="text-xs font-black text-cyan-300 block font-mono">/s/ (Xì gió)</span>
-          <span class="text-[10px] text-slate-400">Răng khép trong</span>
+          <span class="text-[10px] text-slate-300 block mt-0.5">Răng khép trong</span>
+          <span class="text-[9px] text-cyan-400/80 font-mono">Xì hơi lốp xe</span>
         </div>
-        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+        <div class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
           <span class="text-xs font-black text-cyan-300 block font-mono">/t/ (Bật nướu)</span>
-          <span class="text-[10px] text-slate-400">Gõ tách dứt khoát</span>
+          <span class="text-[10px] text-slate-300 block mt-0.5">Nén hơi nướu trên</span>
+          <span class="text-[9px] text-cyan-400/80 font-mono">Gõ tách dứt khoát</span>
         </div>
       </div>
     `;
@@ -913,7 +996,7 @@ function getSceneVisualGraphicHTML(visualType, theme) {
 
   if (visualType === 'pareto-chart') {
     return `
-      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-2 shadow-inner">
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/30 space-y-2 shadow-inner">
         <div class="flex items-center justify-between text-xs">
           <span class="font-bold text-amber-300 flex items-center space-x-1.5">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-400"></i>
@@ -932,28 +1015,95 @@ function getSceneVisualGraphicHTML(visualType, theme) {
     `;
   }
 
-  if (visualType === 'social-trinity') {
+  if (visualType === 'foundation-pillar') {
     return `
-      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex flex-wrap items-center justify-around gap-2 text-center shadow-inner">
-        <div class="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30">
-          <span class="text-[10px] text-emerald-400 block font-bold">1. Chào Hỏi</span>
-          <span class="text-xs font-bold text-white">Hi, nice to meet you!</span>
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/80 border border-cyan-500/30 grid grid-cols-2 gap-2 text-center shadow-inner">
+        <div class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+          <span class="text-[10px] text-cyan-400 font-bold block uppercase">20% Nền Móng Cơ Miệng</span>
+          <span class="text-xs font-black text-white">/s/ & /t/ Cốt Lõi</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">Xây dựng quán tính phát âm</span>
         </div>
-        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <div class="px-3 py-1.5 rounded-lg bg-teal-950/50 border border-teal-500/30">
-          <span class="text-[10px] text-teal-400 block font-bold">2. Biết Ơn</span>
-          <span class="text-xs font-bold text-white">Thank you so much!</span>
-        </div>
-        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-teal-400"></i>
-        <div class="px-3 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30">
-          <span class="text-[10px] text-cyan-400 block font-bold">3. Chúc Lành</span>
-          <span class="text-xs font-bold text-white">Have a great day!</span>
+        <div class="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/20">
+          <span class="text-[10px] text-emerald-400 font-bold block uppercase">80% Kết Quả Ngữ Pháp</span>
+          <span class="text-xs font-black text-white">Phản Xạ Tự Nhiên</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">Tự động nói đúng số nhiều & quá khứ</span>
         </div>
       </div>
     `;
   }
 
-  // Mặc định trả về rỗng nếu không có visualType đặc biệt
+  if (visualType === 'social-trinity') {
+    return `
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30 flex flex-wrap items-center justify-around gap-2 text-center shadow-inner">
+        <div class="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30">
+          <span class="text-[10px] text-emerald-400 block font-bold">1. Chào Hỏi</span>
+          <span class="text-xs font-bold text-white font-mono">Hi, nice to meet you!</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <div class="px-3 py-1.5 rounded-lg bg-teal-950/50 border border-teal-500/30">
+          <span class="text-[10px] text-teal-400 block font-bold">2. Biết Ơn</span>
+          <span class="text-xs font-bold text-white font-mono">Thank you so much!</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-teal-400"></i>
+        <div class="px-3 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30">
+          <span class="text-[10px] text-cyan-400 block font-bold">3. Chúc Lành</span>
+          <span class="text-xs font-bold text-white font-mono">Have a great day!</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'dopamine-spark') {
+    return `
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/80 border border-purple-500/30 flex items-center justify-around gap-2 text-center shadow-inner">
+        <div class="px-2.5 py-1.5 rounded-lg bg-purple-950/50 border border-purple-500/30">
+          <span class="text-[10px] text-purple-300 block font-bold">1. Nói Chuẩn 3 Câu</span>
+          <span class="text-xs font-bold text-white">Hi • Thanks • Bye</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-purple-400"></i>
+        <div class="px-2.5 py-1.5 rounded-lg bg-pink-950/50 border border-pink-500/30">
+          <span class="text-[10px] text-pink-300 block font-bold">2. Nụ Cười Bản Xứ</span>
+          <span class="text-xs font-bold text-white">Đón Nhận Ấm Áp</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-pink-400"></i>
+        <div class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30">
+          <span class="text-[10px] text-emerald-300 block font-bold">3. Tiết Dopamine</span>
+          <span class="text-xs font-bold text-white">Xóa 100% Nỗi Sợ</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'multimodal-flow') {
+    return `
+      <div class="motion-beat-visual my-3 p-2.5 rounded-xl bg-slate-900/80 border border-blue-500/30 grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-center shadow-inner">
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">1. Soi Gương</div>
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">2. Nghe Mẫu</div>
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">3. Nói AI</div>
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">4. Trắc Nghiệm</div>
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">5. Thẻ 3D</div>
+        <div class="p-1.5 rounded bg-blue-950/40 border border-blue-500/20 text-[10px] font-bold text-blue-300">6. Ghép Câu</div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'synaptic-consolidation') {
+    return `
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30 grid grid-cols-2 gap-2 text-center shadow-inner">
+        <div class="p-2 rounded-lg bg-rose-950/30 border border-rose-500/20">
+          <span class="text-[10px] text-rose-400 block font-bold">Học Dồn 1 Lần</span>
+          <span class="text-xs font-bold text-slate-300">Hippocampus Quá Tải</span>
+          <span class="text-[10px] text-rose-400/80 block mt-0.5">Rơi rụng 85% sau 24h</span>
+        </div>
+        <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30">
+          <span class="text-[10px] text-emerald-400 block font-bold">7 Lần Lặp Ngắt Quãng</span>
+          <span class="text-xs font-bold text-white">Vỏ Não Dài Hạn (LTP)</span>
+          <span class="text-[10px] text-emerald-400/90 block mt-0.5">Khắc sâu phản xạ vĩnh viễn</span>
+        </div>
+      </div>
+    `;
+  }
+
   return "";
 }
 
@@ -974,7 +1124,6 @@ function renderSceneCardHTML(sc, sIdx, totalScenes) {
 
   const calloutBorder = isEmerald ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-200' :
                         isCyan ? 'border-cyan-500/40 bg-cyan-950/40 text-cyan-200' :
-                        isIndigo ? 'border-indigo-500/40 bg-indigo-950/40 text-indigo-200' :
                         isPurple ? 'border-purple-500/40 bg-purple-950/40 text-purple-200' :
                         isBlue ? 'border-blue-500/40 bg-blue-950/40 text-blue-200' :
                         'border-amber-500/40 bg-amber-950/40 text-amber-200';
@@ -984,26 +1133,41 @@ function renderSceneCardHTML(sc, sIdx, totalScenes) {
   return `
     <div class="scene-active-card p-4 sm:p-6 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl transition-all duration-300">
       
-      <!-- 1. MỐC BADGE CHỦ ĐỀ (VÀO CHẬM, MƯỢT MÀ) -->
-      <div class="mb-3 motion-beat-badge">
+      <!-- Top Bar: Badge & Scene Step Progress Indicator -->
+      <div class="mb-3 flex items-center justify-between gap-2">
         <span class="inline-flex items-center px-3 py-1 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border ${badgeClass}">
           ${sc.badge}
         </span>
+        <div class="flex items-center space-x-1.5 text-[11px] font-mono text-slate-400">
+          <span>Ý ${sIdx + 1}/${totalScenes}</span>
+          <div class="flex items-center space-x-1">
+            ${Array.from({ length: totalScenes }).map((_, idx) => `
+              <span class="w-2 h-2 rounded-full ${idx === sIdx ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-slate-800'}"></span>
+            `).join("")}
+          </div>
+        </div>
       </div>
 
-      <!-- 2. MỐC TIÊU ĐỀ HẠT NHÂN -->
-      <h3 class="motion-beat-title text-base sm:text-xl md:text-2xl font-black text-white mb-2 leading-snug">
+      <!-- Main Focus Title -->
+      <h3 class="text-base sm:text-xl md:text-2xl font-black text-white mb-2 leading-snug">
         ${sc.title}
       </h3>
 
-      <!-- 3. HOẠT ẢNH MINH HỌA TRỰC QUAN SINH ĐỘNG (NẾU CÓ) -->
+      <!-- Dedicated Visual Widget -->
       ${visualHTML}
 
-      <!-- 4. DANH SÁCH TỪNG DÒNG TRI THỨC VI MÔ (MICRO-POINTS) -->
-      ${sc.points && sc.points.length > 0 ? `
+      <!-- Focused Single Insight Box -->
+      ${sc.insight ? `
+        <div class="motion-beat-point-0 p-3.5 sm:p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 flex items-start space-x-3 my-3 shadow-md">
+          <div class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 flex-shrink-0">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">${sc.insight}</p>
+        </div>
+      ` : sc.points && sc.points.length > 0 ? `
         <div class="space-y-2 mb-3.5">
           ${sc.points.map((pt, pIdx) => `
-            <div class="motion-beat-point-${Math.min(pIdx, 2)} p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 flex items-start space-x-2.5 transition">
+            <div class="motion-beat-point-${Math.min(pIdx, 2)} p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 flex items-start space-x-2.5">
               <div class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 flex-shrink-0">
                 <i data-lucide="${pt.icon || 'check'}" class="w-3.5 h-3.5"></i>
               </div>
@@ -1012,14 +1176,14 @@ function renderSceneCardHTML(sc, sIdx, totalScenes) {
           `).join("")}
         </div>
       ` : `
-        <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4 font-normal motion-beat-title">
-          ${sc.content}
+        <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4 font-normal">
+          ${sc.content || ''}
         </p>
       `}
 
-      <!-- 5. HỘP ĐÚC KẾT NƠ-RON PHÁT SÁNG -->
+      <!-- Callout Box -->
       ${sc.callout ? `
-        <div class="motion-beat-callout p-3.5 rounded-xl border ${calloutBorder} flex items-start space-x-3 shadow-inner">
+        <div class="motion-beat-callout p-3.5 rounded-xl border ${calloutBorder} flex items-start space-x-3 shadow-inner mt-2">
           <i data-lucide="${sc.icon || 'sparkles'}" class="w-4 h-4 flex-shrink-0 mt-0.5 text-current"></i>
           <div class="text-xs sm:text-sm font-medium leading-relaxed">
             ${sc.callout}
@@ -1041,32 +1205,22 @@ window.switchScene = function(sIdx, isAuto) {
   if (!container) return;
 
   if (window.gsap) {
-    // GSAP BUTTERY SMOOTH CROSS-DISSOLVE (TUYỆT ĐỐI KHÔNG CHỚP ĐEN, CHẬM VÀ ÊM ÁI)
+    // GSAP BUTTERY SMOOTH CROSS-DISSOLVE (CHẬM, ÊM ÁI, KHÔNG CHỚP ĐEN)
     gsap.killTweensOf(container);
     gsap.to(container, {
-      opacity: 0.35, // Giữ 35% hiển thị, KHÔNG BAO GIỜ để opacity: 0 gây chớp đen
+      opacity: 0.35,
       x: -12,
       scale: 0.995,
-      duration: 0.32,
+      duration: 0.35,
       ease: "power2.inOut",
       onComplete: () => {
         container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
         if (window.lucide) window.lucide.createIcons();
 
-        // Lướt vào êm ái
         gsap.fromTo(container,
           { opacity: 0.35, x: 14, scale: 0.995 },
           { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: "power2.out" }
         );
-
-        // Stagger các dòng điểm con nhịp nhàng
-        const points = container.querySelectorAll("[class*='motion-beat-point-']");
-        if (points.length > 0) {
-          gsap.fromTo(points,
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.4, stagger: 0.12, ease: "power2.out" }
-          );
-        }
 
         if (isAuto) {
           const card = document.getElementById("activeSlideCard");
@@ -1075,7 +1229,6 @@ window.switchScene = function(sIdx, isAuto) {
       }
     });
   } else {
-    // Fallback mượt mà không GSAP
     container.style.transition = "opacity 0.25s ease, transform 0.25s ease";
     container.style.opacity = "0.4";
     setTimeout(() => {
@@ -1089,12 +1242,10 @@ window.switchScene = function(sIdx, isAuto) {
     }, 250);
   }
 
-  // Nếu học viên bấm đổi cảnh thủ công khi đang phát, lập tức phát âm thanh cảnh đó
+  // Nếu người dùng bấm đổi cảnh thủ công khi đang phát audio, chuyển luôn audio sang cảnh đó
   if (!isAuto && isSlideAudioPlaying) {
     window.stopAllAudios();
-    if (typeof playSceneAudio === "function") {
-      playSceneAudio(sIdx);
-    }
+    playSceneAudio(sIdx);
   }
 };
 
@@ -1149,21 +1300,16 @@ function renderMasterLecture(lesson) {
 
       <!-- CINEMATIC VIDEO CANVAS (Full-Width, Centered, Zero Stutter) -->
       <div class="relative z-10 mb-4 p-4 sm:p-6 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl transition-all duration-300" id="activeSlideCard">
-        
-
-
-        
-
         <!-- ACTIVE SCENE CONTAINER (FULL WIDTH, PROMINENT TYPOGRAPHY, HARDWARE ACCELERATED ANIMATION) -->
         <div id="activeSceneContentContainer" class="video-scene-transition">
           ${renderSceneCardHTML(currentScene, currentSlideSceneIndex, scenes.length)}
         </div>
       </div>
 
-      <!-- Slide Audio Player & Auto-Advance Control -->
-      <div class="relative z-10 mb-4 p-3 sm:p-4 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center space-x-3 w-full sm:w-auto">
-          <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
+      <!-- Slide Audio Player & Speed Controller & Auto-Advance Control -->
+      <div class="relative z-10 mb-4 p-3 sm:p-4 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
             <i data-lucide="${isSlideAudioPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
             <span>${isSlideAudioPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
           </button>
@@ -1173,6 +1319,15 @@ function renderMasterLecture(lesson) {
             <span class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse" style="animation-delay: 150ms"></span>
             <span class="w-1.5 h-3 bg-teal-400 rounded-full animate-pulse" style="animation-delay: 300ms"></span>
             <span class="w-1.5 h-5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 450ms"></span>
+          </div>
+
+          <!-- Bộ điều chỉnh tốc độ đọc (0.75x, 1.0x, 1.25x, 1.5x) -->
+          <div class="flex items-center space-x-1 p-1 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono ml-0 sm:ml-2">
+            <span class="text-[10px] text-slate-400 px-1.5 hidden sm:inline">Tốc độ:</span>
+            <button onclick="setLecturePlaybackSpeed(0.75)" id="speedBtn-075" class="px-2 py-1 rounded-lg ${Math.abs(currentLecturePlaybackSpeed - 0.75) < 0.05 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30' : 'text-slate-400 hover:text-white'} transition cursor-pointer">0.75x</button>
+            <button onclick="setLecturePlaybackSpeed(1.0)" id="speedBtn-100" class="px-2 py-1 rounded-lg ${Math.abs(currentLecturePlaybackSpeed - 1.0) < 0.05 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30' : 'text-slate-400 hover:text-white'} transition cursor-pointer">1.0x</button>
+            <button onclick="setLecturePlaybackSpeed(1.25)" id="speedBtn-125" class="px-2 py-1 rounded-lg ${Math.abs(currentLecturePlaybackSpeed - 1.25) < 0.05 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30' : 'text-slate-400 hover:text-white'} transition cursor-pointer">1.25x</button>
+            <button onclick="setLecturePlaybackSpeed(1.5)" id="speedBtn-150" class="px-2 py-1 rounded-lg ${Math.abs(currentLecturePlaybackSpeed - 1.5) < 0.05 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30' : 'text-slate-400 hover:text-white'} transition cursor-pointer">1.5x</button>
           </div>
         </div>
 
@@ -1212,7 +1367,7 @@ function renderMasterLecture(lesson) {
 function updateLectureControls(isPlaying) {
   const btn = document.getElementById("btnPlaySlideAudio");
   if (btn) {
-    btn.className = `w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
+    btn.className = `px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
     btn.innerHTML = `
       <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
       <span>${isPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
@@ -1233,13 +1388,13 @@ function playSceneAudio(sIdx) {
   isSlideAudioPlaying = true;
   updateLectureControls(true);
 
-  window.playTrack(audioFile, () => {
-    // Khi audio của cảnh này phát xong
+  const audioTrack = window.playTrack(audioFile, () => {
+    // Khi audio của phân cảnh này phát xong
     if (!isSlideAudioPlaying) return;
 
     if (sIdx < slide.scenes.length - 1) {
-      // Vẫn còn cảnh tiếp theo trong slide này:
-      // Nghỉ 650ms nhịp nhàng, chuyển cảnh êm ái, sau đó phát audio cảnh kế
+      // Vẫn còn phân cảnh tiếp theo trong cùng slide:
+      // Nghỉ 650ms nhịp nhàng, chuyển cảnh êm ái, sau đó phát audio phân cảnh kế tiếp
       setTimeout(() => {
         if (!isSlideAudioPlaying) return;
         window.switchScene(sIdx + 1, true);
@@ -1249,7 +1404,7 @@ function playSceneAudio(sIdx) {
         }, 500);
       }, 650);
     } else {
-      // Đã hết các cảnh của slide này
+      // Đã hết các phân cảnh của slide này:
       if (isSlideAutoAdvance) {
         if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
           setTimeout(() => {
@@ -1279,6 +1434,12 @@ function playSceneAudio(sIdx) {
     isSlideAudioPlaying = false;
     updateLectureControls(false);
   });
+
+  if (audioTrack) {
+    try {
+      audioTrack.playbackRate = currentLecturePlaybackSpeed;
+    } catch(e) {}
+  }
 }
 
 window.goToSlide = function(idx) {
@@ -1338,7 +1499,6 @@ window.finishMasterLectureAndUnlockStep1 = function() {
   window.scrollTo({ top: 120, behavior: 'smooth' });
 };
 
-// ==============================================================
 // 6. MODULE 1: KHẨU HÌNH, ÂM VỊ & ĐỒNG BỘ 100% TỪ LUYỆN NÓI
 // Đã khắc phục triệt để lỗi bấm "Nghe lại" bị phát sai từ
 // ==============================================================
