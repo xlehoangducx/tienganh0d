@@ -236,83 +236,23 @@
   },
   "lecture-buoi-01-slide-3-scene-0.mp3": {
     "file": "assets/audio/lecture-buoi-01-slide-3-scene-0.mp3",
-    "duration": 21.758,
+    "duration": 2.05,
     "captions": [
       {
-        "start": 0.368,
-        "end": 1.887,
+        "start": 0.2,
+        "end": 1.95,
         "text": "Theo kho ngữ liệu tiếng Anh Mỹ,"
-      },
-      {
-        "start": 1.887,
-        "end": 5.562,
-        "text": "âm gió và âm bật xuất hiện trong hơn sáu mươi lăm phần trăm cấu trúc thường"
-      },
-      {
-        "start": 5.562,
-        "end": 5.758,
-        "text": "gặp."
-      },
-      {
-        "start": 6.053,
-        "end": 10.259,
-        "text": "Danh từ số nhiều thêm s, động từ ngôi thứ ba thêm s, thì quá khứ thêm ed,"
-      },
-      {
-        "start": 10.259,
-        "end": 11.526,
-        "text": "và sở hữu cách thêm s."
-      },
-      {
-        "start": 11.821,
-        "end": 13.515,
-        "text": "Nghĩa là chỉ cần làm chủ hai âm này,"
-      },
-      {
-        "start": 13.515,
-        "end": 16.621,
-        "text": "bạn đã xử lý phần lớn những đuôi từ khiến người Việt hay nuốt mất."
-      },
-      {
-        "start": 16.916,
-        "end": 19.56,
-        "text": "Đây là lý do buổi đầu tiên tập trung vào cơ miệng,"
-      },
-      {
-        "start": 19.56,
-        "end": 21.463,
-        "text": "thay vì chạy qua thật nhiều từ vựng."
       }
     ]
   },
   "lecture-buoi-01-slide-3-scene-1.mp3": {
     "file": "assets/audio/lecture-buoi-01-slide-3-scene-1.mp3",
-    "duration": 17.0,
+    "duration": 3.95,
     "captions": [
       {
-        "start": 0.368,
-        "end": 2.421,
-        "text": "Hãy hình dung việc học nói như xây nhà."
-      },
-      {
-        "start": 2.421,
-        "end": 5.421,
-        "text": "Hai mươi phần trăm công sức đầu tiên nằm ở móng và khung."
-      },
-      {
-        "start": 5.716,
-        "end": 9.26,
-        "text": "Khi khẩu hình đã chuẩn, bạn không còn phải nghĩ đến âm cuối mỗi lần nói."
-      },
-      {
-        "start": 9.26,
-        "end": 12.116,
-        "text": "Não bộ giải phóng năng lượng cho việc chọn từ và diễn đạt."
-      },
-      {
-        "start": 12.411,
-        "end": 16.705,
-        "text": "Đó là hiệu ứng đòn bẩy: sửa một lần ở gốc, kết quả theo bạn suốt lộ trình."
+        "start": 0.2,
+        "end": 3.85,
+        "text": "âm gió và âm bật xuất hiện trong hơn sáu mươi lăm phần trăm cấu trúc thường gặp."
       }
     ]
   },
@@ -528,6 +468,61 @@
         "start": 28.621,
         "end": 30.844,
         "text": "Have a great day!"
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-2.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-2.mp3",
+    "duration": 5.75,
+    "captions": [
+      {
+        "start": 0.2,
+        "end": 5.65,
+        "text": "Danh từ số nhiều thêm s, động từ ngôi thứ ba thêm s, thì quá khứ thêm ed, và sở hữu cách thêm s."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-3.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-3.mp3",
+    "duration": 5.1,
+    "captions": [
+      {
+        "start": 0.2,
+        "end": 5.0,
+        "text": "Nghĩa là chỉ cần làm chủ hai âm này, bạn đã xử lý phần lớn những đuôi từ khiến người Việt hay nuốt mất."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-4.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-4.mp3",
+    "duration": 5.0,
+    "captions": [
+      {
+        "start": 0.2,
+        "end": 4.9,
+        "text": "Đây là lý do buổi đầu tiên tập trung vào cơ miệng, thay vì chạy qua thật nhiều từ vựng."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-5.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-5.mp3",
+    "duration": 5.55,
+    "captions": [
+      {
+        "start": 0.2,
+        "end": 5.45,
+        "text": "Hãy hình dung việc học nói như xây nhà. Hai mươi phần trăm công sức đầu tiên nằm ở móng và khung."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-6.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-6.mp3",
+    "duration": 11.45,
+    "captions": [
+      {
+        "start": 0.2,
+        "end": 11.35,
+        "text": "Khi khẩu hình đã chuẩn, bạn không còn phải nghĩ đến âm cuối mỗi lần nói. Não bộ giải phóng năng lượng cho việc chọn từ và diễn đạt. Đó là hiệu ứng đòn bẩy: sửa một lần ở gốc, kết quả theo bạn suốt lộ trình."
       }
     ]
   }

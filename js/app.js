@@ -1351,6 +1351,179 @@ function getSceneVisualGraphicHTML(visualType, theme) {
     `;
   }
 
+  if (visualType === 'coca-corpus-counter') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/85 border border-emerald-500/40 shadow-inner relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/10 to-transparent pointer-events-none"></div>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+          <div class="flex items-center space-x-3 w-full sm:w-auto">
+            <div class="relative w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+              <span class="absolute inset-0 rounded-2xl bg-emerald-400/20 visual-pulse-ring"></span>
+              <i data-lucide="database" class="w-6 h-6 relative z-10"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-emerald-300">KHO NGỮ LIỆU ĐÀM THOẠI MỸ</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">COCA</span>
+              </div>
+              <div class="text-lg sm:text-xl font-black text-white font-mono tracking-tight text-emerald-300 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+                1,000,000,000+ <span class="text-xs text-slate-300 font-sans font-normal">Từ Vựng Thực Tế</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 text-xs font-mono bg-slate-950/80 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+            <span class="text-slate-400">Định luật:</span>
+            <span class="text-emerald-400 font-bold">Pareto 80/20</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'pareto-live-meter') {
+    return `
+      <div class="motion-beat-visual my-3 p-4 rounded-xl bg-slate-900/85 border border-cyan-500/40 shadow-inner relative overflow-hidden">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-xs sm:text-sm font-bold text-cyan-300 flex items-center space-x-1.5">
+            <i data-lucide="activity" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
+            <span>Tỷ Lệ Bao Phủ Của 2 Âm Vị /s/ và /t/</span>
+          </span>
+          <span class="text-2xl sm:text-3xl font-black text-cyan-300 font-mono drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]">65%</span>
+        </div>
+        <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800 p-0.5 mb-2">
+          <div class="h-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-teal-300 rounded-full shadow-lg shadow-cyan-500/50" style="width: 65%;"></div>
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-slate-300 font-mono">
+          <span class="flex items-center space-x-1.5 text-cyan-400 font-bold">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>Chiếm hơn 2/3 cấu trúc câu thường ngày</span>
+          </span>
+          <span class="text-slate-400">Chuẩn Hội Thoại Mỹ 🇺🇸</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'four-pillars-morphology') {
+    return `
+      <div class="motion-beat-visual my-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
+          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">1. Số Nhiều</span>
+          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">cat<span class="text-purple-400 underline font-extrabold">s</span></span>
+          <span class="text-[9px] text-slate-400 font-mono">đuôi /s/, /z/, /ɪz/</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
+          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">2. Ngôi Thứ 3</span>
+          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">like<span class="text-purple-400 underline font-extrabold">s</span></span>
+          <span class="text-[9px] text-slate-400 font-mono">đuôi /s/, /z/</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
+          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">3. Quá Khứ</span>
+          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">stopp<span class="text-purple-400 underline font-extrabold">ed</span></span>
+          <span class="text-[9px] text-slate-400 font-mono">bật đuôi /t/, /d/</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
+          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">4. Sở Hữu</span>
+          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">David<span class="text-purple-400 underline font-extrabold">'s</span></span>
+          <span class="text-[9px] text-slate-400 font-mono">đuôi /z/, /s/</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'end-sound-scanner') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/85 border border-emerald-500/40 space-y-2.5 shadow-inner">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-emerald-300 flex items-center space-x-1.5">
+            <i data-lucide="scan-line" class="w-4 h-4 text-emerald-400 animate-pulse"></i>
+            <span>Quét Sạch Tật Nuốt Âm Đuôi Cố Hữu</span>
+          </span>
+          <span class="text-[10px] font-mono text-emerald-400/90 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">Hiệu Ứng Bứt Phá</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-2 rounded-lg bg-rose-950/20 border border-rose-500/25">
+            <span class="text-[10px] text-rose-400 block font-bold">Nuốt đuôi (Nói bồi) ❌</span>
+            <span class="text-slate-300 font-mono">"Nai", "Mít", "Thanh-kiu"</span>
+            <span class="text-[9px] text-rose-400/80 block mt-0.5">Người bản xứ phải đoán từ</span>
+          </div>
+          <div class="p-2 rounded-lg bg-emerald-950/30 border border-emerald-500/40">
+            <span class="text-[10px] text-emerald-400 block font-bold">Có âm gió & bật ✅</span>
+            <span class="text-white font-mono font-bold">Nice /s/, Meet /t/, Thanks /θ/</span>
+            <span class="text-[9px] text-emerald-300/90 block mt-0.5">Rõ chữ, tự nhiên 100%</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'focus-vs-cramming') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/85 border border-amber-500/40 space-y-2 shadow-inner">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+            <span class="text-[10px] text-amber-400/90 font-bold block uppercase">❌ Nhồi Nhét 1,000 Từ Vựng</span>
+            <span class="text-xs font-bold text-slate-300 block my-1">Quá Tải Trí Nhớ Tạm (Hippocampus)</span>
+            <span class="text-[10px] text-rose-400 block">Rơi rụng 85% sau 24 giờ</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40">
+            <span class="text-[10px] text-emerald-400 font-bold block uppercase">✅ Tái Cấu Trúc Khẩu Hình</span>
+            <span class="text-xs font-bold text-white block my-1">Tạo Quán Tính Cơ Miệng Tự Động</span>
+            <span class="text-[10px] text-emerald-300 block">Dùng suốt 600h mà không bao giờ quên</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'foundation-blueprint') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/85 border border-cyan-500/40 shadow-inner">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="font-bold text-cyan-300 flex items-center space-x-1.5">
+            <i data-lucide="building-2" class="w-4 h-4 text-cyan-400"></i>
+            <span>Mô Hình Xây Nhà: Móng Vững Thân Kiên Cố</span>
+          </span>
+          <span class="text-[10px] font-mono text-cyan-400">Định Luật 80/20</span>
+        </div>
+        <div class="space-y-1.5">
+          <div class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
+            <span class="text-xs font-bold text-white">80% Kết Quả Ngữ Pháp & Phản Xạ</span>
+            <span class="text-[10px] font-mono text-emerald-400 font-bold">Thân Nhà Vươn Cao</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-cyan-950/60 border border-cyan-500/50 flex items-center justify-between shadow-md">
+            <span class="text-xs font-black text-cyan-300 font-mono">20% Nền Móng Cơ Miệng (/s/, /t/, /θ/)</span>
+            <span class="text-[10px] font-mono text-cyan-300 font-bold uppercase bg-cyan-500/20 px-1.5 py-0.5 rounded">Móng Chịu Lực</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'cognitive-energy-meter') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/85 border border-emerald-500/40 shadow-inner">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="font-bold text-emerald-300 flex items-center space-x-1.5">
+            <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i>
+            <span>Giải Phóng Dung Lượng Não Bộ (Broca Relaxation)</span>
+          </span>
+          <span class="text-[10px] font-mono text-emerald-400 font-bold">Tự Động Hóa 100%</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-center text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block">Cơ Miệng Tự Động</span>
+            <span class="text-xs font-bold text-white font-mono mt-0.5 block">Xì gió & Bật dứt khoát</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40">
+            <span class="text-[10px] text-emerald-400 block font-bold">Vùng Broca Rảnh Tay</span>
+            <span class="text-xs font-black text-emerald-300 mt-0.5 block">Tập trung kết nối cảm xúc</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   if (visualType === 'pareto-chart') {
     return `
       <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/30 space-y-2 shadow-inner">
