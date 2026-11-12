@@ -651,13 +651,27 @@ body.cinema-mode [data-cinema-hide] {
   display: none !important;
 }
 
+/* AI Neural Canvas & Cyber Canvases in Cinema Mode */
+body.cinema-mode #neuralCanvas {
+  display: block !important;
+  z-index: 75 !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+body.cinema-mode #pointerTrailCanvas {
+  display: block !important;
+  z-index: 95 !important;
+  pointer-events: none !important;
+}
+
 body.cinema-mode #moduleLecture {
   position: fixed;
   inset: 0;
   z-index: 80;
   margin: 0;
   padding: 0;
-  background: #07080d;
+  background: transparent !important;
   overflow: hidden;
 }
 
@@ -669,9 +683,7 @@ body.cinema-mode #slideStageMainCard {
   padding: 0;
   border: 0;
   border-radius: 0;
-  background:
-    radial-gradient(80% 65% at 50% 20%, rgba(16, 185, 129, 0.08), transparent 70%),
-    #07080d;
+  background: radial-gradient(80% 65% at 50% 20%, rgba(16, 185, 129, 0.09), transparent 72%) !important;
 }
 
 body.cinema-mode .lecture-cinema-stage {
@@ -680,8 +692,10 @@ body.cinema-mode .lecture-cinema-stage {
   flex-direction: column;
   min-height: 0;
   margin: 0;
-  border: 0;
+  border: 0 !important;
   border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
   padding-bottom: 5.5rem; /* Để khoảng trống thoáng đãng cho dải sóng âm cinemaWave không bao giờ bị đè */
   box-sizing: border-box;
 }
@@ -705,10 +719,13 @@ body.cinema-mode #activeSceneContentContainer::-webkit-scrollbar {
 body.cinema-mode .scene-active-card {
   width: min(1080px, 100%);
   margin: auto;
-  padding: clamp(0.5rem, 1.5vw, 1.25rem);
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  padding: clamp(1rem, 2.2vw, 2rem);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  background: rgba(11, 14, 23, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 1.5rem;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.85), 0 0 35px -10px rgba(16, 185, 129, 0.18);
 }
 
 body.cinema-mode .scene-title {
@@ -758,13 +775,6 @@ body.cinema-live .cinema-wave {
   box-shadow: 0 14px 40px -18px rgba(0, 0, 0, 0.9), 0 0 30px -10px rgba(16, 185, 129, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  cursor: pointer;
-  overflow: hidden;
-}
-  background: rgba(2, 6, 23, 0.72);
-  box-shadow: 0 14px 40px -18px rgba(0, 0, 0, 0.9), 0 0 30px -10px rgba(16, 185, 129, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
   overflow: hidden;
 }

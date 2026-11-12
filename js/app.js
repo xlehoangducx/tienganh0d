@@ -1094,6 +1094,7 @@ window.startCinemaPresentationMode = function() {
 
   document.body.classList.add("cinema-mode");
   document.body.classList.remove("cinema-live");
+  window.dispatchEvent(new Event("resize"));
 
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   if (!lesson) {
@@ -1158,6 +1159,7 @@ window.exitCinemaMode = function(e) {
   if (overlay) overlay.remove();
 
   document.body.classList.remove("cinema-mode", "cinema-live");
+  window.dispatchEvent(new Event("resize"));
   window.stopAllAudios();
   isSlideAudioPlaying = false;
   currentLectureMeta = null;
