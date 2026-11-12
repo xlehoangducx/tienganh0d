@@ -873,61 +873,55 @@ window.startCinemaPresentationMode = function() {
   const playBtn = document.getElementById("btnPlaySlideAudio");
   const cinemaBtn = document.getElementById("btnCinemaMode");
   const waveBox = document.getElementById("lectureWaveVisualizer");
-  if (playBtn) playBtn.classList.add("hidden");
-  if (cinemaBtn) cinemaBtn.classList.add("hidden");
+  const restoreHeaderBtn = document.getElementById("btnRestoreTopHeader");
+
+  // Ẩn tất cả nút điều khiển để quay màn hình
+  if (playBtn) { playBtn.classList.add("hidden"); playBtn.classList.remove("flex"); }
+  if (cinemaBtn) { cinemaBtn.classList.add("hidden"); cinemaBtn.classList.remove("flex"); }
+  if (restoreHeaderBtn) { restoreHeaderBtn.classList.add("hidden"); restoreHeaderBtn.classList.remove("flex"); }
 
   if (waveBox) {
-    waveBox.className = "w-full max-w-xl h-14 px-4 sm:px-6 rounded-2xl bg-slate-900/95 border border-emerald-500/50 flex items-center justify-between shadow-[0_0_25px_rgba(16,185,129,0.15)] transition-all duration-500 cursor-pointer";
+    waveBox.className = "w-full max-w-2xl h-12 px-6 rounded-2xl bg-slate-900/90 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.12)] transition-all duration-500 cursor-pointer overflow-hidden";
+    // Trong 5s đếm ngược: hiển thị số giây đếm ngược để chuẩn bị quay màn hình
     waveBox.innerHTML = `
-      <!-- Left wave bars -->
-      <div class="flex items-center space-x-1 h-7">
-        ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10].map((h, i) => `
-          <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 45}ms"></span>
-        `).join('')}
-      </div>
-
-      <!-- Center countdown & status -->
-      <div id="cinemaStatusBox" class="flex items-center space-x-2 text-xs sm:text-sm font-mono font-bold text-cyan-300">
+      <div id="cinemaCountdownCenter" class="flex items-center space-x-2 text-xs sm:text-sm font-mono font-bold text-cyan-300">
         <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-        <span id="cinemaStatusText">Tự động phát sau: 5s</span>
-      </div>
-
-      <!-- Right wave bars & exit button -->
-      <div class="flex items-center space-x-3">
-        <div class="hidden sm:flex items-center space-x-1 h-7">
-          ${[10, 18, 12, 24, 16, 22, 14, 20, 26, 18, 10, 16, 24, 12, 22, 18, 26, 20, 14, 8].map((h, i) => `
-            <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-cyan-400' : 'bg-emerald-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 45}ms"></span>
-          `).join('')}
-        </div>
-        <button onclick="exitCinemaMode(event)" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer" title="Thoát chế độ trình chiếu">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <span id="cinemaCountdownText">Chuẩn bị quay màn hình: 5s</span>
       </div>
     `;
-    waveBox.onclick = function(e) {
-      if (e.target.closest('button')) return;
-      window.toggleSlideAudio();
+    waveBox.onclick = function() {
+      // Khi bấm vào waveBox lúc đang quay, có thể thoát cinema mode
+      window.exitCinemaMode();
     };
-    if (window.lucide) window.lucide.createIcons();
   }
 
-  // 5 giây sau tự động phát âm thanh theo đúng yêu cầu
   let remainingSec = 5;
   if (cinemaCountdownTimer) clearInterval(cinemaCountdownTimer);
 
   cinemaCountdownTimer = setInterval(() => {
     remainingSec--;
-    const textEl = document.getElementById("cinemaStatusText");
-    if (textEl) {
-      if (remainingSec > 0) {
-        textEl.textContent = `Tự động phát sau: ${remainingSec}s`;
-      } else {
-        textEl.innerHTML = `<span class="text-emerald-400 flex items-center space-x-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Đang Trình Chiếu...</span></span>`;
-      }
+    const textEl = document.getElementById("cinemaCountdownText");
+    if (textEl && remainingSec > 0) {
+      textEl.textContent = `Chuẩn bị quay màn hình: ${remainingSec}s`;
     }
+
     if (remainingSec <= 0) {
       clearInterval(cinemaCountdownTimer);
       cinemaCountdownTimer = null;
+
+      // 5 GIÂY ĐÃ HẾT: ẨN HOÀN TOÀN CÁC NÚT VÀ CHỮ, CHỈ ĐỂ DẢI SÓNG ÂM KÉO DÀI ĐỂ QUAY MÀN HÌNH
+      if (waveBox) {
+        waveBox.innerHTML = `
+          <div class="flex items-center justify-center space-x-1.5 w-full h-8 px-2">
+            ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
+               12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16].map((h, i) => `
+              <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 35}ms"></span>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // Tự động phát âm thanh
       playSceneAudio(currentSlideSceneIndex || 0);
     }
   }, 1000);
@@ -942,9 +936,25 @@ window.exitCinemaMode = function(e) {
   }
   window.stopAllAudios();
   isSlideAudioPlaying = false;
+
+  // Khôi phục nút Hiện menu nếu header đang ẩn
+  const restoreHeaderBtn = document.getElementById("btnRestoreTopHeader");
+  const mainHeader = document.getElementById("mainTopHeader");
+  if (mainHeader && mainHeader.classList.contains("hidden") && restoreHeaderBtn) {
+    restoreHeaderBtn.classList.remove("hidden");
+    restoreHeaderBtn.classList.add("flex");
+  }
+
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   if (lesson) renderMasterLecture(lesson);
 };
+
+// Bấm phím ESC để thoát chế độ trình chiếu nhanh chóng
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && isCinemaMode) {
+    window.exitCinemaMode();
+  }
+});
 
 window.toggleTopHeader = function() {
   const header = document.getElementById("mainTopHeader");
@@ -1371,28 +1381,13 @@ function renderMasterLecture(lesson) {
       <!-- Slide Audio Player & Admin Cinema Controls -->
       <div id="lectureAudioControlBar" class="relative z-10 mb-2 p-3 sm:p-4 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex items-center justify-center gap-3 transition-all duration-500">
         ${isCinemaMode ? `
-          <!-- Khung Waveform Kéo Dài Trong Chế Độ Trình Chiếu -->
-          <div id="lectureWaveVisualizer" onclick="toggleSlideAudio()" class="w-full max-w-xl h-14 px-4 sm:px-6 rounded-2xl bg-slate-900/95 border border-emerald-500/50 flex items-center justify-between shadow-[0_0_25px_rgba(16,185,129,0.15)] transition-all duration-500 cursor-pointer">
-            <div class="flex items-center space-x-1 h-7">
-              ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10].map((h, i) => `
-                <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} ${isSlideAudioPlaying ? 'animate-pulse' : 'opacity-40'}" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 45}ms"></span>
+          <!-- Chế độ Trình Chiếu: KHÔNG CÒN CHỮ VÀ NÚT, CHỈ DẢI SÓNG ÂM KÉO DÀI ĐỂ QUAY MÀN HÌNH -->
+          <div id="lectureWaveVisualizer" onclick="exitCinemaMode()" class="w-full max-w-2xl h-12 px-6 rounded-2xl bg-slate-900/90 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.12)] transition-all duration-500 cursor-pointer overflow-hidden" title="Bấm để thoát chế độ trình chiếu (hoặc phím ESC)">
+            <div class="flex items-center justify-center space-x-1.5 w-full h-8 px-2">
+              ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
+                 12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16].map((h, i) => `
+                <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 35}ms"></span>
               `).join('')}
-            </div>
-
-            <div id="cinemaStatusBox" class="flex items-center space-x-2 text-xs sm:text-sm font-mono font-bold text-cyan-300">
-              <span class="w-2.5 h-2.5 rounded-full ${isSlideAudioPlaying ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}"></span>
-              <span id="cinemaStatusText">${isSlideAudioPlaying ? 'Đang Trình Chiếu...' : 'Tạm Dừng'}</span>
-            </div>
-
-            <div class="flex items-center space-x-3">
-              <div class="hidden sm:flex items-center space-x-1 h-7">
-                ${[10, 18, 12, 24, 16, 22, 14, 20, 26, 18, 10, 16, 24, 12, 22, 18, 26, 20, 14, 8].map((h, i) => `
-                  <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-cyan-400' : 'bg-emerald-400'} ${isSlideAudioPlaying ? 'animate-pulse' : 'opacity-40'}" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 45}ms"></span>
-                `).join('')}
-              </div>
-              <button onclick="exitCinemaMode(event)" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer" title="Thoát chế độ trình chiếu">
-                <i data-lucide="x" class="w-4 h-4"></i>
-              </button>
             </div>
           </div>
         ` : `
@@ -1418,7 +1413,7 @@ function renderMasterLecture(lesson) {
       </div>
 
       <!-- Slide Navigation Footer: Chỉ hiển thị nút Hoàn Thành khi đến Slide cuối cùng -->
-      ${isLast ? `
+      ${isLast && !isCinemaMode ? `
         <div class="relative z-10 pt-3 border-t border-slate-800 flex justify-center">
           <button onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer">
             <span>🚀 Hoàn Thành Bài Thuyết Giảng • Chuyển Sang Bước 1: Khẩu Hình</span>
@@ -1434,15 +1429,16 @@ function renderMasterLecture(lesson) {
 function updateLectureControls(isPlaying) {
   const btn = document.getElementById("btnPlaySlideAudio");
   if (btn) {
-    btn.className = `px-7 py-3 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
-    btn.innerHTML = `
-      <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
-      <span>${isPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
-    `;
-  }
-  const cinemaText = document.getElementById("cinemaStatusText");
-  if (cinemaText && isCinemaMode) {
-    cinemaText.innerHTML = isPlaying ? `<span class="text-emerald-400 flex items-center space-x-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Đang Trình Chiếu...</span></span>` : `<span class="text-amber-300 font-bold">⏸️ Đã Tạm Dừng</span>`;
+    if (isCinemaMode) {
+      btn.classList.add("hidden");
+      btn.classList.remove("flex");
+    } else {
+      btn.className = `px-7 py-3 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
+      btn.innerHTML = `
+        <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
+        <span>${isPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
+      `;
+    }
   }
   if (window.lucide) window.lucide.createIcons();
 }
