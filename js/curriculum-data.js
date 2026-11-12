@@ -104,6 +104,7 @@ export const CURRICULUM_DATA = {
                 badge: "🔍 THỰC TRẠNG & NGUYÊN NHÂN",
                 title: "95% Người Học Thất Bại Vì Bắt Đầu Bằng Công Thức Khô Khan",
                 content: "Não bộ con người không được tiến hóa để học quy tắc trừu tượng trước khi có cảm xúc và trải nghiệm xã hội. Bắt đầu bằng lý thuyết khiến vùng hạch hạnh nhân (Amygdala) bị kích hoạt phản ứng sợ hãi và quá tải nhận thức.",
+                callout: "⚠️ Bắt đầu bằng ngữ pháp khô khan sẽ kích hoạt phản ứng lo âu, làm rơi rụng 60% năng lượng tiếp thu!",
                 icon: "alert-triangle",
                 theme: "amber"
               },
@@ -111,6 +112,7 @@ export const CURRICULUM_DATA = {
                 badge: "💡 BẢN NĂNG NGUYÊN THỦY CỦA NÃO BỘ",
                 title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
                 content: "Ở Buổi 1, chúng ta kích hoạt lại chính bản năng nguyên thủy: Kết nối và sinh tồn xã hội. Chỉ cần 3 cụm từ hạt nhân là đủ để mở khóa vùng phản xạ giao tiếp tự nhiên!",
+                callout: "✨ Chỉ cần 3 cụm câu hạt nhân là đủ mở khóa phản xạ sinh tồn xã hội đầu tiên mà không cần suy nghĩ!",
                 icon: "sparkles",
                 theme: "emerald"
               }
@@ -128,6 +130,7 @@ export const CURRICULUM_DATA = {
                 badge: "⚠️ TẬT PHÁT ÂM TIẾNG VIỆT",
                 title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
                 content: "Tiếng Việt không có âm kẹp lưỡi /θ/, gió /s/ hay bật /t/. Người Việt hay thụt lưỡi nói Thank you thành 'Thanh-kiu' và nuốt trọn âm đuôi biến Nice thành 'Nai'.",
+                callout: "⚠️ Thói quen rụt lưỡi vào chân răng trong sẽ biến âm /θ/ thành 'th/t' tiếng Việt bồi.",
                 icon: "alert-circle",
                 theme: "amber"
               },
@@ -135,6 +138,7 @@ export const CURRICULUM_DATA = {
                 badge: "🎯 TÁI CẤU TRÚC CƠ QUAN PHÁT ÂM",
                 title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
                 content: "3 âm vị này là liệu pháp vật lý trị liệu cho cơ quan phát âm, đánh thức các nhóm cơ lưỡi và hàm chưa từng hoạt động, xóa bỏ vĩnh viễn tật nói tiếng Anh bồi.",
+                callout: "🎯 Ép nhẹ đầu lưỡi ở kẽ răng và thổi hơi gió mát trượt êm ái trên mặt lưỡi!",
                 icon: "mic",
                 theme: "cyan"
               }
@@ -152,6 +156,7 @@ export const CURRICULUM_DATA = {
                 badge: "📊 QUY LUẬT PARETO 80/20",
                 title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Ngữ Pháp",
                 content: "Từ đuôi số nhiều (-s/es), ngôi thứ 3 hiện tại, thì quá khứ (-ed) đến sở hữu cách ('s) — tất cả đều cấu tạo từ 2 âm vị nền móng này.",
+                callout: "📊 Hơn 65% danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi 3 đều kết thúc bằng /s/ hoặc /t/.",
                 icon: "pie-chart",
                 theme: "amber"
               },
@@ -159,6 +164,7 @@ export const CURRICULUM_DATA = {
                 badge: "🏗️ MÓNG NHÀ KIÊN CỐ",
                 title: "Làm Chủ Ngay Buổi 1 Để Không Bao Giờ Phải Sửa Lại",
                 content: "Làm chủ 2 âm này ở Buổi 1 là xây xong cái móng nhà kiên cố cho toàn bộ ngữ pháp sau này mà không bao giờ phải sửa lại hay hoang mang!",
+                callout: "🏗️ Làm chủ 2 âm này ở Buổi 1 là xây xong cái móng nhà kiên cố cho toàn bộ lộ trình!",
                 icon: "layers",
                 theme: "emerald"
               }
@@ -176,6 +182,7 @@ export const CURRICULUM_DATA = {
                 badge: "🌐 NGHI THỨC PHỔ QUÁT",
                 title: "Bộ Ba Giao Tiếp Sinh Tồn Xã Hội Phương Tây",
                 content: "Bộ ba: Hi, nice to meet you! → Thank you so much! → Have a great day! là nghi thức ứng xử phổ quát giúp bạn kết nối tức thì với bất kỳ người bản xứ nào.",
+                callout: "🌐 Bộ ba: Chào hỏi → Biết ơn → Chúc lành là chiếc vé thông hành văn hóa toàn cầu.",
                 icon: "shield-check",
                 theme: "indigo"
               },
@@ -183,6 +190,7 @@ export const CURRICULUM_DATA = {
                 badge: "⚡ KÍCH HOẠT DOPAMINE NÃO BỘ",
                 title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
                 content: "Dù ở sân bay JFK hay ngoài phố: Chỉ cần nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn, kích hoạt Dopamine xóa tan nỗi sợ nói tiếng Anh!",
+                callout: "🤝 Nhận nụ cười đón nhận của người bản xứ giúp não bộ tiết Dopamine xóa tan nỗi sợ nói.",
                 icon: "smile",
                 theme: "purple"
               }
@@ -200,6 +208,7 @@ export const CURRICULUM_DATA = {
                 badge: "🔄 LỘ TRÌNH 6 BƯỚC ĐA GIÁC QUAN",
                 title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
                 content: "Kích hoạt đồng thời 6 vùng thần kinh: Vận động miệng, thính giác, thị giác, phản hồi âm thanh, không gian 3D và tái tạo chữ viết.",
+                callout: "🔄 6 Giác quan đồng bộ: Nhìn khẩu hình, nghe mẫu, nói vào mic, trắc nghiệm, thẻ 3D và ghép câu.",
                 icon: "cpu",
                 theme: "blue"
               },
@@ -207,6 +216,7 @@ export const CURRICULUM_DATA = {
                 badge: "🧠 CỐ ĐỊNH KHỚP THẦN KINH DÀI HẠN",
                 title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
                 content: "Chuyển từng cụm từ từ bộ nhớ tạm sang vỏ não dài hạn. Đạt 7/7 lần là chạm mốc cố định khớp thần kinh vĩnh viễn (Long-term Potentiation)!",
+                callout: "🧠 Đạt đủ 7/7 lần lặp đa giác quan để chuyển kiến thức vào vỏ não dài hạn vĩnh viễn!",
                 icon: "zap",
                 theme: "emerald"
               }

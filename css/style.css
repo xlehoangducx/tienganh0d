@@ -163,3 +163,30 @@ body {
 .video-progress-fill {
   transition: width 0.15s linear;
 }
+
+
+/* Hardware-Accelerated Video Slide Scene Transitions */
+.video-scene-transition {
+  will-change: transform, opacity;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease;
+}
+
+.scene-exit-left {
+  opacity: 0 !important;
+  transform: translate3d(-18px, 0, 0) scale(0.98) !important;
+}
+
+.scene-enter-right {
+  animation: sceneEnterRightKeyframe 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sceneEnterRightKeyframe {
+  0% {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
