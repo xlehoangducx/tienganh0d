@@ -566,6 +566,216 @@ export const CURRICULUM_DATA = {
           distractorWords: ["nice", "trip", "weekend"]
         }
       ]
+    },
+    {
+      id: "buoi-02",
+      sessionNumber: 2,
+      phaseId: 0,
+      title: "Âm Rung /z/ & Làm Quen Bạn Bè",
+      topic: "Kế thừa khẩu hình /s/, kích hoạt âm rung /z/, cấu trúc 'Excuse me, please!' và 'This is my friend'",
+      duration: "25 phút",
+      practicalContext: "Giao tiếp lịch sự khi cần xin phép, gọi sự chú ý và giới thiệu bạn bè làm quen.",
+      status: "locked",
+
+      // Module 0: Bài Thuyết Giảng Khai Mở
+      masterLecture: {
+        title: "Bản Đồ Khai Mở Buổi 02: Kế Thừa Mắt Xích & Âm Rung /z/",
+        subtitle: "Chuỗi thuyết giảng mở rộng âm vị kế thừa từ Buổi 01",
+        author: "Gia Sư Trí Tuệ Nhân Tạo (Hải Đăng)",
+        audioFile: "assets/audio/lecture-buoi-02.mp3",
+        slides: [
+          {
+            id: 1,
+            title: "Kế Thừa Khẩu Hình: Từ /s/ Sang Âm Rung /z/",
+            subtitle: "Giữ nguyên hàm răng khép của /s/, rung thanh quản để tạo âm /z/",
+            audioFile: "assets/audio/lecture-buoi-02.mp3",
+            icon: "zap",
+            badge: "Kế Thừa Mắt Xích",
+            scenes: [
+              {
+                badge: "⚡ KẾ THỪA KHẨU HÌNH",
+                title: "Từ Âm Gió /s/ Sang Âm Rung /z/",
+                audioFile: "assets/audio/lecture-buoi-02.mp3",
+                visualType: "intro-welcome",
+                insight: "Kế thừa khẩu hình 2 hàm răng khép của Buổi 1, đặt tay lên cổ họng và rung dây thanh quản để tạo âm /z/ chuẩn xác trong Excuse me và Please.",
+                callout: "⚡ Tái kích hoạt 30% khẩu hình Buổi 1: Giữ nguyên răng /s/ nhưng rung cổ họng để bật ra âm /z/!",
+                icon: "zap",
+                theme: "emerald"
+              }
+            ]
+          }
+        ]
+      },
+
+      // Module 1: Khẩu Hình Cơ Miệng
+      mouthTechniques: [
+        {
+          symbol: "/z/",
+          name: "Âm Rung Kẽ Răng (Voiced Alveolar Fricative)",
+          vietnameseAnchor: "Giống âm 'D' miền Bắc nhưng khép chặt 2 hàm răng và rung mạnh cổ họng",
+          guideSteps: [
+            "Hai hàm răng khép kín tương tự như khi phát âm /s/ ở Buổi 1",
+            "Đầu lưỡi đặt phía sau chân răng cửa dưới",
+            "Đẩy luồng hơi ra đồng thời rung mạnh dây thanh quản ở cổ họng (sờ tay thấy rung rõ rệt)"
+          ],
+          words: [
+            { word: "Please", ipa: "/pliːz/", meaning: "Làm ơn / Xin vui lòng", audioFile: "assets/audio/great.mp3" },
+            { word: "Excuse", ipa: "/ɪkˈskjuːz/", meaning: "Xin lỗi / Xin phép", audioFile: "assets/audio/great.mp3" }
+          ]
+        }
+      ],
+
+      // Module 2: 3 Cụm Từ Hạt Nhân
+      chunks: [
+        {
+          id: "c2_1",
+          chunk: "Excuse me, please!",
+          ipa: "/ɪkˈskjuːz miː pliːz/",
+          vietnameseMeaning: "Xin lỗi, làm ơn cho tôi hỏi / Xin phép!",
+          practicalContext: "Gọi sự chú ý của ai đó một cách lịch sự, xin phép đi qua hoặc hỏi đường.",
+          audioFile: "assets/audio/great.mp3",
+          repetitions: 0
+        },
+        {
+          id: "c2_2",
+          chunk: "This is my friend.",
+          ipa: "/ðɪs ɪz maɪ frend/",
+          vietnameseMeaning: "Đây là bạn của tôi.",
+          practicalContext: "Giới thiệu một người bạn hoặc đồng nghiệp khi gặp gỡ người khác.",
+          audioFile: "assets/audio/great.mp3",
+          repetitions: 0
+        },
+        {
+          id: "c2_3",
+          chunk: "Thank you so much!",
+          ipa: "/θæŋk juː səʊ mʌtʃ/",
+          vietnameseMeaning: "Cảm ơn bạn rất nhiều! (Tái kích hoạt Buổi 1)",
+          practicalContext: "Đáp lại lời chào đón hoặc sự giúp đỡ của đối phương.",
+          audioFile: "assets/audio/thank-you-so-much.mp3",
+          repetitions: 0
+        }
+      ],
+
+      // Module 3: Trắc Nghiệm Phản Xạ
+      quizzes: [
+        {
+          id: "q2_1",
+          question: "Khi cần thu hút sự chú ý của người bản xứ một cách lịch sự, bạn nói câu gì?",
+          options: [
+            "Excuse me, please!",
+            "Hey you, look here!",
+            "Wait for me!",
+            "Thank you so much!"
+          ],
+          correctIndex: 0,
+          explanation: "'Excuse me, please!' là cách gọi sự chú ý chuẩn mực và lịch thiệp nhất trong văn hóa Mỹ."
+        },
+        {
+          id: "q2_2",
+          question: "Để giới thiệu một người bạn với người khác, câu nào chuẩn xác nhất?",
+          options: [
+            "This is my friend.",
+            "Here is friend.",
+            "Meet my people.",
+            "I have friend."
+          ],
+          correctIndex: 0,
+          explanation: "'This is my friend.' là mẫu câu hạt nhân tự nhiên nhất để giới thiệu bạn bè."
+        },
+        {
+          id: "q2_3",
+          question: "Âm /z/ khác âm /s/ ở điểm then chốt nào?",
+          options: [
+            "Âm /z/ làm rung dây thanh quản ở cổ họng, còn /s/ chỉ xì gió",
+            "Âm /z/ phải thè lưỡi ra ngoài kẽ răng",
+            "Âm /z/ nuốt hơi vào trong bụng",
+            "Hai âm này hoàn toàn giống nhau"
+          ],
+          correctIndex: 0,
+          explanation: "/s/ là âm vô thanh (chỉ gió), còn /z/ là âm hữu thanh (rung dây thanh quản ở cổ họng)."
+        }
+      ],
+
+      // Module 5: Đối Thoại AI 2 Chiều
+      dialogueStory: {
+        location: "Sảnh Quầy Thông Tin - Ga Tàu Trung Tâm (Grand Central Station)",
+        contextSummary: "Bạn đang cùng bạn mình tìm đường tại nhà ga. Bạn lịch sự xin phép nhân viên hướng dẫn và giới thiệu bạn của mình.",
+        audioFile: "assets/audio/story-buoi-02.mp3",
+        audioText: "Bạn đang có mặt tại ga tàu Grand Central. Hãy dùng câu Excuse me, please! để mở lời lịch sự với nhân viên hướng dẫn."
+      },
+      dialogueTurns: [
+        {
+          speaker: "user",
+          role: "Bạn",
+          englishText: "Excuse me, please!",
+          vietnameseText: "Xin lỗi, làm ơn cho tôi hỏi!",
+          audioFile: "assets/audio/great.mp3",
+          avatar: "https://ui-avatars.com/api/?name=You&background=10b981&color=fff"
+        },
+        {
+          speaker: "ai",
+          role: "Sarah (Nhân Viên)",
+          englishText: "Hello! How can I help you and your friend today?",
+          vietnameseText: "Xin chào! Tôi có thể giúp gì cho bạn và bạn của bạn hôm nay?",
+          audioFile: "assets/audio/great.mp3",
+          avatar: "https://ui-avatars.com/api/?name=Sarah&background=06b6d4&color=fff"
+        },
+        {
+          speaker: "user",
+          role: "Bạn",
+          englishText: "This is my friend.",
+          vietnameseText: "Đây là bạn của tôi.",
+          audioFile: "assets/audio/great.mp3",
+          avatar: "https://ui-avatars.com/api/?name=You&background=10b981&color=fff"
+        },
+        {
+          speaker: "ai",
+          role: "Sarah (Nhân Viên)",
+          englishText: "Nice to meet both of you! Gate 4 is right on your left.",
+          vietnameseText: "Rất vui được gặp hai bạn! Cổng số 4 nằm ngay bên tay trái của bạn nhé.",
+          audioFile: "assets/audio/great.mp3",
+          avatar: "https://ui-avatars.com/api/?name=Sarah&background=06b6d4&color=fff"
+        },
+        {
+          speaker: "user",
+          role: "Bạn",
+          englishText: "Thank you so much!",
+          vietnameseText: "Cảm ơn bạn rất nhiều! (Tái kích hoạt Buổi 1)",
+          audioFile: "assets/audio/thank-you-so-much.mp3",
+          avatar: "https://ui-avatars.com/api/?name=You&background=10b981&color=fff"
+        }
+      ],
+
+      // Module 6: Thử Thách Gõ Phản Xạ & Ghép Khối Từ
+      typingChallenges: [
+        {
+          id: "tc2_1",
+          vietnameseCue: "Xin lỗi, làm ơn cho tôi hỏi!",
+          audioFile: "assets/audio/great.mp3",
+          audioText: "Excuse me, please!",
+          targetWords: ["Excuse", "me,", "please!"],
+          fullSentence: "Excuse me, please!",
+          distractorWords: ["sorry", "help", "thank"]
+        },
+        {
+          id: "tc2_2",
+          vietnameseCue: "Đây là bạn của tôi.",
+          audioFile: "assets/audio/great.mp3",
+          audioText: "This is my friend.",
+          targetWords: ["This", "is", "my", "friend."],
+          fullSentence: "This is my friend.",
+          distractorWords: ["are", "they", "nice"]
+        },
+        {
+          id: "tc2_3",
+          vietnameseCue: "Cảm ơn bạn rất nhiều!",
+          audioFile: "assets/audio/thank-you-so-much.mp3",
+          audioText: "Thank you so much!",
+          targetWords: ["Thank", "you", "so", "much!"],
+          fullSentence: "Thank you so much!",
+          distractorWords: ["for", "help", "very"]
+        }
+      ]
     }
   ]
 };

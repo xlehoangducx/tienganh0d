@@ -692,7 +692,14 @@ Thầy giáo khuyên bạn hãy hoàn thành xong "${prevMod ? prevMod.title : '
 // ==============================================================
 function isLessonUnlocked(lesson) {
   if (!lesson) return false;
+  // Buổi 01 luôn mở cho khách trải nghiệm miễn phí 0đ
   if (lesson.sessionNumber === 1) return true;
+
+  // Từ Buổi 02 trở đi, bắt buộc phải đăng nhập bằng tài khoản Gmail
+  if (!currentUser) return false;
+
+  // Super Admin luôn mở khóa mọi bài học để kiểm thử
+  if (isCurrentUserAdmin()) return true;
 
   const completed = (userProgress && userProgress.completedLessons) || [];
   const prevLesson = CURRICULUM_DATA.lessons.find(l => l.sessionNumber === lesson.sessionNumber - 1);
@@ -703,6 +710,60 @@ function isLessonUnlocked(lesson) {
 window.notifyLockedLesson = function(sessionNum) {
   playIncorrectSound();
   alert(`🔒 Buổi ${sessionNum < 10 ? '0' + sessionNum : sessionNum} đang tạm khóa!\n\nTheo quy tắc khoa học nhận thức, bạn cần hoàn thành bài học và đạt tối thiểu 70% bài kiểm tra của Buổi ${sessionNum - 1 < 10 ? '0' + (sessionNum - 1) : sessionNum - 1} để mở khóa nơ-ron bài tiếp theo nhé!`);
+};
+
+// Mở Modal yêu cầu đăng nhập Gmail khi khách bấm vào Buổi 02+
+window.openLoginRequiredModal = function(sessionNum = 2) {
+  const modal = document.getElementById("loginRequiredModal");
+  if (!modal) return;
+  const numStr = sessionNum < 10 ? '0' + sessionNum : sessionNum;
+  const sessionText = document.getElementById("loginModalSessionText");
+  if (sessionText) sessionText.textContent = `Buổi ${numStr} trở đi`;
+  modal.classList.remove("hidden");
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.closeLoginRequiredModal = function() {
+  const modal = document.getElementById("loginRequiredModal");
+  if (modal) modal.classList.add("hidden");
+};
+
+// Xử lý đăng nhập Google từ Modal hoặc Header
+window.handleLoginFromModal = async function() {
+  const modalBtn = document.getElementById("btnModalGoogleLogin");
+  const headerBtn = document.getElementById("btnHeaderLogin");
+  const originalModalHtml = modalBtn ? modalBtn.innerHTML : "";
+  try {
+    if (modalBtn) {
+      modalBtn.disabled = true;
+      modalBtn.innerHTML = `<span class="animate-spin inline-block mr-2">⏳</span> Đang kết nối Gmail...`;
+    }
+    if (headerBtn) {
+      headerBtn.disabled = true;
+      headerBtn.innerHTML = `<span class="animate-spin inline-block mr-1">⏳</span> Đang xử lý...`;
+    }
+    if (typeof window.loginWithGoogle === "function") {
+      await window.loginWithGoogle();
+      window.closeLoginRequiredModal();
+    } else {
+      alert("Hệ thống đăng nhập đang khởi tạo, vui lòng thử lại sau giây lát.");
+    }
+  } catch (err) {
+    console.error("Lỗi đăng nhập:", err);
+    if (err.code !== "auth/popup-closed-by-user") {
+      alert("Đăng nhập chưa thành công: " + (err.message || err));
+    }
+  } finally {
+    if (modalBtn) {
+      modalBtn.disabled = false;
+      modalBtn.innerHTML = originalModalHtml;
+    }
+    if (headerBtn) {
+      headerBtn.disabled = false;
+      headerBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i><span>Đăng nhập Gmail</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
 };
 
 // ==============================================================
@@ -746,14 +807,17 @@ function renderCurriculumTree() {
             const shortLessonTitle = `Buổi ${l.sessionNumber < 10 ? '0' + l.sessionNumber : l.sessionNumber}: ${l.title.split('&')[0].trim()}`;
 
             if (!unlocked) {
+              const needsLogin = (!currentUser && l.sessionNumber > 1);
               return `
-                <div onclick="notifyLockedLesson(${l.sessionNumber})" 
-                     class="p-2.5 rounded-lg text-xs cursor-not-allowed transition flex items-center justify-between text-slate-500 bg-slate-950/40 border border-slate-900/80 opacity-60">
+                <div onclick="${needsLogin ? `openLoginRequiredModal(${l.sessionNumber})` : `notifyLockedLesson(${l.sessionNumber})`}" 
+                     class="p-2.5 rounded-lg text-xs cursor-pointer transition flex items-center justify-between ${needsLogin ? 'text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30' : 'text-slate-500 bg-slate-950/40 border border-slate-900/80 cursor-not-allowed opacity-60'}">
                   <div class="flex items-center space-x-2 pr-2">
-                    <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-600 flex-shrink-0"></i>
-                    <span class="break-words">${shortLessonTitle}</span>
+                    <i data-lucide="${needsLogin ? 'log-in' : 'lock'}" class="w-3.5 h-3.5 ${needsLogin ? 'text-amber-400' : 'text-slate-600'} flex-shrink-0"></i>
+                    <span class="break-words ${needsLogin ? 'font-medium' : ''}">${shortLessonTitle}</span>
                   </div>
-                  <span class="text-[10px] font-mono text-slate-600 bg-slate-900 px-1.5 py-0.5 rounded flex-shrink-0">Khóa</span>
+                  <span class="text-[10px] font-mono ${needsLogin ? 'text-amber-300 bg-amber-500/20 border border-amber-500/40' : 'text-slate-600 bg-slate-900'} px-1.5 py-0.5 rounded flex-shrink-0">
+                    ${needsLogin ? 'Cần Login' : 'Khóa'}
+                  </span>
                 </div>
               `;
             }
@@ -785,6 +849,10 @@ window.selectLesson = function(lessonId) {
   if (!lesson) return;
 
   if (!isLessonUnlocked(lesson)) {
+    if (lesson.sessionNumber > 1 && !currentUser) {
+      window.openLoginRequiredModal(lesson.sessionNumber);
+      return;
+    }
     notifyLockedLesson(lesson.sessionNumber);
     return;
   }
@@ -2708,11 +2776,11 @@ function renderTypingChallenges(challenges) {
         <div class="flex flex-wrap items-center justify-center gap-3">
           <button onclick="resetGatingFlow()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-1.5 cursor-pointer">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            <span>Bắt Đầu Lại Lộ Trình (Có Hướng Dẫn)</span>
+            <span>Bắt Đầu Lại Lộ Trình</span>
           </button>
-          <button onclick="toggleFreeMode()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 cursor-pointer">
-            <i data-lucide="unlock" class="w-4 h-4"></i>
-            <span>Mở Khóa Tự Do Ôn Tập (Xem Mọi Bước)</span>
+          <button onclick="selectLesson('buoi-02')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 cursor-pointer">
+            <span>Tiến Lên Buổi 02</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
@@ -3149,10 +3217,22 @@ setupAuthUI(async (user, profile) => {
   const userAvatar = document.getElementById("userAvatar");
   const tabBtnAdmin = document.getElementById("tabBtn-adminView");
   const pendingAlert = document.getElementById("pendingAlert");
+  const btnHeaderLogin = document.getElementById("btnHeaderLogin");
+  const btnLogout = document.getElementById("btnLogout");
 
   if (user && profile) {
+    if (btnHeaderLogin) {
+      btnHeaderLogin.classList.add("hidden");
+      btnHeaderLogin.classList.remove("inline-flex");
+    }
+    if (btnLogout) {
+      btnLogout.classList.remove("hidden");
+    }
     if (userName) userName.textContent = user.displayName || user.email;
-    if (userAvatar) userAvatar.src = user.photoURL || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName || "User");
+    if (userAvatar) {
+      userAvatar.src = user.photoURL || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.displayName || "User");
+      userAvatar.className = "w-8 h-8 rounded-full border border-emerald-500/40";
+    }
     
     userProgress = await loadUserProgress(user);
     updateProgressUI(userProgress);
@@ -3212,6 +3292,24 @@ setupAuthUI(async (user, profile) => {
       if (activeLesson) renderMasterLecture(activeLesson);
     }
   } else {
+    // Khách trải nghiệm chưa đăng nhập: mở khóa Buổi 01, yêu cầu đăng nhập từ Buổi 02+
+    if (btnHeaderLogin) {
+      btnHeaderLogin.classList.remove("hidden");
+      btnHeaderLogin.classList.add("inline-flex");
+    }
+    if (btnLogout) {
+      btnLogout.classList.add("hidden");
+    }
+    if (userName) userName.textContent = "Khách Trải Nghiệm";
+    if (userAvatar) {
+      userAvatar.src = "https://ui-avatars.com/api/?name=Khach&background=1e293b&color=94a3b8";
+      userAvatar.className = "w-8 h-8 rounded-full border border-slate-700";
+    }
+    if (userRoleBadge) {
+      userRoleBadge.textContent = "Chưa Đăng Nhập";
+      userRoleBadge.className = "text-amber-400/90 text-[11px] font-medium";
+    }
+    if (tabBtnAdmin) tabBtnAdmin.classList.add('hidden');
     userProgress = await loadUserProgress(null);
     updateProgressUI(userProgress);
     renderCurriculumTree();

@@ -85,6 +85,14 @@ export async function updateStudentStatus(uid, newStatus) {
   });
 }
 
+// Hàm đăng nhập Google dùng chung cho cả trang chủ và modal
+export async function loginWithGoogle() {
+  const result = await signInWithPopup(auth, provider);
+  const profile = await syncUserProfile(result.user);
+  return { user: result.user, profile };
+}
+window.loginWithGoogle = loginWithGoogle;
+
 // Hàm khởi tạo đăng nhập Google
 export function setupAuthUI(onUserLoaded) {
   const btnGoogleLogin = document.getElementById("btnGoogleLogin");
@@ -95,8 +103,7 @@ export function setupAuthUI(onUserLoaded) {
       try {
         btnGoogleLogin.disabled = true;
         btnGoogleLogin.innerHTML = `<span class="animate-spin inline-block mr-2">⏳</span> Đang đăng nhập...`;
-        const result = await signInWithPopup(auth, provider);
-        const profile = await syncUserProfile(result.user);
+        await loginWithGoogle();
         window.location.href = "dashboard.html";
       } catch (err) {
         console.error("Đăng nhập lỗi:", err);

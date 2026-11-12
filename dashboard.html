@@ -101,11 +101,17 @@
           <span aria-hidden="true">☕</span>
         </button>
 
+        <!-- Nút Đăng nhập cho Khách Trải Nghiệm -->
+        <button id="btnHeaderLogin" onclick="handleLoginFromModal()" title="Đăng nhập Gmail để lưu tiến độ và học tiếp" class="hidden px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 items-center space-x-1.5 transition cursor-pointer">
+          <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+          <span>Đăng nhập Gmail</span>
+        </button>
+
         <div id="userProfile" class="flex items-center space-x-2">
-          <img id="userAvatar" src="https://ui-avatars.com/api/?name=Hoc+Vien" class="w-8 h-8 rounded-full border border-emerald-500/40" alt="Avatar">
+          <img id="userAvatar" src="https://ui-avatars.com/api/?name=Khach&background=1e293b&color=94a3b8" class="w-8 h-8 rounded-full border border-slate-700" alt="Avatar">
           <div class="hidden sm:block text-left text-xs">
-            <div id="userName" class="font-bold text-slate-200 truncate max-w-[120px]">Đang tải...</div>
-            <div id="userRoleBadge" class="text-emerald-400 font-medium">Học viên</div>
+            <div id="userName" class="font-bold text-slate-200 truncate max-w-[120px]">Khách Trải Nghiệm</div>
+            <div id="userRoleBadge" class="text-amber-400/90 text-[11px] font-medium">Chưa Đăng Nhập</div>
           </div>
         </div>
 
@@ -114,7 +120,7 @@
           <i data-lucide="eye-off" class="w-4 h-4"></i>
         </button>
 
-        <button id="btnLogout" title="Đăng xuất" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition">
+        <button id="btnLogout" title="Đăng xuất" class="hidden p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer">
           <i data-lucide="log-out" class="w-4 h-4"></i>
         </button>
       </div>
@@ -746,6 +752,56 @@
     </div>
   </div>
 
+  <!-- ================= MODAL BẮT BUỘC ĐĂNG NHẬP GMAIL (BUỔI 02 TRỞ ĐI) ================= -->
+  <div id="loginRequiredModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="cyber-card border-slate-700 max-w-md w-full rounded-3xl p-6 sm:p-7 relative shadow-2xl bg-gradient-to-b from-slate-900 via-slate-900/95 to-[#0b0e17] border border-amber-500/30">
+      <button onclick="closeLoginRequiredModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500/20 to-emerald-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-2xl shadow-lg shadow-amber-500/10 mb-3">
+          <i data-lucide="shield-alert" class="w-7 h-7 text-amber-400"></i>
+        </div>
+        <h3 id="loginModalTitle" class="text-lg sm:text-xl font-black text-white tracking-tight">Mở Khóa Buổi Học Tiếp Theo</h3>
+        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+          Bạn đang trải nghiệm miễn phí <strong class="text-emerald-400 font-semibold">Buổi 01</strong>. Từ <strong class="text-amber-400 font-semibold" id="loginModalSessionText">Buổi 02 trở đi</strong>, bạn chỉ cần đăng nhập bằng Gmail để lưu tiến độ và học tiếp trọn vẹn lộ trình.
+        </p>
+      </div>
+
+      <!-- Lợi ích khi đăng nhập -->
+      <div class="space-y-2.5 mb-6 bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 text-xs">
+        <div class="flex items-center space-x-2.5 text-slate-300">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+          <span>100% Miễn phí trọn đời (0đ Vì Cộng Đồng)</span>
+        </div>
+        <div class="flex items-center space-x-2.5 text-slate-300">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+          <span>Tự động lưu tiến độ, điểm số nơ-ron trên đám mây</span>
+        </div>
+        <div class="flex items-center space-x-2.5 text-slate-300">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+          <span>Mở khóa tuần tự các buổi học tiếp theo theo chuẩn khoa học</span>
+        </div>
+      </div>
+
+      <!-- Nút Đăng Nhập Google 1-Click -->
+      <button id="btnModalGoogleLogin" onclick="handleLoginFromModal()" class="w-full py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm shadow-xl shadow-white/10 transition flex items-center justify-center space-x-3 cursor-pointer group active:scale-95">
+        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span class="tracking-tight">Đăng Nhập Nhanh Bằng Gmail</span>
+      </button>
+
+      <button onclick="closeLoginRequiredModal()" class="w-full mt-3 py-2.5 rounded-xl text-xs text-slate-400 hover:text-slate-200 transition cursor-pointer">
+        Tiếp tục trải nghiệm Buổi 01
+      </button>
+    </div>
+  </div>
+
   <!-- SCRIPTS -->
   <script>
     // Định nghĩa hàm Modal và sao chép số tài khoản toàn cục
@@ -756,6 +812,21 @@
 
     window.closeDonateModal = function() {
       const modal = document.getElementById("donateModal");
+      if (modal) modal.classList.add("hidden");
+    };
+
+    window.openLoginRequiredModal = function(sessionNum = 2) {
+      const modal = document.getElementById("loginRequiredModal");
+      if (!modal) return;
+      const numStr = sessionNum < 10 ? '0' + sessionNum : sessionNum;
+      const sessionText = document.getElementById("loginModalSessionText");
+      if (sessionText) sessionText.textContent = `Buổi ${numStr} trở đi`;
+      modal.classList.remove("hidden");
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    window.closeLoginRequiredModal = function() {
+      const modal = document.getElementById("loginRequiredModal");
       if (modal) modal.classList.add("hidden");
     };
 
