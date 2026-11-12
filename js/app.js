@@ -460,6 +460,24 @@ window.toggleFreeMode = function() {
     alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!\nCác module sẽ tuân theo lộ trình tiếp thu khoa học thần kinh từng bước.");
   }
 };
+window.toggleFreedomMode = window.toggleFreeMode;
+
+window.openDonateModal = window.openDonateModal || function() {
+  const modal = document.getElementById("donateModal");
+  if (modal) modal.classList.remove("hidden");
+};
+
+window.closeDonateModal = window.closeDonateModal || function() {
+  const modal = document.getElementById("donateModal");
+  if (modal) modal.classList.add("hidden");
+};
+
+window.copySTKModal = window.copySTKModal || function() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText("0941958090");
+  }
+  alert("Đã sao chép số tài khoản MB Bank: 0941958090 (LE HOANG DUC)!");
+};
 
 window.resetGatingFlow = function() {
   internalUnlockedStep = 0;
@@ -497,12 +515,26 @@ window.updateModuleTabsUI = function() {
   if (label) {
     label.textContent = isFreeMode ? 'Chế Độ Tự Do: BẬT' : 'Chế Độ Tự Do: TẮT';
   }
+  const freedomStatus = document.getElementById('freedomModeStatus');
+  if (freedomStatus) {
+    freedomStatus.textContent = isFreeMode ? 'Tự Do: BẬT' : 'Tự Do: TẮT';
+  }
+
   const btnFree = document.getElementById('btnToggleFreeMode');
   if (btnFree) {
     if (isFreeMode) {
       btnFree.className = "px-2.5 py-1 rounded-lg text-xs font-bold border border-cyan-500/50 text-cyan-300 bg-cyan-500/10 transition flex items-center space-x-1.5 cursor-pointer";
     } else {
       btnFree.className = "px-2.5 py-1 rounded-lg text-xs font-medium border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600 transition flex items-center space-x-1.5 cursor-pointer";
+    }
+  }
+
+  const freedomBtn = document.getElementById('freedomModeBtn');
+  if (freedomBtn) {
+    if (isFreeMode) {
+      freedomBtn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-cyan-300 bg-cyan-500/15 border border-cyan-500/40 shadow-sm transition flex items-center space-x-1 flex-shrink-0 cursor-pointer";
+    } else {
+      freedomBtn.className = "px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-semibold text-slate-400 hover:text-emerald-300 bg-slate-900 border border-slate-800 transition flex items-center space-x-1 flex-shrink-0 cursor-pointer";
     }
   }
 
