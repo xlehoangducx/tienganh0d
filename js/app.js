@@ -1170,7 +1170,7 @@ function getSceneVisualGraphicHTML(visualType, theme) {
           </div>
           <div>
             <span class="text-xs font-bold text-emerald-300 block flex items-center space-x-1.5">
-              <span>Gia Sư Trí Tuệ Nhân Tạo (OmniLang AI)</span>
+              <span>Gia Sư Trí Tuệ Nhân Tạo (Gia Sư Của Tui)</span>
               <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Live</span>
             </span>
             <span class="text-[11px] text-slate-300">Khởi đầu lộ trình 600h chuẩn Cambridge CEFR • Đánh thức phản xạ tự nhiên</span>

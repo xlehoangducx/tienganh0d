@@ -6,7 +6,7 @@
 
 export const CURRICULUM_DATA = {
   meta: {
-    title: "OmniLang AI - Nền Tảng Học Tiếng Anh Mô Phỏng Não Bộ AI",
+    title: "Gia Sư Của Tui - Nền Tảng Học Ngôn Ngữ Mô Phỏng Não Bộ AI",
     founder: "Người Sáng Lập & Học Viên #001",
     adminEmail: "xlehoangducx@gmail.com",
     lastUpdated: "2026-11-12",
