@@ -99,30 +99,46 @@ export const CURRICULUM_DATA = {
             audioFile: "assets/audio/lecture-buoi-01-slide-1.mp3",
             icon: "sparkles",
             badge: "Góc Nhìn Khai Sáng",
-            cardContent: `
-              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
-                <p>95% người học thất bại vì bắt đầu bằng công thức ngữ pháp khô khan. Não bộ con người không được tiến hóa để học quy tắc trừu tượng trước khi có cảm xúc và trải nghiệm xã hội.</p>
-                <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 font-medium">
-                  💡 Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A. Ở Buổi 1, chúng ta kích hoạt lại chính bản năng nguyên thủy: <strong>Kết nối và sinh tồn xã hội</strong>.
-                </div>
-              </div>
-            `
+            scenes: [
+              {
+                badge: "🔍 THỰC TRẠNG & NGUYÊN NHÂN",
+                title: "95% Người Học Thất Bại Vì Bắt Đầu Bằng Công Thức Khô Khan",
+                content: "Não bộ con người không được tiến hóa để học quy tắc trừu tượng trước khi có cảm xúc và trải nghiệm xã hội. Bắt đầu bằng lý thuyết khiến vùng hạch hạnh nhân (Amygdala) bị kích hoạt phản ứng sợ hãi và quá tải nhận thức.",
+                icon: "alert-triangle",
+                theme: "amber"
+              },
+              {
+                badge: "💡 BẢN NĂNG NGUYÊN THỦY CỦA NÃO BỘ",
+                title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
+                content: "Ở Buổi 1, chúng ta kích hoạt lại chính bản năng nguyên thủy: Kết nối và sinh tồn xã hội. Chỉ cần 3 cụm từ hạt nhân là đủ để mở khóa vùng phản xạ giao tiếp tự nhiên!",
+                icon: "sparkles",
+                theme: "emerald"
+              }
+            ]
           },
           {
             id: 2,
-            title: "Giải Mã 3 Âm Vị: Theta, Gió S, Bật T",
+            title: "Giải Mã 3 Âm Vị: Theta /θ/, Gió /s/, Bật /t/",
             subtitle: "Bẻ gãy triệt để 3 tật nói tiếng Anh bồi của người Việt",
             audioFile: "assets/audio/lecture-buoi-01-slide-2.mp3",
             icon: "mic",
             badge: "Cơ Sinh Học Khẩu Hình",
-            cardContent: `
-              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
-                <p>Tiếng Việt không có âm kẹp lưỡi /θ/, không có âm đuôi /s/, và không có âm bật /t/. Người Việt hay 'rụt lưỡi' nói Thank you thành Thanh-kiu và nuốt sạch âm đuôi biến Nice thành Nai.</p>
-                <div class="p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-cyan-300 font-medium">
-                  🎯 3 âm này là liệu pháp 'Tái cấu trúc cơ quan phát âm', đánh thức các nhóm cơ lưỡi và hàm chưa từng hoạt động.
-                </div>
-              </div>
-            `
+            scenes: [
+              {
+                badge: "⚠️ TẬT PHÁT ÂM TIẾNG VIỆT",
+                title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
+                content: "Tiếng Việt không có âm kẹp lưỡi /θ/, gió /s/ hay bật /t/. Người Việt hay thụt lưỡi nói Thank you thành 'Thanh-kiu' và nuốt trọn âm đuôi biến Nice thành 'Nai'.",
+                icon: "alert-circle",
+                theme: "amber"
+              },
+              {
+                badge: "🎯 TÁI CẤU TRÚC CƠ QUAN PHÁT ÂM",
+                title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
+                content: "3 âm vị này là liệu pháp vật lý trị liệu cho cơ quan phát âm, đánh thức các nhóm cơ lưỡi và hàm chưa từng hoạt động, xóa bỏ vĩnh viễn tật nói tiếng Anh bồi.",
+                icon: "mic",
+                theme: "cyan"
+              }
+            ]
           },
           {
             id: 3,
@@ -131,14 +147,22 @@ export const CURRICULUM_DATA = {
             audioFile: "assets/audio/lecture-buoi-01-slide-3.mp3",
             icon: "pie-chart",
             badge: "Kho Ngữ Liệu 1 Tỷ Từ",
-            cardContent: `
-              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
-                <p>Âm gió /s/ và âm bật /t/ xuất hiện trong hơn 65% toàn bộ hệ thống danh từ số nhiều, thì quá khứ (-ed) và động từ ngôi thứ 3 của người Mỹ.</p>
-                <div class="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 text-amber-300 font-medium">
-                  🏗️ Làm chủ 2 âm này ở Buổi 1 là xây xong cái móng nhà kiên cố cho toàn bộ ngữ pháp sau này mà không bao giờ phải sửa lại!
-                </div>
-              </div>
-            `
+            scenes: [
+              {
+                badge: "📊 QUY LUẬT PARETO 80/20",
+                title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Ngữ Pháp",
+                content: "Từ đuôi số nhiều (-s/es), ngôi thứ 3 hiện tại, thì quá khứ (-ed) đến sở hữu cách ('s) — tất cả đều cấu tạo từ 2 âm vị nền móng này.",
+                icon: "pie-chart",
+                theme: "amber"
+              },
+              {
+                badge: "🏗️ MÓNG NHÀ KIÊN CỐ",
+                title: "Làm Chủ Ngay Buổi 1 Để Không Bao Giờ Phải Sửa Lại",
+                content: "Làm chủ 2 âm này ở Buổi 1 là xây xong cái móng nhà kiên cố cho toàn bộ ngữ pháp sau này mà không bao giờ phải sửa lại hay hoang mang!",
+                icon: "layers",
+                theme: "emerald"
+              }
+            ]
           },
           {
             id: 4,
@@ -147,14 +171,22 @@ export const CURRICULUM_DATA = {
             audioFile: "assets/audio/lecture-buoi-01-slide-4.mp3",
             icon: "shield-check",
             badge: "Ứng Xử Xã Hội Thực Tế",
-            cardContent: `
-              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
-                <p>Bộ ba: <strong>Hi, nice to meet you!</strong> → <strong>Thank you so much!</strong> → <strong>Have a great day!</strong> là nghi thức ứng xử phổ quát trong văn hóa phương Tây.</p>
-                <div class="p-3 rounded-xl bg-purple-950/30 border border-purple-500/30 text-purple-300 font-medium">
-                  🤝 Dù ở sân bay JFK, quán cà phê hay ngoài phố: Chỉ cần nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn, kích hoạt Dopamine xóa tan nỗi sợ nói!
-                </div>
-              </div>
-            `
+            scenes: [
+              {
+                badge: "🌐 NGHI THỨC PHỔ QUÁT",
+                title: "Bộ Ba Giao Tiếp Sinh Tồn Xã Hội Phương Tây",
+                content: "Bộ ba: Hi, nice to meet you! → Thank you so much! → Have a great day! là nghi thức ứng xử phổ quát giúp bạn kết nối tức thì với bất kỳ người bản xứ nào.",
+                icon: "shield-check",
+                theme: "indigo"
+              },
+              {
+                badge: "⚡ KÍCH HOẠT DOPAMINE NÃO BỘ",
+                title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
+                content: "Dù ở sân bay JFK hay ngoài phố: Chỉ cần nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn, kích hoạt Dopamine xóa tan nỗi sợ nói tiếng Anh!",
+                icon: "smile",
+                theme: "purple"
+              }
+            ]
           },
           {
             id: 5,
@@ -163,14 +195,22 @@ export const CURRICULUM_DATA = {
             audioFile: "assets/audio/lecture-buoi-01-slide-5.mp3",
             icon: "cpu",
             badge: "Lộ Trình Đa Giác Quan",
-            cardContent: `
-              <div class="space-y-3 text-slate-300 text-sm leading-relaxed">
-                <p>Khóa tuần tự từng bước: Soi gương cơ miệng → Nghe âm chuẩn → Nói micro AI chấm điểm → Trắc nghiệm → Thẻ 3D → Đối thoại → Gõ câu.</p>
-                <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 font-medium text-center">
-                  ✨ Chạm mốc <strong>7/7 lần khắc sâu</strong> để ghi nhớ vĩnh viễn vào vỏ não dài hạn. Hãy cùng bắt đầu!
-                </div>
-              </div>
-            `
+            scenes: [
+              {
+                badge: "🔄 LỘ TRÌNH 6 BƯỚC ĐA GIÁC QUAN",
+                title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
+                content: "Kích hoạt đồng thời 6 vùng thần kinh: Vận động miệng, thính giác, thị giác, phản hồi âm thanh, không gian 3D và tái tạo chữ viết.",
+                icon: "cpu",
+                theme: "blue"
+              },
+              {
+                badge: "🧠 CỐ ĐỊNH KHỚP THẦN KINH DÀI HẠN",
+                title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
+                content: "Chuyển từng cụm từ từ bộ nhớ tạm sang vỏ não dài hạn. Đạt 7/7 lần là chạm mốc cố định khớp thần kinh vĩnh viễn (Long-term Potentiation)!",
+                icon: "zap",
+                theme: "emerald"
+              }
+            ]
           }
         ]
       },
@@ -414,7 +454,8 @@ export const CURRICULUM_DATA = {
             targetText: "Hi, nice to meet you!",
             ipa: "/haɪ, naɪs tuː miːt juː/",
             meaning: "Chào bạn, rất vui được gặp bạn!",
-            hint: "Mỉm cười thân thiện và đáp lại câu chào làm quen đầu tiên."
+            hint: "Mỉm cười thân thiện và đáp lại câu chào làm quen đầu tiên.",
+            audioFile: "assets/audio/hi-nice-to-meet-you.mp3"
           },
           {
             role: "ai",
@@ -430,7 +471,8 @@ export const CURRICULUM_DATA = {
             targetText: "Thank you so much!",
             ipa: "/ˈθæŋk juː soʊ mʌtʃ/",
             meaning: "Cảm ơn bạn rất nhiều!",
-            hint: "Cảm ơn chân thành với tông giọng trầm ấm."
+            hint: "Cảm ơn chân thành với tông giọng trầm ấm.",
+            audioFile: "assets/audio/thank-you-so-much.mp3"
           },
           {
             role: "ai",
@@ -446,7 +488,8 @@ export const CURRICULUM_DATA = {
             targetText: "Have a great day!",
             ipa: "/hæv ə ɡreɪt deɪ/",
             meaning: "Chúc bạn một ngày tuyệt vời nhé!",
-            hint: "Vẫy tay chào tạm biệt vui vẻ trước khi rời đi."
+            hint: "Vẫy tay chào tạm biệt vui vẻ trước khi rời đi.",
+            audioFile: "assets/audio/have-a-great-day.mp3"
           }
         ]
       },

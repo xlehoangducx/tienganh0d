@@ -722,6 +722,7 @@ function renderMasterLecture(lesson) {
   const currentSlide = slides[currentSlideIndex] || slides[0];
   const isFirst = currentSlideIndex === 0;
   const isLast = currentSlideIndex === slides.length - 1;
+  const scenes = currentSlide.scenes || [];
 
   container.innerHTML = `
     <div class="cyber-card p-6 sm:p-8 rounded-2xl relative overflow-hidden transition-all duration-300">
@@ -730,12 +731,12 @@ function renderMasterLecture(lesson) {
       <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <!-- Top Header & Slide Progress Dots -->
-      <div class="relative z-10 border-b border-slate-800 pb-4 mb-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div class="relative z-10 border-b border-slate-800 pb-4 mb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div class="flex items-center space-x-2">
             <span class="px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>BÀI THUYẾT GIẢNG MỞ ĐẦU</span>
+              <span>BÀI THUYẾT GIẢNG VIDEO NƠ-RON</span>
             </span>
           </div>
 
@@ -744,7 +745,6 @@ function renderMasterLecture(lesson) {
             ${slides.map((s, idx) => `
               <button onclick="goToSlide(${idx})" class="h-2 rounded-full transition-all duration-300 ${idx === currentSlideIndex ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-500/50' : idx < currentSlideIndex ? 'w-3 bg-emerald-700 hover:bg-emerald-600' : 'w-3 bg-slate-800 hover:bg-slate-700'}" title="Slide ${idx + 1}: ${s.title}"></button>
             `).join("")}
-            
           </div>
         </div>
 
@@ -756,25 +756,53 @@ function renderMasterLecture(lesson) {
         </p>
       </div>
 
-      <!-- Slide Main Visual Card (Animated) -->
-      <div class="relative z-10 mb-6 p-6 sm:p-7 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl slide-card-active transition-all duration-300" id="activeSlideCard">
-        <div class="flex items-start justify-between gap-3 mb-4 border-b border-slate-800/70 pb-3">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-300 flex items-center justify-center border border-emerald-500/30">
-              <i data-lucide="${currentSlide.icon || 'sparkles'}" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold block">${currentSlide.badge || 'Trọng Tâm Nơ-ron'}</span>
-              <h3 class="text-base sm:text-lg font-bold text-white">${currentSlide.title}</h3>
-            </div>
+      <!-- Slide Cinematic Stage (Video Presentation Experience) -->
+      <div class="relative z-10 mb-6 p-5 sm:p-7 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl transition-all duration-300" id="activeSlideCard">
+        
+        <!-- Video Header Info Bar -->
+        <div class="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-800/80">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-2.5 h-2.5 rounded-full ${isSlideAudioPlaying ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}"></span>
+            <span class="text-xs font-mono uppercase tracking-wider ${isSlideAudioPlaying ? 'text-emerald-400 font-bold' : 'text-slate-400'}" id="slideVideoStatusText">
+              ${isSlideAudioPlaying ? 'Đang phát video bài giảng • Đồng bộ âm thanh nơ-ron' : 'Chế độ trình chiếu từng cảnh'}
+            </span>
           </div>
-          <span class="px-3 py-1 rounded-full text-[11px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
-            Trang ${currentSlideIndex + 1}
+          <span class="px-3 py-0.5 rounded-full text-[11px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
+            Slide ${currentSlideIndex + 1} / ${slides.length}
           </span>
         </div>
 
-        <div class="slide-content-body">
-          ${currentSlide.cardContent}
+        <!-- Video Time Progress Bar -->
+        <div class="w-full bg-slate-950/80 rounded-full h-1.5 mb-5 overflow-hidden border border-slate-800">
+          <div id="slideVideoProgressBar" class="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 video-progress-fill" style="width: 0%"></div>
+        </div>
+
+        <!-- Distinct Cinematic Scenes (Video Keyframes) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="slideScenesGrid">
+          ${scenes.map((sc, sIdx) => `
+            <div id="slideSceneCard-${sIdx}" class="video-scene-card p-5 rounded-2xl bg-slate-950/60 border ${sc.theme === 'emerald' ? 'border-emerald-500/30' : sc.theme === 'cyan' ? 'border-cyan-500/30' : sc.theme === 'indigo' ? 'border-indigo-500/30' : sc.theme === 'purple' ? 'border-purple-500/30' : sc.theme === 'blue' ? 'border-blue-500/30' : 'border-amber-500/30'} flex flex-col justify-between" style="animation-delay: ${sIdx * 0.35}s">
+              <div>
+                <div class="flex items-center space-x-2 mb-2.5">
+                  <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider ${sc.theme === 'emerald' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : sc.theme === 'cyan' ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30' : sc.theme === 'indigo' ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30' : sc.theme === 'purple' ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30' : sc.theme === 'blue' ? 'bg-blue-500/15 text-blue-300 border border-blue-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}">
+                    ${sc.badge}
+                  </span>
+                </div>
+                <h4 class="text-base sm:text-lg font-bold text-white mb-2 leading-snug">
+                  ${sc.title}
+                </h4>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  ${sc.content}
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <span>Cảnh ${sIdx + 1} / ${scenes.length}</span>
+                <span class="flex items-center space-x-1 ${sc.theme === 'emerald' ? 'text-emerald-400' : sc.theme === 'cyan' ? 'text-cyan-400' : 'text-amber-400'}">
+                  <i data-lucide="${sc.icon || 'sparkles'}" class="w-3.5 h-3.5"></i>
+                  <span>Khắc sâu nơ-ron</span>
+                </span>
+              </div>
+            </div>
+          `).join("")}
         </div>
       </div>
 
@@ -879,7 +907,7 @@ window.toggleSlideAudio = function() {
   isSlideAudioPlaying = true;
   renderMasterLecture(lesson);
 
-  window.playTrack(slide.audioFile, () => {
+  const audioTrack = window.playTrack(slide.audioFile, () => {
     isSlideAudioPlaying = false;
     renderMasterLecture(lesson);
 
@@ -905,12 +933,48 @@ window.toggleSlideAudio = function() {
     isSlideAudioPlaying = false;
     renderMasterLecture(lesson);
   });
+
+  // Gắn listener ontimeupdate đồng bộ timeline tiến trình video & spotlight 2 cảnh
+  if (audioTrack) {
+    audioTrack.ontimeupdate = function() {
+      const pBar = document.getElementById("slideVideoProgressBar");
+      const statusText = document.getElementById("slideVideoStatusText");
+      if (audioTrack.duration) {
+        const pct = (audioTrack.currentTime / audioTrack.duration) * 100;
+        if (pBar) pBar.style.width = `${pct}%`;
+
+        const scene0 = document.getElementById("slideSceneCard-0");
+        const scene1 = document.getElementById("slideSceneCard-1");
+        if (audioTrack.currentTime < audioTrack.duration * 0.48) {
+          if (scene0) {
+            scene0.classList.add("is-active-spotlight");
+            scene0.classList.remove("is-dimmed-spotlight");
+          }
+          if (scene1) {
+            scene1.classList.remove("is-active-spotlight");
+            scene1.classList.add("is-dimmed-spotlight");
+          }
+          if (statusText) statusText.textContent = "Đang thuyết giảng Cảnh 1 • Thực trạng & Vấn đề";
+        } else {
+          if (scene0) {
+            scene0.classList.remove("is-active-spotlight");
+            scene0.classList.add("is-dimmed-spotlight");
+          }
+          if (scene1) {
+            scene1.classList.add("is-active-spotlight");
+            scene1.classList.remove("is-dimmed-spotlight");
+          }
+          if (statusText) statusText.textContent = "Đang thuyết giảng Cảnh 2 • Giải pháp & Quy luật nơ-ron";
+        }
+      }
+    };
+  }
 };
 
 window.finishMasterLectureAndUnlockStep1 = function() {
   window.stopAllAudios();
   isSlideAudioPlaying = false;
-  window.unlockStep(1, true); // Mở khóa Bước 1 và tự động chuyển sang kèm phát âm thanh hướng dẫn
+  window.unlockStep(1, true);
   window.scrollTo({ top: 120, behavior: 'smooth' });
 };
 
@@ -1392,6 +1456,30 @@ function setupDialogueModule(lesson) {
   updateCurrentDialogueTurnUI();
 }
 
+window.playDialogueTurnAudio = function(turnIndex) {
+  if (!currentDialogueScenario || !currentDialogueScenario.turns) return;
+  const turn = currentDialogueScenario.turns[turnIndex];
+  if (!turn) return;
+
+  // Highlight bubble
+  document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400', 'bg-cyan-950/30'));
+  const bubble = document.getElementById(`dialogueBubble-${turnIndex}`);
+  if (bubble) bubble.classList.add('ring-2', 'ring-cyan-400', 'bg-cyan-950/30');
+
+  let audioPath = turn.audioFile;
+  if (!audioPath) {
+    const phrase = (turn.role === 'ai' ? turn.text : turn.targetText) || '';
+    const normKey = phrase.trim().toLowerCase().replace(/[.,!?;:"']/g, "").replace(/\s+/g, " ").trim();
+    audioPath = VIENEU_AUDIO_MAP[normKey];
+  }
+
+  if (audioPath) {
+    window.playTrack(audioPath);
+  } else {
+    speakText(turn.role === 'ai' ? turn.text : turn.targetText);
+  }
+};
+
 function renderDialogueTurns() {
   const container = document.getElementById("dialogueTurnsContainer");
   if (!container || !currentDialogueScenario) return;
@@ -1400,22 +1488,23 @@ function renderDialogueTurns() {
   container.innerHTML = turns.map((turn, idx) => {
     const isAi = turn.role === 'ai';
     return `
-      <div id="dialogueBubble-${idx}" class="p-3.5 rounded-2xl transition-all duration-300 ${isAi ? 'bg-slate-900/90 border border-purple-500/20 mr-4 sm:mr-12' : 'bg-emerald-950/20 border border-emerald-500/30 ml-4 sm:ml-12'}">
+      <div id="dialogueBubble-${idx}" class="p-3.5 sm:p-4 rounded-2xl transition-all duration-300 ${isAi ? 'bg-slate-900/90 border border-purple-500/20 mr-4 sm:mr-12' : 'bg-emerald-950/20 border border-emerald-500/30 ml-4 sm:ml-12'}">
         <div class="flex items-start space-x-3">
           <div class="w-8 h-8 rounded-xl ${isAi ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-base flex-shrink-0">
             ${isAi ? (currentDialogueScenario.characterAvatar || '👨‍💼') : '🙋'}
           </div>
           <div class="flex-grow">
-            <div class="flex items-center justify-between mb-0.5">
+            <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-bold ${isAi ? 'text-purple-300' : 'text-emerald-400'}">${turn.speaker}</span>
-              <button onclick="speakText('${(isAi ? turn.text : turn.targetText).replace(/'/g, "\\'")}')" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 px-2 py-0.5 rounded bg-slate-800">
-                <i data-lucide="volume-2" class="w-3 h-3"></i>
+              <button onclick="playDialogueTurnAudio(${idx})" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition cursor-pointer border border-slate-700">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
                 <span>Nghe</span>
               </button>
             </div>
-            <div class="text-sm sm:text-base font-bold text-white">${isAi ? turn.text : turn.targetText}</div>
-            <div class="text-xs text-slate-400 mt-0.5">${turn.meaning}</div>
-            ${turn.hint ? `<div class="text-[11px] text-amber-400/90 mt-1">💡 <em>Mẹo: ${turn.hint}</em></div>` : ''}
+            <div class="text-sm sm:text-base font-bold text-white mb-0.5">${isAi ? turn.text : turn.targetText}</div>
+            <div class="text-[11px] font-mono text-slate-400 mb-1">${turn.ipa || ''}</div>
+            <div class="text-xs text-slate-300">${turn.meaning}</div>
+            ${turn.hint ? `<div class="text-[11px] text-amber-300/90 mt-1 italic">💡 <em>Mẹo: ${turn.hint}</em></div>` : ''}
           </div>
         </div>
       </div>
@@ -1451,14 +1540,14 @@ window.narrateCurrentScenario = function() {
     window.stopAllAudios();
     currentStoryAudio = null;
     if (btn) {
-      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
       if (window.lucide) window.lucide.createIcons();
     }
     return;
   }
 
   if (btn) {
-    btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời kể... (Bấm dừng)</span>`;
+    btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-amber-300 animate-pulse"></i><span class="text-amber-300">Đang phát lời kể... (Bấm dừng)</span>`;
     if (window.lucide) window.lucide.createIcons();
   }
 
@@ -1467,7 +1556,7 @@ window.narrateCurrentScenario = function() {
     const noticeEl = document.getElementById("voiceNoticeTip");
     if (noticeEl) noticeEl.classList.add("hidden");
     if (btn) {
-      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
       if (window.lucide) window.lucide.createIcons();
     }
   }, () => {
@@ -1476,7 +1565,7 @@ window.narrateCurrentScenario = function() {
       speakVietnamese(lesson.dialogueScenario.storyNarrativeVi);
     }
     if (btn) {
-      btn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+      btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
       if (window.lucide) window.lucide.createIcons();
     }
   });
@@ -1505,24 +1594,41 @@ window.playFullConversationLoop = function() {
 
   function playTurn() {
     if (idx >= turns.length) {
+      document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400', 'bg-cyan-950/30'));
       alert("🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên cùng David!");
       return;
     }
 
     const turn = turns[idx];
-    // Highlight bubble
-    document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400'));
+    document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400', 'bg-cyan-950/30'));
     const bubble = document.getElementById(`dialogueBubble-${idx}`);
-    if (bubble) bubble.classList.add('ring-2', 'ring-cyan-400');
+    if (bubble) {
+      bubble.classList.add('ring-2', 'ring-cyan-400', 'bg-cyan-950/30');
+      bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-    if (turn.role === 'ai' && turn.audioFile) {
-      window.playTrack(turn.audioFile, () => {
+    let audioPath = turn.audioFile;
+    if (!audioPath) {
+      const phrase = (turn.role === 'ai' ? turn.text : turn.targetText) || '';
+      const normKey = phrase.trim().toLowerCase().replace(/[.,!?;:"']/g, "").replace(/\s+/g, " ").trim();
+      audioPath = VIENEU_AUDIO_MAP[normKey];
+    }
+
+    if (audioPath) {
+      window.playTrack(audioPath, () => {
         idx++;
-        setTimeout(playTurn, 900);
+        setTimeout(playTurn, 850);
       }, () => {
-        speakText(turn.text);
-        idx++;
-        setTimeout(playTurn, 1000);
+        const phrase = turn.role === 'ai' ? turn.text : turn.targetText;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.88;
+        utterance.onend = function() {
+          idx++;
+          setTimeout(playTurn, 850);
+        };
+        window.speechSynthesis.speak(utterance);
       });
     } else {
       const phrase = turn.role === 'ai' ? turn.text : turn.targetText;
@@ -1530,12 +1636,10 @@ window.playFullConversationLoop = function() {
       const utterance = new SpeechSynthesisUtterance(phrase);
       utterance.lang = 'en-US';
       utterance.rate = 0.88;
-
       utterance.onend = function() {
         idx++;
-        setTimeout(playTurn, 1000);
+        setTimeout(playTurn, 850);
       };
-
       window.speechSynthesis.speak(utterance);
     }
   }
@@ -1545,7 +1649,14 @@ window.playFullConversationLoop = function() {
 
 window.replayCurrentTurnTarget = function() {
   if (userTurnsList.length === 0) return;
-  speakText(userTurnsList[currentDialogueTurnIndex].targetText);
+  const currentTurn = userTurnsList[currentDialogueTurnIndex];
+  if (!currentTurn) return;
+
+  if (currentTurn.audioFile) {
+    window.playTrack(currentTurn.audioFile);
+  } else {
+    speakText(currentTurn.targetText);
+  }
 };
 
 window.prevDialogueTurn = function() {

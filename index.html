@@ -865,48 +865,42 @@
 
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const type = Math.floor(Math.random() * 4);
+
+        // BẮT BUỘC: CHỈ BAY Ở 2 BIÊN MÉP (TRÁI & PHẢI), TUYỆT ĐỐI KHÔNG BAY VÀO GIỮA
+        const isLeft = Math.random() < 0.5;
+        const sideMargin = Math.min(160, Math.max(90, vw * 0.12));
 
         let startX, startY, endX, endY;
 
-        if (type === 0) {
-          // Bottom drifting up
-          startX = Math.random() * (vw - 120);
-          startY = vh + 20;
-          endX = startX + (Math.random() * 120 - 60);
-          endY = -60;
-        } else if (type === 1) {
-          // Top drifting down
-          startX = Math.random() * (vw - 120);
-          startY = -60;
-          endX = startX + (Math.random() * 120 - 60);
-          endY = vh + 60;
-        } else if (type === 2) {
-          // Left drifting right
-          startX = -120;
-          startY = Math.random() * (vh - 100) + 50;
-          endX = vw + 60;
-          endY = startY + (Math.random() * 120 - 60);
+        if (isLeft) {
+          startX = Math.random() * (sideMargin - 30) + 12;
+          endX = startX + (Math.random() * 26 - 13);
         } else {
-          // Right drifting left
-          startX = vw + 30;
-          startY = Math.random() * (vh - 100) + 50;
-          endX = -130;
-          endY = startY + (Math.random() * 120 - 60);
+          startX = vw - sideMargin + Math.random() * (sideMargin - 40);
+          endX = startX + (Math.random() * 26 - 13);
+        }
+
+        const floatUp = Math.random() < 0.65;
+        if (floatUp) {
+          startY = vh + 15;
+          endY = -50;
+        } else {
+          startY = -40;
+          endY = vh + 40;
         }
 
         pill.style.left = `${startX}px`;
         pill.style.top = `${startY}px`;
         pill.style.opacity = "0";
-        pill.style.transform = `scale(0.8) rotate(${(Math.random() - 0.5) * 15}deg)`;
+        pill.style.transform = `scale(0.8) rotate(${(Math.random() - 0.5) * 12}deg)`;
 
         container.appendChild(pill);
 
         requestAnimationFrame(() => {
           pill.style.opacity = "0.85";
-          const duration = 9000 + Math.random() * 5000;
+          const duration = 10000 + Math.random() * 5000;
           pill.style.transition = `opacity 1.5s ease, transform ${duration}ms cubic-bezier(0.1, 0.2, 0.2, 1)`;
-          pill.style.transform = `translate(${endX - startX}px, ${endY - startY}px) scale(1) rotate(${(Math.random() - 0.5) * 20}deg)`;
+          pill.style.transform = `translate(${endX - startX}px, ${endY - startY}px) scale(1) rotate(${(Math.random() - 0.5) * 16}deg)`;
 
           setTimeout(() => {
             pill.style.opacity = "0";

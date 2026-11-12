@@ -352,44 +352,47 @@
         <div id="moduleSpeaking" class="module-content hidden space-y-4">
           <div class="cyber-card p-5 rounded-2xl border-purple-500/30">
             <div id="speakingGuideBanner"></div>
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">
-                  <i data-lucide="bot" class="w-5 h-5"></i>
+            <!-- 1. KHUNG DẪN CHUYỆN KỂ BỐI CẢNH (ĐẶT TRÊN ĐẦU TIÊN THEO ĐÚNG SƯ PHẠM) -->
+            <div class="p-5 rounded-2xl bg-purple-950/30 border border-purple-500/30 mb-5 relative overflow-hidden shadow-lg shadow-purple-950/40">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 border-b border-purple-500/20 pb-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold border border-purple-500/30 flex-shrink-0">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold block">Bước Khởi Đầu • Neo Ngữ Cảnh Xã Hội</span>
+                    <h4 class="text-sm sm:text-base font-bold text-white">Bối Cảnh Thực Tế Do Gia Sư AI Kể Chuyện</h4>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-base font-bold text-white" id="dialogueScenarioTitle">Phòng Đối Thoại Nhập Vai 2 Chiều (AI Speaking Loop)</h3>
-                  <p class="text-xs text-purple-300/80 mt-0.5">Mô phỏng 100% bối cảnh thực tế: Nghe gia sư kể chuyện → Người bản xứ mở lời → Bạn nói đối đáp</p>
-                </div>
-              </div>
-              <div class="flex items-center space-x-2">
-                <button onclick="playFullConversationLoop()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition">
-                  <i data-lucide="play-circle" class="w-4 h-4"></i>
-                  <span>Nghe Toàn Bộ Hội Thoại</span>
-                </button>
-                <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                  Web Speech API 0đ
-                </span>
-              </div>
-            </div>
-
-            <!-- Khung Dẫn Chuyện Kể Bối Cảnh (Teacher Audio Storytelling) -->
-            <div class="p-4 rounded-xl bg-purple-950/20 border border-purple-500/20 mb-5">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                <div class="flex items-center space-x-2 text-xs font-bold text-purple-300">
-                  <i data-lucide="book-open" class="w-4 h-4"></i>
-                  <span>Bối Cảnh Thực Tế Do Gia Sư AI Kể Chuyện</span>
-                </div>
-                <button onclick="narrateCurrentScenario()" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-purple-900/30 transition self-start sm:self-auto cursor-pointer">
-                  <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                <button onclick="narrateCurrentScenario()" id="btnPlayStoryAudio" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center space-x-2 shadow-lg shadow-purple-900/40 transition cursor-pointer self-start sm:self-auto flex-shrink-0">
+                  <i data-lucide="volume-2" class="w-4 h-4"></i>
                   <span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>
                 </button>
               </div>
-              <p id="dialogueStoryNarrative" class="text-xs text-slate-300 leading-relaxed italic mb-2">
+              <p id="dialogueStoryNarrative" class="text-xs sm:text-sm text-slate-200 leading-relaxed italic bg-slate-950/50 p-4 rounded-xl border border-purple-500/20">
                 Đang tải bối cảnh câu chuyện...
               </p>
-              <div id="voiceNoticeTip" class="hidden text-[11px] text-amber-300/90 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
+              <div id="voiceNoticeTip" class="hidden text-[11px] text-amber-300/90 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 mt-2">
                 💡 <em>Hệ điều hành của bạn chưa cài gói giọng đọc tiếng Việt của trình duyệt. Bạn hãy theo dõi lời dẫn chuyện hiển thị trực quan ở trên nhé!</em>
+              </div>
+            </div>
+
+            <!-- 2. KHUNG HỘI THOẠI & NÚT NGHE TOÀN BỘ (NẰM SAU BỐI CẢNH) -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-5">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold border border-emerald-500/30 flex-shrink-0">
+                  <i data-lucide="message-square-text" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="text-base sm:text-lg font-bold text-white" id="dialogueScenarioTitle">Cuộc Gặp Gỡ Tình Cờ Tại Sân Bay Quốc Tế New York</h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Mô phỏng 100% cuộc đối thoại thực tế: Người bản xứ David mở lời → Bạn nói đối đáp</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                <button onclick="playFullConversationLoop()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 hover:from-emerald-500/30 hover:to-cyan-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md shadow-emerald-500/10">
+                  <i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i>
+                  <span>🎧 Nghe Toàn Bộ Hội Thoại</span>
+                </button>
               </div>
             </div>
 
