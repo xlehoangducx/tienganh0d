@@ -17,6 +17,31 @@ let currentActiveLessonId = "buoi-01";
 let userQuizScore = 0;
 let answeredCount = 0;
 
+// ==============================================================
+// HELPERS: AN TOÀN HIỂN THỊ (CHỐNG XSS) & ĐƯỜNG DẪN ẢNH
+// ==============================================================
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function safePhotoURL(url, fallbackName = "Học viên") {
+  try {
+    const parsed = new URL(String(url || ""));
+    if (parsed.protocol === "https:") return parsed.href;
+  } catch (e) {}
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName || "Học viên")}`;
+}
+
+function safeDocId(id) {
+  return String(id || "").replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
 // Bộ nhớ lưu từ đang chọn luyện phát âm trong Module 1: { [techIdx]: wordObject }
 const selectedMouthWords = {};
 
@@ -182,7 +207,9 @@ export function speakText(text) {
   utterance.lang = 'en-US';
   utterance.rate = 0.88;
   const voices = window.speechSynthesis.getVoices();
-  const usVoice = voices.find(v => v.lang === 'en-US' || v.lang.includes('US') || v.lang.includes('en'));
+  // Chỉ dùng giọng Mỹ. Không lấy en-GB/en-AU để tránh đọc lệch âm.
+  const usVoice = voices.find(v => v.lang === 'en-US' && v.localService) ||
+    voices.find(v => v.lang === 'en-US');
   if (usVoice) utterance.voice = usVoice;
   window.speechSynthesis.speak(utterance);
 }
@@ -322,16 +349,20 @@ window.selectTrackAndOpenCurriculum = function(trackName) {
     const badge = document.getElementById("drawerCurrentTrackBadge");
     if (badge) badge.textContent = "🇺🇸 Giao Tiếp 0đ";
   } else if (trackName === 'esp') {
-    // Thông báo chuyên ngành ESP
-    window.switchDrawerView('curriculum');
-    const badge = document.getElementById("drawerCurrentTrackBadge");
-    if (badge) badge.textContent = "💼 Chuyên Ngành (ESP)";
+    window.notifyEspComingSoon();
+    return;
   }
 };
 
 window.switchMainView = function(viewId) {
+  if (viewId === "adminView" && !isCurrentUserAdmin()) {
+    alert("🔒 Khu vực quản trị chỉ dành cho Super Admin.");
+    return;
+  }
+
   document.getElementById("curriculumView").classList.add("hidden");
   document.getElementById("adminView").classList.add("hidden");
+  window.toggleSidebar(true);
 
   document.querySelectorAll(".view-tab-btn").forEach(btn => {
     btn.classList.remove("text-emerald-400", "bg-emerald-500/10", "border-emerald-500/20", "text-amber-400", "bg-amber-500/10", "border-amber-500/20");
@@ -362,6 +393,9 @@ let currentGuideAudio = null;
 let currentStoryAudio = null;
 
 window.stopAllAudios = function() {
+  stopCaptionSync();
+  currentLectureMeta = null;
+  resetLecturePlaybackUI();
   if (activeGlobalAudio) {
     try { activeGlobalAudio.pause(); } catch(e) {}
     activeGlobalAudio = null;
@@ -381,18 +415,31 @@ window.stopAllAudios = function() {
   if (currentStoryAudio) {
     try { currentStoryAudio.pause(); } catch(e) {}
     currentStoryAudio = null;
+    const storyBtn = document.getElementById("btnPlayStoryAudio");
+    if (storyBtn) {
+      storyBtn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span>🎧 Nghe Gia Sư Kể Bối Cảnh</span>`;
+    }
+  }
+  if (currentPlayingGuideStep !== null) {
+    const guideBtn = document.getElementById(`btnGuideAudio-${currentPlayingGuideStep}`);
+    if (guideBtn) {
+      guideBtn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i><span>🎧 Nghe Lời Thầy Hướng Dẫn</span>`;
+      guideBtn.className = "flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition flex items-center space-x-1.5 cursor-pointer";
+    }
+    currentPlayingGuideStep = null;
   }
   if (window.speechSynthesis) {
     try { window.speechSynthesis.cancel(); } catch(e) {}
   }
+  if (window.lucide) window.lucide.createIcons();
 };
 
-window.playTrack = function(audioPath, onEnded, onError) {
+window.playTrack = function(audioPath, onEnded, onError, rate = 1) {
   window.stopAllAudios();
   const audio = new Audio(audioPath);
   activeGlobalAudio = audio;
   try {
-    audio.playbackRate = currentLecturePlaybackSpeed;
+    audio.playbackRate = rate;
   } catch(e) {}
   audio.onended = () => {
     if (activeGlobalAudio === audio) activeGlobalAudio = null;
@@ -424,24 +471,43 @@ export const MODULE_FLOW = [
 
 let internalUnlockedStep = 0; // 0: chỉ mở moduleLecture, 1: mở đến moduleMouth, ..., 6: mở tất cả
 let isFreeMode = false;
+const GATING_STORAGE_PREFIX = "tienganh0d_step_gating_v2";
 
-// Đọc trạng thái từ localStorage
-try {
-  const savedGating = localStorage.getItem('tienganh0d_step_gating_buoi_01');
-  if (savedGating) {
+// Khóa tiến trình phải tách riêng theo tài khoản và theo buổi học.
+// Không bao giờ đọc trạng thái trước khi biết người dùng là ai: dữ liệu cũ
+// của admin hoặc của tài khoản khác không thể rò rỉ sang học viên.
+function getGatingStorageKey() {
+  const userKey = currentUser && currentUser.uid ? currentUser.uid : "guest";
+  return `${GATING_STORAGE_PREFIX}_${userKey}_${currentActiveLessonId}`;
+}
+
+function loadStepGatingState() {
+  internalUnlockedStep = 0;
+  isFreeMode = false;
+  if (!currentUser) return; // Khách chưa đăng nhập: chỉ dùng trạng thái trong RAM
+
+  try {
+    const savedGating = localStorage.getItem(getGatingStorageKey());
+    if (!savedGating) return;
     const parsed = JSON.parse(savedGating);
-    if (typeof parsed.unlockedStep === 'number') internalUnlockedStep = parsed.unlockedStep;
-    if (typeof parsed.isFreeMode === 'boolean') isFreeMode = parsed.isFreeMode;
+    if (typeof parsed.unlockedStep === "number") {
+      internalUnlockedStep = Math.max(0, Math.min(6, parsed.unlockedStep));
+    }
+    // Chế độ Tự Do là quyền của admin, không bao giờ kế thừa từ storage của người khác.
+    if (isCurrentUserAdmin() && parsed.isFreeMode === true) {
+      isFreeMode = true;
+    }
+  } catch (e) {
+    console.warn("Lỗi đọc step gating từ localStorage:", e);
   }
-} catch (e) {
-  console.warn('Lỗi đọc step gating từ localStorage:', e);
 }
 
 function saveStepGatingState() {
+  if (!currentUser) return;
   try {
-    localStorage.setItem('tienganh0d_step_gating_buoi_01', JSON.stringify({
+    localStorage.setItem(getGatingStorageKey(), JSON.stringify({
       unlockedStep: internalUnlockedStep,
-      isFreeMode: isFreeMode
+      isFreeMode: isCurrentUserAdmin() ? isFreeMode : false
     }));
   } catch (e) {}
 }
@@ -461,8 +527,8 @@ window.unlockStep = function(stepNumber, autoSwitch = false) {
 };
 
 window.toggleFreeMode = function() {
-  const isAdmin = currentProfile?.role === 'admin' || (currentUser && currentUser.email === 'xlehoangducx@gmail.com');
-  if (!isAdmin) {
+  if (!isCurrentUserAdmin()) {
+    isFreeMode = false;
     alert("🔒 Chế độ Tự Do chỉ dành riêng cho Quản trị viên để kiểm thử hệ thống!");
     return;
   }
@@ -472,7 +538,7 @@ window.toggleFreeMode = function() {
   if (isFreeMode) {
     alert("🔓 Đã BẬT Chế Độ Tự Do Ôn Tập (Admin Mode)!\nBạn có thể tự do mở xem và ôn tập bất kỳ bước nào trong 7 module.");
   } else {
-    alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!\nCác module sẽ tuân theo lộ trình tiếp thu khoa học thần kinh từng bước.");
+    alert("🔒 Đã kích hoạt lại Khóa Tuần Tự!\nCác module sẽ tuân theo lộ trình tiếp thu từng bước.");
   }
 };
 window.toggleFreedomMode = window.toggleFreeMode;
@@ -504,24 +570,30 @@ window.resetGatingFlow = function() {
 };
 
 window.updateModuleTabsUI = function() {
+  if (isFreeMode && !isCurrentUserAdmin()) {
+    isFreeMode = false;
+    saveStepGatingState();
+  }
+
   MODULE_FLOW.forEach((mod, idx) => {
     const btn = document.getElementById(`btn-${mod.id}`);
     if (!btn) return;
     const isUnlocked = isFreeMode || idx <= internalUnlockedStep;
     const isCompleted = !isFreeMode && idx < internalUnlockedStep;
+    btn.title = mod.title;
 
     if (isUnlocked) {
       btn.classList.remove("opacity-50", "cursor-not-allowed");
       btn.innerHTML = `
         <i data-lucide="${mod.icon || 'star'}" class="w-4 h-4"></i>
-        <span>${mod.title}</span>
+        <span class="module-tab-label">${mod.title}</span>
         ${isCompleted ? '<span class="text-[10px] text-emerald-400 ml-1 font-bold">✓</span>' : ''}
       `;
     } else {
       btn.classList.add("opacity-50", "cursor-not-allowed");
       btn.innerHTML = `
         <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
-        <span class="text-slate-500">${mod.title}</span>
+        <span class="module-tab-label text-slate-500">${mod.title}</span>
       `;
     }
   });
@@ -545,7 +617,7 @@ window.updateModuleTabsUI = function() {
   }
 
   const freedomBtn = document.getElementById('freedomModeBtn');
-  const isAdmin = currentProfile?.role === 'admin' || (currentUser && currentUser.email === 'xlehoangducx@gmail.com');
+  const isAdmin = isCurrentUserAdmin();
   if (freedomBtn) {
     if (isAdmin) {
       freedomBtn.classList.remove("hidden");
@@ -715,8 +787,9 @@ window.selectLesson = function(lessonId) {
   }
 
   currentActiveLessonId = lessonId;
-
-  // Cập nhật Header
+  currentSlideIndex = 0;
+  currentSlideSceneIndex = 0;
+  loadStepGatingState();
   const titleEl = document.getElementById("currentLessonTitle");
   const topicEl = document.getElementById("currentLessonTopic");
   const contextEl = document.getElementById("currentLessonContext");
@@ -856,7 +929,97 @@ function formatTime(sec) {
 // 5.4. VISUAL MOTION GRAPHICS GENERATOR CHO TỪNG CẢNH THUYẾT GIẢNG
 // ==============================================================
 let currentLectureAudioInstance = null;
-let currentLecturePlaybackSpeed = 0.95; // Mặc định cố định 0.95x theo yêu cầu, loại bỏ thanh đổi tốc độ gây rối mắt
+let currentLecturePlaybackSpeed = 0.95; // Audio đã được thu chậm sẵn; không chỉnh tốc độ khi phát để hình - tiếng khớp tuyệt đối
+let lectureTimingMap = null;
+let lectureTimingPromise = null;
+let captionFrame = null;
+let currentLectureMeta = null;
+let lectureIntroPlayed = false;
+const LECTURE_INTRO_FILE = "assets/audio/lecture-buoi-01-intro.mp3";
+
+function loadLectureTiming() {
+  if (lectureTimingMap) return Promise.resolve(lectureTimingMap);
+  if (!lectureTimingPromise) {
+    lectureTimingPromise = fetch("assets/audio/lecture-buoi-01-timing.json", { cache: "force-cache" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        lectureTimingMap = data || {};
+        return lectureTimingMap;
+      })
+      .catch(() => {
+        lectureTimingMap = {};
+        return lectureTimingMap;
+      });
+  }
+  return lectureTimingPromise;
+}
+
+function getLectureTimingEntry(file) {
+  if (!lectureTimingMap || !file) return null;
+  const base = String(file).split("/").pop();
+  return lectureTimingMap[base] || null;
+}
+
+function stopCaptionSync() {
+  if (captionFrame) cancelAnimationFrame(captionFrame);
+  captionFrame = null;
+}
+
+function syncLectureCaption(entry, time) {
+  const ribbon = document.getElementById("lectureCaptionRibbon");
+  const textEl = document.getElementById("lectureCaptionText");
+  const fill = document.getElementById("lectureTimelineFill");
+  const timeEl = document.getElementById("lectureTimeLabel");
+
+  if (fill) {
+    const duration = entry?.duration || 0;
+    fill.style.width = duration ? `${Math.min(100, (time / duration) * 100)}%` : "0%";
+  }
+  if (timeEl) timeEl.textContent = formatTime(time);
+
+  if (!ribbon || !textEl || !entry || !Array.isArray(entry.captions)) return;
+  const caption = entry.captions.find((item) => time >= item.start && time < item.end);
+  if (caption) {
+    if (textEl.textContent !== caption.text) {
+      textEl.textContent = caption.text;
+      ribbon.classList.remove("caption-pop");
+      void ribbon.offsetWidth;
+      ribbon.classList.add("caption-pop");
+    }
+    ribbon.classList.remove("hidden");
+  } else if (time < (entry.captions[0]?.start || 0)) {
+    ribbon.classList.add("hidden");
+  }
+}
+
+function startCaptionSync(audio, file) {
+  stopCaptionSync();
+  const entry = getLectureTimingEntry(file);
+  const ribbon = document.getElementById("lectureCaptionRibbon");
+  if (ribbon) ribbon.classList.add("hidden");
+  if (!audio || !entry) return;
+
+  const totalEl = document.getElementById("lectureTotalTime");
+  if (totalEl) totalEl.textContent = formatTime(entry.duration || audio.duration || 0);
+
+  const tick = () => {
+    if (!audio || audio.paused || audio.ended) return;
+    syncLectureCaption(entry, audio.currentTime || 0);
+    captionFrame = requestAnimationFrame(tick);
+  };
+  captionFrame = requestAnimationFrame(tick);
+}
+
+function resetLecturePlaybackUI() {
+  stopCaptionSync();
+  const ribbon = document.getElementById("lectureCaptionRibbon");
+  if (ribbon) ribbon.classList.add("hidden");
+  const fill = document.getElementById("lectureTimelineFill");
+  if (fill) fill.style.width = "0%";
+  const timeEl = document.getElementById("lectureTimeLabel");
+  if (timeEl) timeEl.textContent = "00:00";
+}
+loadLectureTiming();
 
 function isCurrentUserAdmin() {
   return (currentProfile && currentProfile.role === 'admin') || (currentUser && currentUser.email === 'xlehoangducx@gmail.com');
@@ -866,83 +1029,94 @@ let isCinemaMode = false;
 let cinemaCountdownTimer = null;
 
 window.startCinemaPresentationMode = function() {
-  const isAdmin = isCurrentUserAdmin();
-  if (!isAdmin) return;
+  if (!isCurrentUserAdmin() || isCinemaMode) return;
 
+  window.stopAllAudios();
+  isSlideAudioPlaying = false;
+  currentLectureMeta = null;
   isCinemaMode = true;
-  const playBtn = document.getElementById("btnPlaySlideAudio");
-  const cinemaBtn = document.getElementById("btnCinemaMode");
-  const waveBox = document.getElementById("lectureWaveVisualizer");
-  const restoreHeaderBtn = document.getElementById("btnRestoreTopHeader");
+  currentSlideIndex = 0;
+  currentSlideSceneIndex = 0;
 
-  // Ẩn tất cả nút điều khiển để quay màn hình
-  if (playBtn) { playBtn.classList.add("hidden"); playBtn.classList.remove("flex"); }
-  if (cinemaBtn) { cinemaBtn.classList.add("hidden"); cinemaBtn.classList.remove("flex"); }
-  if (restoreHeaderBtn) { restoreHeaderBtn.classList.add("hidden"); restoreHeaderBtn.classList.remove("flex"); }
+  document.body.classList.add("cinema-mode");
+  document.body.classList.remove("cinema-live");
 
-  if (waveBox) {
-    waveBox.className = "w-full max-w-2xl h-12 px-6 rounded-2xl bg-slate-900/90 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.12)] transition-all duration-500 cursor-pointer overflow-hidden";
-    // Trong 5s đếm ngược: hiển thị số giây đếm ngược để chuẩn bị quay màn hình
-    waveBox.innerHTML = `
-      <div id="cinemaCountdownCenter" class="flex items-center space-x-2 text-xs sm:text-sm font-mono font-bold text-cyan-300">
-        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-        <span id="cinemaCountdownText">Chuẩn bị quay màn hình: 5s</span>
-      </div>
-    `;
-    waveBox.onclick = function() {
-      // Khi bấm vào waveBox lúc đang quay, có thể thoát cinema mode
-      window.exitCinemaMode();
-    };
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  if (!lesson) {
+    isCinemaMode = false;
+    document.body.classList.remove("cinema-mode");
+    return;
   }
+
+  // Luôn mở màn từ slide đầu tiên để buổi quay có bố cục ổn định.
+  renderMasterLecture(lesson);
+
+  const oldOverlay = document.getElementById("cinemaCountdownOverlay");
+  if (oldOverlay) oldOverlay.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "cinemaCountdownOverlay";
+  overlay.className = "cinema-countdown-overlay";
+  overlay.innerHTML = `
+    <span class="cinema-countdown-label">Chuẩn bị trình chiếu</span>
+    <span id="cinemaCountdownNumber" class="cinema-countdown-number">5</span>
+    <span class="cinema-countdown-hint">Bấm Esc để thoát bất cứ lúc nào</span>
+  `;
+  document.body.appendChild(overlay);
 
   let remainingSec = 5;
   if (cinemaCountdownTimer) clearInterval(cinemaCountdownTimer);
 
   cinemaCountdownTimer = setInterval(() => {
-    remainingSec--;
-    const textEl = document.getElementById("cinemaCountdownText");
-    if (textEl && remainingSec > 0) {
-      textEl.textContent = `Chuẩn bị quay màn hình: ${remainingSec}s`;
-    }
+    if (!isCinemaMode) return;
+    remainingSec -= 1;
 
-    if (remainingSec <= 0) {
-      clearInterval(cinemaCountdownTimer);
-      cinemaCountdownTimer = null;
+    const numberEl = document.getElementById("cinemaCountdownNumber");
+    if (numberEl && remainingSec > 0) numberEl.textContent = String(remainingSec);
 
-      // 5 GIÂY ĐÃ HẾT: ẨN HOÀN TOÀN CÁC NÚT VÀ CHỮ, CHỈ ĐỂ DẢI SÓNG ÂM KÉO DÀI ĐỂ QUAY MÀN HÌNH
-      if (waveBox) {
-        waveBox.innerHTML = `
-          <div class="flex items-center justify-center space-x-1.5 w-full h-8 px-2">
-            ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
-               12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16].map((h, i) => `
-              <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 35}ms"></span>
-            `).join('')}
-          </div>
-        `;
-      }
+    if (remainingSec > 0) return;
 
-      // Tự động phát âm thanh
-      playSceneAudio(currentSlideSceneIndex || 0);
-    }
+    clearInterval(cinemaCountdownTimer);
+    cinemaCountdownTimer = null;
+    if (!isCinemaMode) return;
+
+    overlay.classList.add("is-fading");
+    setTimeout(() => overlay.remove(), 380);
+
+    // Sau 5 giây: ẩn toàn bộ nút/chữ điều khiển, chỉ còn slide và sóng âm để quay màn hình.
+    document.body.classList.add("cinema-live");
+    playSceneAudio(0);
   }, 1000);
 };
 
 window.exitCinemaMode = function(e) {
   if (e) e.stopPropagation();
   isCinemaMode = false;
+
   if (cinemaCountdownTimer) {
     clearInterval(cinemaCountdownTimer);
     cinemaCountdownTimer = null;
   }
+
+  const overlay = document.getElementById("cinemaCountdownOverlay");
+  if (overlay) overlay.remove();
+
+  document.body.classList.remove("cinema-mode", "cinema-live");
   window.stopAllAudios();
   isSlideAudioPlaying = false;
+  currentLectureMeta = null;
 
   // Khôi phục nút Hiện menu nếu header đang ẩn
   const restoreHeaderBtn = document.getElementById("btnRestoreTopHeader");
   const mainHeader = document.getElementById("mainTopHeader");
-  if (mainHeader && mainHeader.classList.contains("hidden") && restoreHeaderBtn) {
-    restoreHeaderBtn.classList.remove("hidden");
-    restoreHeaderBtn.classList.add("flex");
+  if (mainHeader && mainHeader.classList.contains("hidden")) {
+    document.body.classList.add("header-hidden");
+    if (restoreHeaderBtn) {
+      restoreHeaderBtn.classList.remove("hidden");
+      restoreHeaderBtn.classList.add("flex");
+    }
+  } else {
+    document.body.classList.remove("header-hidden");
   }
 
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
@@ -964,6 +1138,7 @@ window.toggleTopHeader = function() {
   const isHidden = header.classList.contains("hidden");
   if (isHidden) {
     header.classList.remove("hidden");
+    document.body.classList.remove("header-hidden");
     if (restoreBtn) {
       restoreBtn.classList.add("hidden");
       restoreBtn.classList.remove("flex");
@@ -971,6 +1146,7 @@ window.toggleTopHeader = function() {
     localStorage.setItem("adminTopHeaderHidden", "false");
   } else {
     header.classList.add("hidden");
+    document.body.classList.add("header-hidden");
     if (restoreBtn) {
       restoreBtn.classList.remove("hidden");
       restoreBtn.classList.add("flex");
@@ -1230,59 +1406,67 @@ function getSceneVisualGraphicHTML(visualType, theme) {
   return "";
 }
 
+function cleanSceneBadge(text) {
+  return String(text || "")
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
+    .replace(/GIA SƯ AI/gi, "LỜI MỞ ĐẦU")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function renderSceneCardHTML(sc, sIdx, totalScenes) {
   if (!sc) return "";
-  const isEmerald = sc.theme === 'emerald';
-  const isCyan = sc.theme === 'cyan';
-  const isIndigo = sc.theme === 'indigo';
-  const isPurple = sc.theme === 'purple';
-  const isBlue = sc.theme === 'blue';
+  const theme = sc.theme || "emerald";
+  const isEmerald = theme === "emerald";
+  const isCyan = theme === "cyan";
+  const isIndigo = theme === "indigo";
+  const isPurple = theme === "purple";
+  const isBlue = theme === "blue";
 
-  const badgeClass = isEmerald ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40' :
-                     isCyan ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40' :
-                     isIndigo ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/40' :
-                     isPurple ? 'bg-purple-500/15 text-purple-300 border-purple-500/40' :
-                     isBlue ? 'bg-blue-500/15 text-blue-300 border-blue-500/40' :
-                     'bg-amber-500/15 text-amber-300 border-amber-500/40';
+  const badgeClass = isEmerald ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" :
+                     isCyan ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40" :
+                     isIndigo ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/40" :
+                     isPurple ? "bg-purple-500/15 text-purple-300 border-purple-500/40" :
+                     isBlue ? "bg-blue-500/15 text-blue-300 border-blue-500/40" :
+                     "bg-amber-500/15 text-amber-300 border-amber-500/40";
 
-  const calloutBorder = isEmerald ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-200' :
-                        isCyan ? 'border-cyan-500/40 bg-cyan-950/40 text-cyan-200' :
-                        isPurple ? 'border-purple-500/40 bg-purple-950/40 text-purple-200' :
-                        isBlue ? 'border-blue-500/40 bg-blue-950/40 text-blue-200' :
-                        'border-amber-500/40 bg-amber-950/40 text-amber-200';
+  const calloutBorder = isEmerald ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-200" :
+                        isCyan ? "border-cyan-500/40 bg-cyan-950/40 text-cyan-200" :
+                        isPurple ? "border-purple-500/40 bg-purple-950/40 text-purple-200" :
+                        isBlue ? "border-blue-500/40 bg-blue-950/40 text-blue-200" :
+                        "border-amber-500/40 bg-amber-950/40 text-amber-200";
 
-  const visualHTML = getSceneVisualGraphicHTML(sc.visualType, sc.theme);
+  const visualHTML = getSceneVisualGraphicHTML(sc.visualType, theme);
 
   return `
-    <div class="scene-active-card p-4 sm:p-6 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl transition-all duration-300">
-      
-      <!-- Top Bar: Badge Only -->
+    <div class="scene-active-card scene-kinetic p-4 sm:p-5 rounded-2xl bg-slate-950/75 border border-slate-800/90 shadow-xl" data-scene-theme="${theme}">
       <div class="mb-3 flex items-center justify-between gap-2">
-        <span class="inline-flex items-center px-3 py-1 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border ${badgeClass}">
-          ${sc.badge}
+        <span class="scene-kicker inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-[0.14em] border ${badgeClass}">
+          ${cleanSceneBadge(sc.badge)}
+        </span>
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/80 animate-pulse"></span>
+          Đang trình bày
         </span>
       </div>
 
-      <!-- Main Focus Title -->
-      <h3 class="text-base sm:text-xl md:text-2xl font-black text-white mb-2 leading-snug">
+      <h3 class="scene-title text-lg sm:text-2xl md:text-[1.7rem] font-black text-white mb-2.5 leading-snug">
         ${sc.title}
       </h3>
 
-      <!-- Dedicated Visual Widget -->
       ${visualHTML}
 
-      <!-- Focused Single Insight Box -->
       ${sc.insight ? `
-        <div class="motion-beat-point-0 p-3.5 sm:p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 flex items-start space-x-3 my-3 shadow-md">
+        <div class="scene-insight motion-beat-point-0 p-3 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 flex items-start space-x-3 my-3 shadow-md">
           <div class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 flex-shrink-0">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
           </div>
-          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">${sc.insight}</p>
+          <p class="text-sm sm:text-base text-slate-200 leading-relaxed font-normal">${sc.insight}</p>
         </div>
       ` : sc.points && sc.points.length > 0 ? `
-        <div class="space-y-2 mb-3.5">
+        <div class="space-y-2 mb-3">
           ${sc.points.map((pt, pIdx) => `
-            <div class="motion-beat-point-${Math.min(pIdx, 2)} p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 flex items-start space-x-2.5">
+            <div class="motion-beat-point-${Math.min(pIdx, 2)} p-2.5 sm:p-3 rounded-xl bg-slate-900/75 border border-slate-800/80 flex items-start space-x-2.5">
               <div class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 flex-shrink-0">
                 <i data-lucide="${pt.icon || 'check'}" class="w-3.5 h-3.5"></i>
               </div>
@@ -1290,15 +1474,14 @@ function renderSceneCardHTML(sc, sIdx, totalScenes) {
             </div>
           `).join("")}
         </div>
-      ` : ''}
+      ` : ""}
 
-      <!-- Single Callout Box -->
       ${sc.callout ? `
-        <div class="p-3 sm:p-3.5 rounded-xl border ${calloutBorder} text-xs leading-relaxed font-medium mt-2 flex items-start space-x-2 shadow-inner">
-          <i data-lucide="${sc.icon || 'info'}" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+        <div class="scene-callout motion-beat-callout p-2.5 sm:p-3 rounded-xl border ${calloutBorder} text-[11px] sm:text-xs leading-relaxed font-medium mt-2 flex items-start space-x-2 shadow-inner">
+          <i data-lucide="${sc.icon || 'info'}" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5"></i>
           <span>${sc.callout}</span>
         </div>
-      ` : ''}
+      ` : ""}
     </div>
   `;
 }
@@ -1309,15 +1492,46 @@ window.switchScene = function(sIdx) {
   if (!slide || !slide.scenes || !slide.scenes[sIdx]) return;
 
   currentSlideSceneIndex = sIdx;
+  const scene = slide.scenes[sIdx];
+  const stage = document.getElementById("activeSlideCard");
+  if (stage) stage.dataset.theme = scene.theme || "emerald";
+
   const container = document.getElementById("activeSceneContentContainer");
-  if (container) {
-    container.classList.add("slide-card-fadeout");
-    setTimeout(() => {
-      container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
-      container.classList.remove("slide-card-fadeout");
-      if (window.lucide) window.lucide.createIcons();
-    }, 180);
+  if (!container) return;
+
+  const html = renderSceneCardHTML(scene, sIdx, slide.scenes.length);
+  const currentLayer = container.querySelector(".scene-layer.is-current");
+
+  if (!currentLayer) {
+    container.innerHTML = `<div class="scene-layer is-current">${html}</div>`;
+    if (window.lucide) window.lucide.createIcons();
+    return;
   }
+
+  // Crossfade thật: giữ cảnh cũ trong lúc cảnh mới hiện lên, không có khung hình đen.
+  const oldHeight = container.offsetHeight;
+  container.style.minHeight = `${oldHeight}px`;
+
+  const newLayer = document.createElement("div");
+  newLayer.className = "scene-layer scene-layer-enter";
+  newLayer.innerHTML = html;
+  container.appendChild(newLayer);
+  void newLayer.offsetHeight;
+
+  requestAnimationFrame(() => {
+    newLayer.classList.add("is-visible");
+    currentLayer.classList.add("is-leaving");
+  });
+
+  setTimeout(() => {
+    currentLayer.remove();
+    newLayer.classList.remove("scene-layer-enter", "is-visible");
+    newLayer.classList.add("is-current");
+    container.style.minHeight = "";
+    if (window.lucide) window.lucide.createIcons();
+  }, 430);
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 function renderMasterLecture(lesson) {
@@ -1331,92 +1545,94 @@ function renderMasterLecture(lesson) {
   }
 
   const slides = lec.slides;
+  currentSlideIndex = Math.max(0, Math.min(currentSlideIndex, slides.length - 1));
   const currentSlide = slides[currentSlideIndex] || slides[0];
-  const isFirst = currentSlideIndex === 0;
   const isLast = currentSlideIndex === slides.length - 1;
   const scenes = currentSlide.scenes || [];
   const currentScene = scenes[currentSlideSceneIndex] || scenes[0];
   const isAdmin = isCurrentUserAdmin();
 
   container.innerHTML = `
-    <div class="cyber-card p-4 sm:p-7 rounded-2xl relative overflow-hidden transition-all duration-300 w-full" id="slideStageMainCard">
-      <!-- Glow background -->
+    <div class="cyber-card lecture-stage-card p-3 sm:p-5 rounded-2xl relative overflow-hidden transition-all duration-300 w-full" id="slideStageMainCard">
       <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      <!-- Top Header & Slide Progress Dots -->
-      <div class="relative z-10 border-b border-slate-800 pb-3 mb-4">
-        <div class="flex items-center justify-between gap-2 mb-2.5">
-          <div class="flex items-center space-x-2">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>THUYẾT GIẢNG</span>
-            </span>
-          </div>
+      <div class="lecture-top-chrome relative z-10 border-b border-slate-800/90 pb-2.5 mb-3" data-cinema-hide>
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>BÀI GIẢNG</span>
+          </span>
 
-          <!-- Slide Step Progress Dots (5 Slides mượt mà) -->
-          <div class="flex items-center space-x-1.5">
+          <div class="flex items-center space-x-1.5" aria-label="Chọn slide">
             ${slides.map((s, idx) => `
-              <button onclick="goToSlide(${idx})" class="h-2 rounded-full transition-all duration-300 cursor-pointer ${idx === currentSlideIndex ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-500/50' : idx < currentSlideIndex ? 'w-3 bg-emerald-700 hover:bg-emerald-600' : 'w-3 bg-slate-800 hover:bg-slate-700'}" title="Slide ${idx + 1}: ${s.title}"></button>
+              <button onclick="goToSlide(${idx})" class="h-2 rounded-full transition-all duration-300 cursor-pointer ${idx === currentSlideIndex ? 'w-8 bg-emerald-400 shadow-md shadow-emerald-500/50' : idx < currentSlideIndex ? 'w-3 bg-emerald-700 hover:bg-emerald-600' : 'w-3 bg-slate-800 hover:bg-slate-700'}" title="Slide ${idx + 1}: ${escapeHtml(s.title)}" aria-label="Slide ${idx + 1}"></button>
             `).join("")}
           </div>
         </div>
 
-        <h2 class="text-base sm:text-xl md:text-2xl font-black text-white tracking-wide mb-1 leading-snug">
+        <h2 class="text-sm sm:text-lg md:text-xl font-black text-white tracking-wide mb-0.5 leading-snug">
           ${currentSlide.title}
         </h2>
-        <p class="text-xs sm:text-sm text-emerald-400 font-medium">
+        <p class="text-[11px] sm:text-xs text-emerald-400/90 font-medium">
           ${currentSlide.subtitle}
         </p>
       </div>
 
-      <!-- CINEMATIC VIDEO CANVAS (Full-Width, Centered, Zero Stutter) -->
-      <div class="relative z-10 mb-4 p-4 sm:p-6 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl transition-all duration-300" id="activeSlideCard">
-        <!-- ACTIVE SCENE CONTAINER (FULL WIDTH, PROMINENT TYPOGRAPHY) -->
-        <div id="activeSceneContentContainer" class="video-scene-transition">
-          ${renderSceneCardHTML(currentScene, currentSlideSceneIndex, scenes.length)}
+      <div class="lecture-cinema-stage relative z-10 mb-3 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl transition-all duration-300" id="activeSlideCard" data-theme="${currentScene?.theme || 'emerald'}">
+        <div class="lecture-stage-grid" aria-hidden="true"></div>
+
+        <div id="activeSceneContentContainer" class="lecture-scene-container">
+          <div class="scene-layer is-current">${renderSceneCardHTML(currentScene, currentSlideSceneIndex, scenes.length)}</div>
+        </div>
+
+        <div id="lectureCaptionRibbon" class="lecture-caption-ribbon hidden" aria-live="polite">
+          <span id="lectureCaptionText"></span>
+        </div>
+
+        <div class="lecture-timeline" aria-hidden="true">
+          <div id="lectureTimelineFill" class="lecture-timeline-fill"></div>
+        </div>
+        <div class="lecture-time-row">
+          <span id="lectureTimeLabel">00:00</span>
+          <span class="text-slate-600">/</span>
+          <span id="lectureTotalTime">00:00</span>
+        </div>
+
+        <div id="cinemaWave" class="cinema-wave hidden" onclick="exitCinemaMode(event)" title="Bấm để thoát chế độ trình chiếu (hoặc phím Esc)">
+          ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
+             12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16,
+             8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10].map((h, i) => `
+            <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 35}ms"></span>
+          `).join('')}
         </div>
       </div>
 
-      <!-- Slide Audio Player & Admin Cinema Controls -->
-      <div id="lectureAudioControlBar" class="relative z-10 mb-2 p-3 sm:p-4 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex items-center justify-center gap-3 transition-all duration-500">
-        ${isCinemaMode ? `
-          <!-- Chế độ Trình Chiếu: KHÔNG CÒN CHỮ VÀ NÚT, CHỈ DẢI SÓNG ÂM KÉO DÀI ĐỂ QUAY MÀN HÌNH -->
-          <div id="lectureWaveVisualizer" onclick="exitCinemaMode()" class="w-full max-w-2xl h-12 px-6 rounded-2xl bg-slate-900/90 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.12)] transition-all duration-500 cursor-pointer overflow-hidden" title="Bấm để thoát chế độ trình chiếu (hoặc phím ESC)">
-            <div class="flex items-center justify-center space-x-1.5 w-full h-8 px-2">
-              ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
-                 12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16].map((h, i) => `
-                <span class="w-1 rounded-full ${i % 2 === 0 ? 'bg-emerald-400' : 'bg-cyan-400'} animate-pulse" style="height: ${h}px; animation-duration: ${0.6 + (i % 5) * 0.15}s; animation-delay: ${i * 35}ms"></span>
-              `).join('')}
-            </div>
-          </div>
-        ` : `
-          <!-- Chế Độ Chuẩn: Nút Nghe Thuyết Giảng + Nút Trình Chiếu Admin + Waveform Nhỏ Gọn -->
-          <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="px-7 py-3 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
-            <i data-lucide="${isSlideAudioPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
-            <span>${isSlideAudioPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
-          </button>
+      <div id="lectureAudioControlBar" class="relative z-10 mb-1 p-2.5 sm:p-3 rounded-xl bg-slate-950/70 border border-emerald-500/30 flex items-center justify-center gap-2.5 sm:gap-3 transition-all duration-500" data-cinema-hide>
+        <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
+          <i data-lucide="${isSlideAudioPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
+          <span>${isSlideAudioPlaying ? 'Tạm Dừng' : 'Nghe Thuyết Giảng'}</span>
+        </button>
 
-          <!-- Nút Trình Chiếu Dành Riêng Cho Admin -->
-          <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="${isAdmin ? 'flex' : 'hidden'} px-5 py-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-2 cursor-pointer flex-shrink-0" title="Chế độ trình chiếu tự động (Chỉ dành cho Admin)">
-            <i data-lucide="play-square" class="w-4 h-4 text-cyan-400"></i>
-            <span>Trình Chiếu</span>
-          </button>
-          
-          <div id="lectureWaveVisualizer" class="flex items-center space-x-1.5 ${isSlideAudioPlaying ? 'opacity-100' : 'opacity-30'} transition-all duration-500">
-            <span class="w-1.5 h-4 bg-emerald-400 rounded-full animate-pulse"></span>
-            <span class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse" style="animation-delay: 150ms"></span>
-            <span class="w-1.5 h-3 bg-teal-400 rounded-full animate-pulse" style="animation-delay: 300ms"></span>
-            <span class="w-1.5 h-5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 450ms"></span>
-          </div>
-        `}
+        <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="${isAdmin ? 'flex' : 'hidden'} px-3.5 sm:px-4 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0" title="Chế độ trình chiếu tự động (Chỉ dành cho Admin)">
+          <i data-lucide="play-square" class="w-4 h-4 text-cyan-400"></i>
+          <span>Trình Chiếu</span>
+        </button>
+
+        <div id="lectureWaveVisualizer" class="flex items-center space-x-1.5 ${isSlideAudioPlaying ? 'opacity-100' : 'opacity-30'} transition-all duration-500" aria-hidden="true">
+          <span class="w-1.5 h-4 bg-emerald-400 rounded-full animate-pulse"></span>
+          <span class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse" style="animation-delay: 150ms"></span>
+          <span class="w-1.5 h-3 bg-teal-400 rounded-full animate-pulse" style="animation-delay: 300ms"></span>
+          <span class="w-1.5 h-5 bg-emerald-400 rounded-full animate-pulse" style="animation-delay: 450ms"></span>
+        </div>
       </div>
 
-      <!-- Slide Navigation Footer: Chỉ hiển thị nút Hoàn Thành khi đến Slide cuối cùng -->
-      ${isLast && !isCinemaMode ? `
-        <div class="relative z-10 pt-3 border-t border-slate-800 flex justify-center">
-          <button onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer">
-            <span>🚀 Hoàn Thành Bài Thuyết Giảng • Chuyển Sang Bước 1: Khẩu Hình</span>
+      <p id="lectureHint" class="relative z-10 text-center text-[10px] sm:text-[11px] text-slate-500 px-2 min-h-[16px]" data-cinema-hide></p>
+
+      ${isLast ? `
+        <div class="relative z-10 pt-2.5 mt-1 border-t border-slate-800 flex justify-center" data-cinema-hide>
+          <button onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-[11px] sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer">
+            <span>Hoàn Thành Bài Giảng • Chuyển Sang Bước 1: Khẩu Hình</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
         </div>
@@ -1424,111 +1640,153 @@ function renderMasterLecture(lesson) {
     </div>
   `;
 
+  if (isSlideAudioPlaying && currentLectureMeta?.audio && !currentLectureMeta.audio.paused) {
+    updateLectureControls(true);
+    startCaptionSync(currentLectureMeta.audio, currentLectureMeta.file);
+  }
+
   if (window.lucide) window.lucide.createIcons();
 }
+
 function updateLectureControls(isPlaying) {
   const btn = document.getElementById("btnPlaySlideAudio");
   if (btn) {
-    if (isCinemaMode) {
-      btn.classList.add("hidden");
-      btn.classList.remove("flex");
-    } else {
-      btn.className = `px-7 py-3 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
-      btn.innerHTML = `
-        <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
-        <span>${isPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
-      `;
-    }
+    btn.className = `px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
+    btn.innerHTML = `
+      <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
+      <span>${isPlaying ? 'Tạm Dừng' : 'Nghe Thuyết Giảng'}</span>
+    `;
+  }
+  const wave = document.getElementById("lectureWaveVisualizer");
+  if (wave) {
+    wave.classList.toggle("opacity-30", !isPlaying);
+    wave.classList.toggle("opacity-100", isPlaying);
   }
   if (window.lucide) window.lucide.createIcons();
 }
 
-function playSceneAudio(sIdx) {
+async function playSceneAudio(sIdx, options = {}) {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
   if (!slide || !slide.scenes || !slide.scenes[sIdx]) return;
 
+  await loadLectureTiming();
+
   const scene = slide.scenes[sIdx];
-  const audioFile = scene.audioFile || slide.audioFile;
-  if (!audioFile) return;
+  const sceneAudioFile = scene.audioFile || slide.audioFile;
+  if (!sceneAudioFile) return;
+
+  const introEntry = getLectureTimingEntry(LECTURE_INTRO_FILE);
+  const shouldPlayIntro = !options.skipIntro &&
+    !lectureIntroPlayed &&
+    currentSlideIndex === 0 &&
+    sIdx === 0 &&
+    !!introEntry;
+
+  if (shouldPlayIntro) lectureIntroPlayed = true;
+
+  const audioFile = shouldPlayIntro ? LECTURE_INTRO_FILE : sceneAudioFile;
+  const hint = document.getElementById("lectureHint");
+  if (hint) hint.textContent = shouldPlayIntro ? "Lời chào mở đầu • Bài giảng sẽ bắt đầu ngay sau đó" : "";
 
   isSlideAudioPlaying = true;
   updateLectureControls(true);
 
+  const meta = { file: audioFile, sceneIndex: sIdx, audio: null, isIntro: shouldPlayIntro };
+
   const audioTrack = window.playTrack(audioFile, () => {
-    // Khi audio của phân cảnh này phát xong
+    if (currentLectureMeta !== meta) return;
     if (!isSlideAudioPlaying) return;
 
+    if (meta.isIntro) {
+      currentLectureMeta = null;
+      setTimeout(() => {
+        if (isSlideAudioPlaying) playSceneAudio(sIdx, { skipIntro: true });
+      }, 180);
+      return;
+    }
+
     if (sIdx < slide.scenes.length - 1) {
-      // Vẫn còn phân cảnh tiếp theo trong cùng slide:
+      currentLectureMeta = null;
       setTimeout(() => {
         if (!isSlideAudioPlaying) return;
         window.switchScene(sIdx + 1);
         setTimeout(() => {
-          if (!isSlideAudioPlaying) return;
-          playSceneAudio(sIdx + 1);
-        }, 350);
-      }, 500);
+          if (isSlideAudioPlaying) playSceneAudio(sIdx + 1, { skipIntro: true });
+        }, 220);
+      }, 160);
+      return;
+    }
+
+    // Hết cảnh cuối của slide: dừng tại đây, không tự nhảy slide khi người học chỉ bấm nghe.
+    isSlideAudioPlaying = false;
+    currentLectureMeta = null;
+    updateLectureControls(false);
+    resetLecturePlaybackUI();
+    if (hint) {
+      hint.textContent = isLastSlide()
+        ? "Đã nghe hết bài giảng. Bạn có thể hoàn thành để mở khóa Bước 1."
+        : "Đã hết slide này. Chọn chấm tròn phía trên để sang slide tiếp theo.";
+    }
+
+    if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
+      setTimeout(() => {
+        if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
+      }, 700);
     } else {
-      // Đã hết các phân cảnh của slide này:
-      // Tự động chuyển sang slide kế tiếp luôn
-      if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
-        setTimeout(() => {
-          if (!isSlideAudioPlaying) return;
-          window.goToSlide(currentSlideIndex + 1, true);
-        }, 700);
-      } else {
-        // Slide cuối cùng kết thúc: tự động mở khóa Bước 1
-        isSlideAudioPlaying = false;
-        updateLectureControls(false);
-        window.unlockStep(1, false);
-      }
+      window.unlockStep(1, false);
     }
   }, () => {
+    if (currentLectureMeta !== meta) return;
     isSlideAudioPlaying = false;
+    currentLectureMeta = null;
     updateLectureControls(false);
+    resetLecturePlaybackUI();
+    if (hint) hint.textContent = "Không tải được tệp âm thanh. Hãy kiểm tra kết nối và thử lại.";
   });
 
+  meta.audio = audioTrack;
+  currentLectureMeta = meta;
   currentLectureAudioInstance = audioTrack;
+
   if (audioTrack) {
-    try {
-      audioTrack.playbackRate = currentLecturePlaybackSpeed;
-    } catch(e) {}
+    const beginCaption = () => {
+      if (currentLectureMeta === meta) startCaptionSync(audioTrack, audioFile);
+    };
+    if (!audioTrack.paused) {
+      beginCaption();
+    } else {
+      audioTrack.addEventListener("playing", beginCaption, { once: true });
+    }
   }
+}
+
+function isLastSlide() {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  return currentSlideIndex >= (lesson?.masterLecture?.slides?.length || 1) - 1;
 }
 
 window.goToSlide = function(idx, keepPlaying = false) {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   if (!lesson?.masterLecture?.slides) return;
-  window.stopAllAudios();
-  if (!keepPlaying) {
-    isSlideAudioPlaying = false;
-    updateLectureControls(false);
-  }
-  currentSlideSceneIndex = 0;
 
-  const card = document.getElementById("activeSlideCard");
-  if (card) {
-    card.classList.add("slide-card-fadeout");
-    setTimeout(() => {
-      currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
-      currentSlideSceneIndex = 0;
-      renderMasterLecture(lesson);
-      if (keepPlaying) {
-        setTimeout(() => {
-          playSceneAudio(0);
-        }, 400);
-      }
-    }, 180);
+  window.stopAllAudios();
+  currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+  currentSlideSceneIndex = 0;
+  isSlideAudioPlaying = Boolean(keepPlaying);
+  renderMasterLecture(lesson);
+
+  const stage = document.getElementById("slideStageMainCard");
+  if (stage) {
+    stage.classList.remove("slide-stage-enter");
+    void stage.offsetWidth;
+    stage.classList.add("slide-stage-enter");
+  }
+
+  if (keepPlaying) {
+    setTimeout(() => playSceneAudio(0, { skipIntro: true }), 240);
   } else {
-    currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
-    currentSlideSceneIndex = 0;
-    renderMasterLecture(lesson);
-    if (keepPlaying) {
-      setTimeout(() => {
-        playSceneAudio(0);
-      }, 400);
-    }
+    updateLectureControls(false);
   }
 };
 
@@ -1547,20 +1805,40 @@ window.prevSlide = function() {
 };
 
 window.toggleSlideAudio = function() {
+  const meta = currentLectureMeta;
+  const audio = meta?.audio;
+
   if (isSlideAudioPlaying) {
-    window.stopAllAudios();
+    if (audio) {
+      try { audio.pause(); } catch (e) {}
+    }
     isSlideAudioPlaying = false;
+    stopCaptionSync();
     updateLectureControls(false);
-  } else {
-    playSceneAudio(currentSlideSceneIndex || 0);
+    return;
   }
+
+  // Nếu đang tạm dừng đúng cảnh hiện tại thì tiếp tục, không phát lại từ đầu và không nhảy slide.
+  if (meta && audio && audio.paused && !audio.ended && audio.currentTime > 0) {
+    isSlideAudioPlaying = true;
+    updateLectureControls(true);
+    audio.play().then(() => {
+      if (currentLectureMeta === meta) startCaptionSync(audio, meta.file);
+    }).catch(() => {
+      isSlideAudioPlaying = false;
+      updateLectureControls(false);
+    });
+    return;
+  }
+
+  playSceneAudio(currentSlideSceneIndex || 0);
 };
 
 window.finishMasterLectureAndUnlockStep1 = function() {
   window.stopAllAudios();
   isSlideAudioPlaying = false;
   window.unlockStep(1, true);
-  window.scrollTo({ top: 120, behavior: 'smooth' });
+  window.scrollTo({ top: 120, behavior: "smooth" });
 };
 
 // 6. MODULE 1: KHẨU HÌNH, ÂM VỊ & ĐỒNG BỘ 100% TỪ LUYỆN NÓI
@@ -1930,18 +2208,37 @@ window.selectQuizAnswer = async function(quizId, selectedIdx, correctIdx, explan
         `;
       } else {
         finishBanner.innerHTML = `
-          <div class="flex items-center space-x-3 text-xs text-amber-300">
-            <span class="text-2xl">💡</span>
-            <div>
-              <div class="font-bold text-amber-400">Bạn đạt ${userQuizScore}/${totalQuizzes} câu (cần ≥ 70% để mở khóa Bước tiếp theo).</div>
-              <p class="text-slate-400 text-[11px] mt-0.5">Hãy bấm chọn lại đáp án đúng để khắc sâu nơ-ron nhé!</p>
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
+            <div class="flex items-center space-x-3 text-xs text-amber-300">
+              <span class="text-2xl">💡</span>
+              <div>
+                <div class="font-bold text-amber-400">Bạn đạt ${userQuizScore}/${totalQuizzes} câu (cần ≥ 70% để mở khóa bước tiếp theo).</div>
+                <p class="text-slate-400 text-[11px] mt-0.5">Làm lại từ đầu để ôn tập và ghi nhớ sâu hơn. Điểm lần trước vẫn được lưu trong lịch sử.</p>
+              </div>
             </div>
+            <button onclick="resetQuizAttempt()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 transition flex items-center space-x-1.5 cursor-pointer flex-shrink-0">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              <span>Làm lại bài</span>
+            </button>
           </div>
         `;
       }
       if (window.lucide) window.lucide.createIcons();
     }
   }
+};
+
+window.resetQuizAttempt = function() {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  if (!lesson) return;
+  const finishBanner = document.getElementById("quizFinishBanner");
+  if (finishBanner) {
+    finishBanner.classList.add("hidden");
+    finishBanner.innerHTML = "";
+  }
+  renderQuizzes(lesson.quizzes);
+  const quizModule = document.getElementById("moduleQuiz");
+  if (quizModule) quizModule.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 // ==============================================================
@@ -2550,6 +2847,24 @@ function normalizeText(str) {
   return (str || "").toLowerCase().replace(/[^a-z0-9\s]/g, "").trim();
 }
 
+function levenshteinDistance(a, b) {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+
+  let previous = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const current = [i];
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost);
+    }
+    previous = current;
+  }
+  return previous[b.length];
+}
+
+// So khớp theo chuỗi từ: đúng thứ tự, sai vị trí hoặc thiếu từ đều bị trừ điểm.
 function calculateSimilarity(str1, str2) {
   const s1 = normalizeText(str1);
   const s2 = normalizeText(str2);
@@ -2558,11 +2873,8 @@ function calculateSimilarity(str1, str2) {
 
   const words1 = s1.split(/\s+/);
   const words2 = s2.split(/\s+/);
-  let matches = 0;
-  words1.forEach(w => {
-    if (words2.includes(w)) matches++;
-  });
-  return Math.min(1.0, (matches / Math.max(words1.length, words2.length)));
+  const distance = levenshteinDistance(words1, words2);
+  return Math.max(0, Math.min(1, 1 - distance / Math.max(words1.length, words2.length)));
 }
 
 window.practiceMouthSound = function(targetWord, idx) {
@@ -2707,13 +3019,20 @@ function updateProgressUI(progress) {
   if (barEl) barEl.style.width = `${progress.progressPercent || 0}%`;
   if (sessionCountEl) sessionCountEl.textContent = `Đã học: ${completedCount}/10 buổi chặng`;
   if (hoursAccumulatedEl) hoursAccumulatedEl.textContent = `Tích lũy: ${progress.hoursAccumulated || '0.0'}h`;
+
+  const headerBadge = document.getElementById("headerProgressBadge");
+  if (headerBadge) headerBadge.textContent = `${progress.progressPercent || 0}%`;
+
+  const reviewAlert = document.getElementById("spacedReviewAlert");
+  if (reviewAlert) reviewAlert.classList.toggle("hidden", !progress.needsReview);
+  const inactiveDays = document.getElementById("inactiveDaysCount");
+  if (inactiveDays) inactiveDays.textContent = String(progress.daysInactive || 0);
 }
 
 // ==============================================================
 // 14. QUẢN TRỊ ADMIN (DUYỆT HỌC VIÊN)
 // ==============================================================
 async function loadAdminStudents() {
-  window.renderAdminEspKeysTable();
   const tbody = document.getElementById("studentsTableBody");
   if (!tbody) return;
 
@@ -2726,21 +3045,27 @@ async function loadAdminStudents() {
       return;
     }
 
-    tbody.innerHTML = students.map(s => `
+    tbody.innerHTML = students.map(s => {
+      const studentId = safeDocId(s.id);
+      const displayName = escapeHtml(s.displayName || "Ẩn danh");
+      const email = escapeHtml(s.email || "Không có email");
+      const avatar = escapeHtml(safePhotoURL(s.photoURL, s.displayName || "Học viên"));
+      return `
       <tr class="hover:bg-slate-800/40 transition">
         <td class="px-4 py-3 flex items-center space-x-2">
-          <img src="${s.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.displayName || 'User')}" class="w-6 h-6 rounded-full" alt="avatar">
-          <span class="font-medium text-white">${s.displayName || 'Ẩn danh'}</span>
+          <img src="${avatar}" class="w-6 h-6 rounded-full" alt="avatar" referrerpolicy="no-referrer">
+          <span class="font-medium text-white">${displayName}</span>
         </td>
-        <td class="px-4 py-3 font-mono text-xs text-slate-400">${s.email}</td>
+        <td class="px-4 py-3 font-mono text-xs text-slate-400">${email}</td>
         <td class="px-4 py-3">
           ${s.role === 'admin' ? '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 text-xs font-mono font-bold">Admin</span>' : (s.status === 'approved' ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-medium">Đã duyệt</span>' : '<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 text-xs font-medium">Chờ duyệt</span>')}
         </td>
         <td class="px-4 py-3 text-right">
-          ${s.role !== 'admin' ? (s.status === 'pending' ? `<button onclick="approveStudent('${s.id}')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">Duyệt vào học</button>` : `<button onclick="revokeStudent('${s.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-300 text-xs transition">Thu hồi</button>`) : '<span class="text-xs text-slate-500 font-mono">Quyền cao nhất</span>'}
+          ${s.role !== 'admin' ? (s.status === 'pending' ? `<button onclick="approveStudent('${studentId}')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">Duyệt vào học</button>` : `<button onclick="revokeStudent('${studentId}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-300 text-xs transition">Thu hồi</button>`) : '<span class="text-xs text-slate-500 font-mono">Quyền cao nhất</span>'}
         </td>
       </tr>
-    `).join("");
+    `;
+    }).join("");
   } catch (err) {
     console.error("Lỗi tải học viên:", err);
     tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-rose-400">Lỗi kết nối Firebase Firestore.</td></tr>`;
@@ -2769,63 +3094,14 @@ if (refreshBtn) {
 // ==============================================================
 
 // ==============================================================
-// 14.5. KIỂM SOÁT PHÂN KHÚC LỘ TRÌNH (TRACK & ESP LICENSE)
-// ==============================================================
-function initDashboardTrack() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const track = urlParams.get('track');
-  const field = urlParams.get('field');
-
-  const iconBadge = document.getElementById('trackIconBadge');
-  const titleBadge = document.getElementById('trackTitleBadge');
-  const subBadge = document.getElementById('trackSubBadge');
-
-  if (track === 'specialized' && field) {
-    const fieldNames = {
-      it: 'CNTT & Kỹ Sư Phần Mềm (IT)',
-      medical: 'Y Khoa & Điều Dưỡng (Healthcare)',
-      business: 'Kinh Doanh & Đàm Phán (Business)',
-      tourism: 'Khách Sạn & Du Lịch (Tourism)',
-      logistics: 'Xuất Nhập Khẩu & Logistics (Logistics)'
-    };
-    const fieldName = fieldNames[field] || field.toUpperCase();
-    
-    let unlocked = [];
-    try {
-      unlocked = JSON.parse(localStorage.getItem('tienganh0d_unlocked_fields') || '[]');
-    } catch(e) {}
-
-    const isUnlocked = unlocked.includes(field);
-
-    if (iconBadge) {
-      iconBadge.textContent = '💼';
-      iconBadge.className = 'w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-base border border-purple-500/30';
-    }
-    if (titleBadge) {
-      if (isUnlocked) {
-        titleBadge.innerHTML = `<span>Chuyên Ngành: ${fieldName}</span><span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-300 font-mono font-bold">ĐÃ MỞ KHÓA BẢN QUYỀN</span>`;
-      } else {
-        titleBadge.innerHTML = `<span>Chuyên Ngành: ${fieldName}</span><span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 font-mono font-bold">CHƯA KÍCH HOẠT KEY</span>`;
-      }
-    }
-    if (subBadge) {
-      if (isUnlocked) {
-        subBadge.innerHTML = `License Key hợp lệ • Chương trình tiếng Anh nghề nghiệp chuyên sâu đang được đồng bộ bài học`;
-      } else {
-        subBadge.innerHTML = `⚠️ Chuyên ngành này cần mã License Key do Admin cấp riêng cho Gmail của bạn. <a href="index.html#languageMatrixSection" class="text-cyan-400 underline">Kích hoạt ngay</a>`;
-      }
-    }
-  }
-}
-
 // 15. BOOTSTRAP HỆ THỐNG
-initDashboardTrack();
 // ==============================================================
 selectLesson("buoi-01");
 
 setupAuthUI(async (user, profile) => {
   currentUser = user;
   currentProfile = profile;
+  loadStepGatingState();
 
   const userName = document.getElementById("userName");
   const userRoleBadge = document.getElementById("userRoleBadge");
@@ -2846,7 +3122,7 @@ setupAuthUI(async (user, profile) => {
     const mainHeader = document.getElementById("mainTopHeader");
     const cinemaBtn = document.getElementById("btnCinemaMode");
 
-    if (profile.role === 'admin' || user.email === 'xlehoangducx@gmail.com') {
+    if (isCurrentUserAdmin()) {
       if (userRoleBadge) {
         userRoleBadge.textContent = "Super Admin";
         userRoleBadge.className = "text-amber-400 font-bold font-mono";
@@ -2864,10 +3140,13 @@ setupAuthUI(async (user, profile) => {
       // Khôi phục trạng thái ẩn nếu admin đã cấu hình trước đó
       if (localStorage.getItem("adminTopHeaderHidden") === "true") {
         if (mainHeader) mainHeader.classList.add("hidden");
+        document.body.classList.add("header-hidden");
         if (restoreHeaderBtn) {
           restoreHeaderBtn.classList.remove("hidden");
           restoreHeaderBtn.classList.add("flex");
         }
+      } else {
+        document.body.classList.remove("header-hidden");
       }
     } else {
       if (userRoleBadge) {
@@ -2878,6 +3157,8 @@ setupAuthUI(async (user, profile) => {
       if (profile.status === 'pending' && pendingAlert) pendingAlert.classList.remove('hidden');
       if (hideHeaderBtn) hideHeaderBtn.classList.add("hidden");
       if (restoreHeaderBtn) restoreHeaderBtn.classList.add("hidden");
+      if (mainHeader) mainHeader.classList.remove("hidden");
+      document.body.classList.remove("header-hidden");
       if (cinemaBtn) {
         cinemaBtn.classList.add("hidden");
         cinemaBtn.classList.remove("flex");
@@ -2885,74 +3166,22 @@ setupAuthUI(async (user, profile) => {
       if (mainHeader) mainHeader.classList.remove("hidden");
     }
     window.updateModuleTabsUI();
+    if (!isSlideAudioPlaying) {
+      const activeLesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+      if (activeLesson) renderMasterLecture(activeLesson);
+    }
   } else {
     userProgress = await loadUserProgress(null);
     updateProgressUI(userProgress);
     renderCurriculumTree();
+    window.updateModuleTabsUI();
   }
 
   if (window.lucide) window.lucide.createIcons();
 });
 
-// ==============================================================
-// 15. QUẢN LÝ LICENSE KEY CHUYÊN NGÀNH (ESP LICENSE MANAGER)
-// ==============================================================
-window.handleAdminGenerateEspKey = function() {
-  const email = document.getElementById("adminStudentEmail")?.value.trim().toLowerCase();
-  const field = document.getElementById("adminStudentField")?.value;
-  if (!email || !field) {
-    alert("⚠️ Vui lòng nhập đầy đủ Gmail của học viên!");
-    return;
-  }
-
-  const rand1 = Math.floor(1000 + Math.random() * 9000);
-  const rand2 = Math.floor(1000 + Math.random() * 9000);
-  const key = `KEY-${field.toUpperCase()}-${rand1}-${rand2}`;
-  const now = new Date().toLocaleDateString('vi-VN');
-
-  let keys = [];
-  try {
-    keys = JSON.parse(localStorage.getItem("tienganh0d_esp_keys") || "[]");
-  } catch (e) {}
-
-  keys.unshift({
-    email: email,
-    field: field,
-    key: key,
-    createdAt: now,
-    status: 'active'
-  });
-
-  localStorage.setItem("tienganh0d_esp_keys", JSON.stringify(keys));
-  window.renderAdminEspKeysTable();
-  alert(`🎉 Đã cấp License Key thành công cho ${email}!\nMã Key: ${key}\nChuyên ngành: ${field.toUpperCase()}`);
-};
-
-window.renderAdminEspKeysTable = function() {
-  const tbody = document.getElementById("espKeysTableBody");
-  if (!tbody) return;
-  let keys = [];
-  try {
-    keys = JSON.parse(localStorage.getItem("tienganh0d_esp_keys") || "[]");
-  } catch (e) {}
-
-  if (keys.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-slate-500">Chưa có License Key nào được sinh.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = keys.map((k) => `
-    <tr class="hover:bg-slate-900/60 transition">
-      <td class="px-4 py-3 font-semibold text-white">${k.email}</td>
-      <td class="px-4 py-3 text-cyan-300 font-bold uppercase">${k.field}</td>
-      <td class="px-4 py-3 font-mono font-bold text-amber-300">${k.key}</td>
-      <td class="px-4 py-3 text-slate-400">${k.createdAt || ''}</td>
-      <td class="px-4 py-3 text-right">
-        <button onclick="navigator.clipboard.writeText('${k.key}'); alert('Đã sao chép mã Key: ${k.key}');" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-semibold transition cursor-pointer">
-          Sao Chép
-        </button>
-      </td>
-    </tr>
-  `).join("");
-  if (window.lucide) window.lucide.createIcons();
+// ESP (Tiếng Anh chuyên ngành) chưa phát hành.
+// Không còn mô phỏng License Key cục bộ vì cơ chế cũ không thể xác thực an toàn.
+window.notifyEspComingSoon = function() {
+  alert("💼 Tiếng Anh Chuyên Ngành (ESP) đang được biên soạn.\nHiện tại lộ trình Giao Tiếp 0đ đã sẵn sàng để bạn học ngay.");
 };

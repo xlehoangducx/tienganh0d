@@ -69,18 +69,10 @@
         const dyMouse = mouse.y - n.y;
         const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
 
-        if (distMouse < mouse.radius) {
+        if (distMouse < mouse.radius && distMouse > 0.001) {
           const force = (1 - distMouse / mouse.radius) * 0.6;
           n.x -= (dxMouse / distMouse) * force;
           n.y -= (dyMouse / distMouse) * force;
-
-          // Vẽ tia kết nối từ chuột tới nơ-ron
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(16, 185, 129, ${(1 - distMouse / mouse.radius) * 0.35})`;
-          ctx.lineWidth = 1;
-          ctx.moveTo(n.x, n.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.stroke();
         }
 
         // Vẽ điểm nơ-ron

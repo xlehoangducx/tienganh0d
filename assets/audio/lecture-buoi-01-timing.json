@@ -1,0 +1,565 @@
+{
+  "lecture-buoi-01-intro.mp3": {
+    "file": "assets/audio/lecture-buoi-01-intro.mp3",
+    "duration": 14.979,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 4.158,
+        "text": "Chào bạn! Mình là Hải Đăng, người đồng hành cùng bạn trong buổi học đầu tiên."
+      },
+      {
+        "start": 4.453,
+        "end": 8.029,
+        "text": "Trước khi bắt đầu, hãy bấm Nghe Thuyết Giảng. Bài giảng sẽ chạy từng cảnh,"
+      },
+      {
+        "start": 8.029,
+        "end": 10.011,
+        "text": "và phụ đề sẽ chạy theo đúng lời mình nói."
+      },
+      {
+        "start": 10.305,
+        "end": 13.224,
+        "text": "Khi cần dừng, bạn chỉ cần bấm Tạm Dừng. Còn bây giờ,"
+      },
+      {
+        "start": 13.224,
+        "end": 14.684,
+        "text": "chúng ta cùng bắt đầu nhé."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-1-scene-0.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
+    "duration": 17.589,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 2.085,
+        "text": "Chào mừng bạn đến với Buổi 01:"
+      },
+      {
+        "start": 2.085,
+        "end": 4.832,
+        "text": "Đánh thức cơ miệng và ba cụm giao tiếp đầu tiên."
+      },
+      {
+        "start": 5.126,
+        "end": 8.619,
+        "text": "Mục tiêu hôm nay rất gọn: làm quen ba âm thè lưỡi, âm gió, âm bật,"
+      },
+      {
+        "start": 8.619,
+        "end": 11.105,
+        "text": "và dùng được ba câu chào hỏi, cảm ơn, tạm biệt."
+      },
+      {
+        "start": 11.4,
+        "end": 14.529,
+        "text": "Bạn không cần học thuộc bảng chữ cái hay công thức ngữ pháp."
+      },
+      {
+        "start": 14.529,
+        "end": 17.295,
+        "text": "Chúng ta bắt đầu bằng những câu có thể nói được ngay."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-1-scene-1.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
+    "duration": 21.126,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 1.518,
+        "text": "Bạn có từng thắc mắc:"
+      },
+      {
+        "start": 1.518,
+        "end": 4.747,
+        "text": "vì sao học ngữ pháp rất nhiều nhưng vẫn không dám mở miệng?"
+      },
+      {
+        "start": 5.042,
+        "end": 9.145,
+        "text": "Khi phải nhớ quá nhiều quy tắc cùng lúc, não bộ rơi vào quá tải nhận thức."
+      },
+      {
+        "start": 9.145,
+        "end": 13.303,
+        "text": "Vùng hạch hạnh nhân bật tín hiệu phòng vệ, còn vùng Broca, nơi tạo câu nói,"
+      },
+      {
+        "start": 13.303,
+        "end": 13.968,
+        "text": "bị chậm lại."
+      },
+      {
+        "start": 14.263,
+        "end": 17.187,
+        "text": "Kết quả là bạn biết công thức, nhưng miệng không phản xạ kịp."
+      },
+      {
+        "start": 17.187,
+        "end": 20.832,
+        "text": "Vì vậy buổi học này bắt đầu bằng âm thanh và ngữ cảnh, không bằng lý thuyết."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-1-scene-2.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-1-scene-2.mp3",
+    "duration": 20.495,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 3.484,
+        "text": "Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A."
+      },
+      {
+        "start": 3.779,
+        "end": 5.831,
+        "text": "Các em học qua khuôn mặt, giọng điệu,"
+      },
+      {
+        "start": 5.831,
+        "end": 8.326,
+        "text": "cảm xúc và những tình huống lặp lại mỗi ngày."
+      },
+      {
+        "start": 8.621,
+        "end": 11.545,
+        "text": "Người lớn cũng vậy. Khi một câu gắn với một khoảnh khắc thật,"
+      },
+      {
+        "start": 11.545,
+        "end": 14.853,
+        "text": "não bộ lưu nó như một trải nghiệm, không phải một bài học thuộc lòng."
+      },
+      {
+        "start": 15.147,
+        "end": 18.426,
+        "text": "Hôm nay bạn chỉ cần ba câu hạt nhân. Ít nhưng dùng được ngay,"
+      },
+      {
+        "start": 18.426,
+        "end": 20.2,
+        "text": "đó mới là điểm khởi đầu bền vững."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-2-scene-0.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-2-scene-0.mp3",
+    "duration": 22.027,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 1.808,
+        "text": "Tiếng Việt là ngôn ngữ đơn âm."
+      },
+      {
+        "start": 1.808,
+        "end": 5.409,
+        "text": "Thói quen rụt lưỡi và nuốt âm cuối khiến nhiều người Việt nói tiếng Anh rất"
+      },
+      {
+        "start": 5.409,
+        "end": 5.842,
+        "text": "khó nghe."
+      },
+      {
+        "start": 6.137,
+        "end": 8.107,
+        "text": "Thank you"
+      },
+      {
+        "start": 8.402,
+        "end": 9.918,
+        "text": "thường bị đọc thành thanh kiu."
+      },
+      {
+        "start": 10.213,
+        "end": 12.183,
+        "text": "Nice"
+      },
+      {
+        "start": 12.478,
+        "end": 13.152,
+        "text": "thành nai."
+      },
+      {
+        "start": 13.446,
+        "end": 15.417,
+        "text": "Meet"
+      },
+      {
+        "start": 15.712,
+        "end": 16.385,
+        "text": "thành mít."
+      },
+      {
+        "start": 16.68,
+        "end": 19.26,
+        "text": "Người Mỹ vẫn hiểu đại ý, nhưng họ phải căng tai."
+      },
+      {
+        "start": 19.26,
+        "end": 21.733,
+        "text": "Chúng ta sẽ sửa đúng ba điểm này ngay hôm nay."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-2-scene-1.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-2-scene-1.mp3",
+    "duration": 26.937,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 1.219,
+        "text": "Với âm thè lưỡi,"
+      },
+      {
+        "start": 1.219,
+        "end": 4.832,
+        "text": "bạn kẹp nhẹ đầu lưỡi giữa hai hàm răng và thổi ra một luồng gió mát."
+      },
+      {
+        "start": 5.126,
+        "end": 6.869,
+        "text": "Thank you."
+      },
+      {
+        "start": 7.164,
+        "end": 9.269,
+        "text": "Đầu lưỡi phải chạm nhẹ, không rụt vào."
+      },
+      {
+        "start": 9.564,
+        "end": 11.782,
+        "text": "Với âm gió, hai hàm răng khép gần lại,"
+      },
+      {
+        "start": 11.782,
+        "end": 14.701,
+        "text": "đầu lưỡi đặt sau răng cửa và xì hơi như xả lốp xe."
+      },
+      {
+        "start": 14.996,
+        "end": 16.966,
+        "text": "Nice."
+      },
+      {
+        "start": 17.261,
+        "end": 20.545,
+        "text": "Với âm bật, đầu lưỡi nén lên nướu trên rồi bật ra dứt khoát."
+      },
+      {
+        "start": 20.84,
+        "end": 22.811,
+        "text": "Meet."
+      },
+      {
+        "start": 23.105,
+        "end": 26.642,
+        "text": "Chỉ cần ba khẩu hình này đúng, ba câu hôm nay sẽ nghe tự nhiên hơn rất nhiều."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-0.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-0.mp3",
+    "duration": 21.758,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 1.887,
+        "text": "Theo kho ngữ liệu tiếng Anh Mỹ,"
+      },
+      {
+        "start": 1.887,
+        "end": 5.562,
+        "text": "âm gió và âm bật xuất hiện trong hơn sáu mươi lăm phần trăm cấu trúc thường"
+      },
+      {
+        "start": 5.562,
+        "end": 5.758,
+        "text": "gặp."
+      },
+      {
+        "start": 6.053,
+        "end": 10.259,
+        "text": "Danh từ số nhiều thêm s, động từ ngôi thứ ba thêm s, thì quá khứ thêm ed,"
+      },
+      {
+        "start": 10.259,
+        "end": 11.526,
+        "text": "và sở hữu cách thêm s."
+      },
+      {
+        "start": 11.821,
+        "end": 13.515,
+        "text": "Nghĩa là chỉ cần làm chủ hai âm này,"
+      },
+      {
+        "start": 13.515,
+        "end": 16.621,
+        "text": "bạn đã xử lý phần lớn những đuôi từ khiến người Việt hay nuốt mất."
+      },
+      {
+        "start": 16.916,
+        "end": 19.56,
+        "text": "Đây là lý do buổi đầu tiên tập trung vào cơ miệng,"
+      },
+      {
+        "start": 19.56,
+        "end": 21.463,
+        "text": "thay vì chạy qua thật nhiều từ vựng."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-3-scene-1.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-3-scene-1.mp3",
+    "duration": 17.0,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 2.421,
+        "text": "Hãy hình dung việc học nói như xây nhà."
+      },
+      {
+        "start": 2.421,
+        "end": 5.421,
+        "text": "Hai mươi phần trăm công sức đầu tiên nằm ở móng và khung."
+      },
+      {
+        "start": 5.716,
+        "end": 9.26,
+        "text": "Khi khẩu hình đã chuẩn, bạn không còn phải nghĩ đến âm cuối mỗi lần nói."
+      },
+      {
+        "start": 9.26,
+        "end": 12.116,
+        "text": "Não bộ giải phóng năng lượng cho việc chọn từ và diễn đạt."
+      },
+      {
+        "start": 12.411,
+        "end": 16.705,
+        "text": "Đó là hiệu ứng đòn bẩy: sửa một lần ở gốc, kết quả theo bạn suốt lộ trình."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-4-scene-0.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-4-scene-0.mp3",
+    "duration": 20.528,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 3.989,
+        "text": "Ba câu hạt nhân của buổi hôm nay nằm trong một vòng giao tiếp tự nhiên."
+      },
+      {
+        "start": 4.284,
+        "end": 7.088,
+        "text": "Hi, nice to meet you!"
+      },
+      {
+        "start": 7.383,
+        "end": 8.562,
+        "text": "khi gặp và làm quen."
+      },
+      {
+        "start": 8.857,
+        "end": 11.358,
+        "text": "Thank you so much!"
+      },
+      {
+        "start": 11.653,
+        "end": 13.0,
+        "text": "khi nhận được giúp đỡ."
+      },
+      {
+        "start": 13.295,
+        "end": 15.518,
+        "text": "Have a great day!"
+      },
+      {
+        "start": 15.813,
+        "end": 16.655,
+        "text": "khi tạm biệt."
+      },
+      {
+        "start": 16.949,
+        "end": 20.234,
+        "text": "Chúng ngắn, dễ nói và mở được hầu hết cuộc trò chuyện xã giao."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-4-scene-1.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-4-scene-1.mp3",
+    "duration": 16.242,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 3.191,
+        "text": "Khi bạn nói đúng một câu và người bản xứ mỉm cười đáp lại,"
+      },
+      {
+        "start": 3.191,
+        "end": 4.747,
+        "text": "não bộ nhận một phần thưởng nhỏ."
+      },
+      {
+        "start": 5.042,
+        "end": 6.803,
+        "text": "Phần thưởng đó giải phóng dopamine,"
+      },
+      {
+        "start": 6.803,
+        "end": 9.168,
+        "text": "làm giảm căng thẳng và khiến bạn muốn nói thêm."
+      },
+      {
+        "start": 9.463,
+        "end": 13.321,
+        "text": "Vì vậy đừng chờ đến khi hoàn hảo. Hãy nói ba câu này ngay khi có cơ hội."
+      },
+      {
+        "start": 13.321,
+        "end": 15.947,
+        "text": "Mỗi phản hồi tích cực là một lần củng cố phản xạ."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-5-scene-0.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-5-scene-0.mp3",
+    "duration": 20.747,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 2.811,
+        "text": "Buổi học được chia thành sáu bước đa giác quan."
+      },
+      {
+        "start": 3.105,
+        "end": 7.287,
+        "text": "Bạn soi khẩu hình, nghe mẫu, nói vào micro để nhận phản hồi, làm trắc nghiệm,"
+      },
+      {
+        "start": 7.287,
+        "end": 10.6,
+        "text": "lật thẻ ghi nhớ, đối thoại cùng người bản xứ và ghép lại câu."
+      },
+      {
+        "start": 10.895,
+        "end": 13.067,
+        "text": "Mỗi bước đánh vào một vùng xử lý khác nhau,"
+      },
+      {
+        "start": 13.067,
+        "end": 15.442,
+        "text": "nên não bộ có nhiều đường để gọi lại kiến thức."
+      },
+      {
+        "start": 15.737,
+        "end": 20.453,
+        "text": "Bạn không cần làm tất cả trong một lần. Hãy đi theo thứ tự, não sẽ tự kết nối."
+      }
+    ]
+  },
+  "lecture-buoi-01-slide-5-scene-1.mp3": {
+    "file": "assets/audio/lecture-buoi-01-slide-5-scene-1.mp3",
+    "duration": 23.021,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 3.942,
+        "text": "Học một lần rồi bỏ quên là chuyện bình thường. Sau hai mươi bốn giờ,"
+      },
+      {
+        "start": 3.942,
+        "end": 6.937,
+        "text": "phần lớn chi tiết mới sẽ rơi rụng nếu không được gọi lại."
+      },
+      {
+        "start": 7.232,
+        "end": 9.937,
+        "text": "Ngược lại, mỗi lần bạn nhớ lại một cách chủ động,"
+      },
+      {
+        "start": 9.937,
+        "end": 12.2,
+        "text": "kết nối thần kinh lại mạnh thêm một chút."
+      },
+      {
+        "start": 12.495,
+        "end": 16.133,
+        "text": "Bảy lần lặp ngắt quãng, trải qua nghe, nói, gõ và đối thoại,"
+      },
+      {
+        "start": 16.133,
+        "end": 18.558,
+        "text": "là đủ để câu nói đi vào trí nhớ dài hạn."
+      },
+      {
+        "start": 18.853,
+        "end": 22.726,
+        "text": "Đó là mục tiêu của buổi hôm nay: không học cho biết, mà học để dùng được."
+      }
+    ]
+  },
+  "story-buoi-01.mp3": {
+    "file": "assets/audio/story-buoi-01.mp3",
+    "duration": 31.139,
+    "captions": [
+      {
+        "start": 0.368,
+        "end": 4.663,
+        "text": "Bạn vừa hạ cánh xuống sân bay quốc tế JFK New York sau một chuyến bay dài."
+      },
+      {
+        "start": 4.958,
+        "end": 8.739,
+        "text": "Bạn đang đứng đợi lấy hành lý bên băng chuyền thì một người đàn ông Mỹ thân"
+      },
+      {
+        "start": 8.739,
+        "end": 10.049,
+        "text": "thiện tên David đứng cạnh,"
+      },
+      {
+        "start": 10.049,
+        "end": 12.116,
+        "text": "quay sang nhìn bạn, mỉm cười và chào hỏi."
+      },
+      {
+        "start": 12.411,
+        "end": 14.853,
+        "text": "Bạn hãy mỉm cười và đáp lại câu chào làm quen:"
+      },
+      {
+        "start": 15.147,
+        "end": 17.952,
+        "text": "Hi, nice to meet you!"
+      },
+      {
+        "start": 18.246,
+        "end": 21.615,
+        "text": "Sau đó, hãy cảm ơn khi anh ấy nhiệt tình giúp bạn nhấc chiếc vali nặng:"
+      },
+      {
+        "start": 21.909,
+        "end": 24.411,
+        "text": "Thank you so much!"
+      },
+      {
+        "start": 24.705,
+        "end": 28.326,
+        "text": "Và trước khi chia tay, đừng quên chúc anh ấy một ngày thật tuyệt vời:"
+      },
+      {
+        "start": 28.621,
+        "end": 30.844,
+        "text": "Have a great day!"
+      }
+    ]
+  }
+}
