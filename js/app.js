@@ -246,7 +246,7 @@ export function speakVietnamese(text) {
 window.speakVietnamese = speakVietnamese;
 
 // ==============================================================
-// 2. ĐIỀU HƯỚNG VIEW & MODULES
+// 2. ĐIỀU HƯỚNG VIEW & MODULES (DRAWER & WORKSPACE)
 // ==============================================================
 window.toggleSidebar = function(forceClose) {
   const sidebar = document.getElementById("curriculumSidebar");
@@ -259,6 +259,73 @@ window.toggleSidebar = function(forceClose) {
   } else {
     sidebar.classList.remove("-translate-x-full");
     if (backdrop) backdrop.classList.remove("hidden");
+  }
+};
+
+window.openLanguageDrawer = function() {
+  const sidebar = document.getElementById("curriculumSidebar");
+  const backdrop = document.getElementById("sidebarBackdrop");
+  if (!sidebar) return;
+  
+  // Hiển thị View 1: Chọn ngôn ngữ & Phân khúc
+  window.switchDrawerView('languageHub');
+  
+  sidebar.classList.remove("-translate-x-full");
+  if (backdrop) backdrop.classList.remove("hidden");
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.openCurriculumDrawer = function() {
+  const sidebar = document.getElementById("curriculumSidebar");
+  const backdrop = document.getElementById("sidebarBackdrop");
+  if (!sidebar) return;
+  
+  // Hiển thị View 2: Lộ trình & Các buổi học hiện tại
+  window.switchDrawerView('curriculum');
+  
+  sidebar.classList.remove("-translate-x-full");
+  if (backdrop) backdrop.classList.remove("hidden");
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.switchDrawerView = function(viewName) {
+  const langView = document.getElementById("drawerLanguageHubView");
+  const curView = document.getElementById("drawerCurriculumView");
+  const headerTitle = document.getElementById("drawerHeaderTitle");
+  
+  if (viewName === 'languageHub') {
+    if (langView) langView.classList.remove("hidden");
+    if (curView) curView.classList.add("hidden");
+    if (headerTitle) {
+      headerTitle.innerHTML = `
+        <i data-lucide="globe" class="w-4 h-4 text-emerald-400"></i>
+        <span>Chọn Ngôn Ngữ & Phân Khúc</span>
+      `;
+    }
+  } else {
+    if (langView) langView.classList.add("hidden");
+    if (curView) curView.classList.remove("hidden");
+    if (headerTitle) {
+      headerTitle.innerHTML = `
+        <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+        <span>Danh Mục Bài Học & Tiến Độ</span>
+      `;
+    }
+  }
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.selectTrackAndOpenCurriculum = function(trackName) {
+  if (trackName === 'communication') {
+    // Tự động chuyển sang View Lộ Trình & Tiến Độ Chặng 0
+    window.switchDrawerView('curriculum');
+    const badge = document.getElementById("drawerCurrentTrackBadge");
+    if (badge) badge.textContent = "🇺🇸 Giao Tiếp 0đ";
+  } else if (trackName === 'esp') {
+    // Thông báo chuyên ngành ESP
+    window.switchDrawerView('curriculum');
+    const badge = document.getElementById("drawerCurrentTrackBadge");
+    if (badge) badge.textContent = "💼 Chuyên Ngành (ESP)";
   }
 };
 
@@ -726,6 +793,136 @@ function formatTime(sec) {
   return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
 }
 
+// ==============================================================
+// 5.4. VISUAL MOTION GRAPHICS GENERATOR CHO TỪNG CẢNH THUYẾT GIẢNG
+// ==============================================================
+function getSceneVisualGraphicHTML(visualType, theme) {
+  if (visualType === 'neural-blockade') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 flex items-center justify-between gap-3 shadow-inner">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            <span class="absolute inset-0 rounded-xl bg-amber-400/20 visual-pulse-ring"></span>
+            <i data-lucide="shield-alert" class="w-5 h-5 relative z-10"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-amber-300 block">Hiện Tượng Quá Tải Nhận Thức (Sweller 1988)</span>
+            <span class="text-[11px] text-slate-400">Ngữ pháp trừu tượng kích hoạt hạch hạnh nhân, đóng sập vùng Broca</span>
+          </div>
+        </div>
+        <div class="hidden sm:flex items-center space-x-1 text-amber-400/60 text-xs font-mono">
+          <span>Khóa Phản Xạ</span>
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'human-connection') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex items-center justify-between gap-3 shadow-inner">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <span class="absolute inset-0 rounded-xl bg-emerald-400/20 visual-pulse-ring"></span>
+            <i data-lucide="heart-handshake" class="w-5 h-5 relative z-10"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-emerald-300 block">Bản Năng Sinh Tồn Xã Hội (Stephen Krashen)</span>
+            <span class="text-[11px] text-slate-400">Kết nối cảm xúc mở rộng tối đa vùng tiếp nhận ngôn ngữ tự nhiên</span>
+          </div>
+        </div>
+        <div class="hidden sm:flex items-center space-x-1 text-emerald-400/80 text-xs font-mono">
+          <span>Kích Hoạt Dopamine</span>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'vietnamese-habit') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 flex items-center justify-between gap-3 shadow-inner">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            <i data-lucide="mic-off" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-amber-300 block">Quán Tính Phát Âm Đơn Âm Tiếng Việt</span>
+            <span class="text-[11px] text-slate-400">Tật thụt lưỡi vào chân răng trong & nuốt sạch âm đuôi /s/, /t/</span>
+          </div>
+        </div>
+        <div class="hidden sm:block text-[11px] font-mono text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-500/30">
+          Nice → "Nai" ❌
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'mouth-kinematics') {
+    return `
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/60 border border-cyan-500/30 grid grid-cols-3 gap-2 text-center shadow-inner">
+        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+          <span class="text-xs font-black text-cyan-300 block font-mono">/θ/ (Theta)</span>
+          <span class="text-[10px] text-slate-400">Kẹp nhẹ đầu lưỡi</span>
+        </div>
+        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+          <span class="text-xs font-black text-cyan-300 block font-mono">/s/ (Xì gió)</span>
+          <span class="text-[10px] text-slate-400">Răng khép trong</span>
+        </div>
+        <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20">
+          <span class="text-xs font-black text-cyan-300 block font-mono">/t/ (Bật nướu)</span>
+          <span class="text-[10px] text-slate-400">Gõ tách dứt khoát</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'pareto-chart') {
+    return `
+      <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/60 border border-amber-500/30 space-y-2 shadow-inner">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-amber-300 flex items-center space-x-1.5">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-400"></i>
+            <span>Độ Bao Phủ Của /s/ và /t/ Trong Ngữ Liệu Mỹ (COCA)</span>
+          </span>
+          <span class="font-mono font-black text-amber-400 text-sm">65%</span>
+        </div>
+        <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+          <div class="h-full bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-400 rounded-full" style="width: 65%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+          <span>Số nhiều (-s/es), Quá khứ (-ed), Ngôi 3 (-s)</span>
+          <span>Bao phủ 2/3 cấu trúc Mỹ</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (visualType === 'social-trinity') {
+    return `
+      <div class="motion-beat-visual my-3 p-3 rounded-xl bg-slate-900/60 border border-emerald-500/30 flex flex-wrap items-center justify-around gap-2 text-center shadow-inner">
+        <div class="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-500/30">
+          <span class="text-[10px] text-emerald-400 block font-bold">1. Chào Hỏi</span>
+          <span class="text-xs font-bold text-white">Hi, nice to meet you!</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <div class="px-3 py-1.5 rounded-lg bg-teal-950/50 border border-teal-500/30">
+          <span class="text-[10px] text-teal-400 block font-bold">2. Biết Ơn</span>
+          <span class="text-xs font-bold text-white">Thank you so much!</span>
+        </div>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-teal-400"></i>
+        <div class="px-3 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30">
+          <span class="text-[10px] text-cyan-400 block font-bold">3. Chúc Lành</span>
+          <span class="text-xs font-bold text-white">Have a great day!</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Mặc định trả về rỗng nếu không có visualType đặc biệt
+  return "";
+}
+
 function renderSceneCardHTML(sc, sIdx, totalScenes) {
   if (!sc) return "";
   const isEmerald = sc.theme === 'emerald';
@@ -748,28 +945,48 @@ function renderSceneCardHTML(sc, sIdx, totalScenes) {
                         isBlue ? 'border-blue-500/40 bg-blue-950/40 text-blue-200' :
                         'border-amber-500/40 bg-amber-950/40 text-amber-200';
 
+  const visualHTML = getSceneVisualGraphicHTML(sc.visualType, sc.theme);
+
   return `
-    <div class="scene-active-card p-5 sm:p-7 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl transition-all duration-300">
-      <div class="flex items-center justify-between mb-3.5">
-        <span class="px-3 py-1 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border ${badgeClass}">
+    <div class="scene-active-card p-4 sm:p-6 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl transition-all duration-300">
+      
+      <!-- 1. MỐC BADGE CHỦ ĐỀ (VÀO CHẬM, MƯỢT MÀ) -->
+      <div class="mb-3 motion-beat-badge">
+        <span class="inline-flex items-center px-3 py-1 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border ${badgeClass}">
           ${sc.badge}
-        </span>
-        <span class="text-xs font-mono text-slate-500">
-          Cảnh ${sIdx + 1} / ${totalScenes}
         </span>
       </div>
 
-      <h3 class="text-lg sm:text-2xl font-black text-white mb-3.5 leading-snug">
+      <!-- 2. MỐC TIÊU ĐỀ HẠT NHÂN -->
+      <h3 class="motion-beat-title text-base sm:text-xl md:text-2xl font-black text-white mb-2 leading-snug">
         ${sc.title}
       </h3>
 
-      <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4 font-normal">
-        ${sc.content}
-      </p>
+      <!-- 3. HOẠT ẢNH MINH HỌA TRỰC QUAN SINH ĐỘNG (NẾU CÓ) -->
+      ${visualHTML}
 
+      <!-- 4. DANH SÁCH TỪNG DÒNG TRI THỨC VI MÔ (MICRO-POINTS) -->
+      ${sc.points && sc.points.length > 0 ? `
+        <div class="space-y-2 mb-3.5">
+          ${sc.points.map((pt, pIdx) => `
+            <div class="motion-beat-point-${Math.min(pIdx, 2)} p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 flex items-start space-x-2.5 transition">
+              <div class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 mt-0.5 flex-shrink-0">
+                <i data-lucide="${pt.icon || 'check'}" class="w-3.5 h-3.5"></i>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">${pt.text}</p>
+            </div>
+          `).join("")}
+        </div>
+      ` : `
+        <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4 font-normal motion-beat-title">
+          ${sc.content}
+        </p>
+      `}
+
+      <!-- 5. HỘP ĐÚC KẾT NƠ-RON PHÁT SÁNG -->
       ${sc.callout ? `
-        <div class="p-4 rounded-xl border ${calloutBorder} flex items-start space-x-3 shadow-inner">
-          <i data-lucide="${sc.icon || 'sparkles'}" class="w-5 h-5 flex-shrink-0 mt-0.5 text-current"></i>
+        <div class="motion-beat-callout p-3.5 rounded-xl border ${calloutBorder} flex items-start space-x-3 shadow-inner">
+          <i data-lucide="${sc.icon || 'sparkles'}" class="w-4 h-4 flex-shrink-0 mt-0.5 text-current"></i>
           <div class="text-xs sm:text-sm font-medium leading-relaxed">
             ${sc.callout}
           </div>
@@ -850,7 +1067,7 @@ function renderMasterLecture(lesson) {
           <div class="flex items-center space-x-2">
             <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>VIDEO THUYẾT GIẢNG NƠ-RON</span>
+              <span>THUYẾT GIẢNG</span>
             </span>
           </div>
 
@@ -873,24 +1090,7 @@ function renderMasterLecture(lesson) {
       <!-- CINEMATIC VIDEO CANVAS (Full-Width, Centered, Zero Stutter) -->
       <div class="relative z-10 mb-4 p-4 sm:p-6 rounded-2xl bg-slate-900/95 border ${isSlideAudioPlaying ? 'border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/40' : 'border-slate-800'} shadow-2xl transition-all duration-300" id="activeSlideCard">
         
-        <!-- Video Canvas Bar: Scene switcher pills + Timeline -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5 pb-3 border-b border-slate-800/80">
-          <div class="flex items-center space-x-2">
-            ${scenes.map((sc, sIdx) => `
-              <button onclick="switchScene(${sIdx})" id="btnSceneTab-${sIdx}" class="scene-tab-btn px-3 py-1 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer ${sIdx === currentSlideSceneIndex ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-md shadow-emerald-500/20' : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800'}">
-                <span class="w-1.5 h-1.5 rounded-full ${sIdx === currentSlideSceneIndex ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}"></span>
-                <span>Cảnh ${sIdx + 1}</span>
-              </button>
-            `).join("")}
-          </div>
 
-          <div class="flex items-center space-x-2">
-            <span class="text-[11px] font-mono text-cyan-400" id="slideTimeIndicator">00:00 / 00:27</span>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
-              Slide ${currentSlideIndex + 1} / ${slides.length}
-            </span>
-          </div>
-        </div>
 
         <!-- Video Time Progress Bar -->
         <div class="w-full bg-slate-950/80 rounded-full h-1.5 mb-4 overflow-hidden border border-slate-800">
@@ -908,7 +1108,7 @@ function renderMasterLecture(lesson) {
         <div class="flex items-center space-x-3 w-full sm:w-auto">
           <button id="btnPlaySlideAudio" onclick="toggleSlideAudio()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isSlideAudioPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0">
             <i data-lucide="${isSlideAudioPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
-            <span>${isSlideAudioPlaying ? 'Tạm Dừng Lời Giảng' : '🎧 Nghe Thầy Thuyết Giảng Slide Này'}</span>
+            <span>${isSlideAudioPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
           </button>
           
           <div class="flex items-center space-x-1.5 ${isSlideAudioPlaying ? 'opacity-100' : 'opacity-30'} transition hidden sm:flex">

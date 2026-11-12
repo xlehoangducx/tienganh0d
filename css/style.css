@@ -190,3 +190,103 @@ body {
     transform: translate3d(0, 0, 0) scale(1);
   }
 }
+
+/* ============================================================== */
+/* HIỆU ỨNG TRÌNH CHIẾU THUYẾT GIẢNG MOTION GRAPHICS (SLOW & SMOOTH) */
+/* ============================================================== */
+
+@keyframes softFadeUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes softFadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes softSlideRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(-20px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes visualPulseWave {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes synapseDash {
+  to {
+    stroke-dashoffset: -30;
+  }
+}
+
+.synapse-flow-line {
+  stroke-dasharray: 6, 6;
+  animation: synapseDash 1.4s linear infinite;
+}
+
+.visual-pulse-ring {
+  animation: visualPulseWave 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.motion-beat-badge {
+  animation: softFadeScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.motion-beat-title {
+  animation: softFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.motion-beat-visual {
+  animation: softFadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+.motion-beat-point-0 {
+  animation: softFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
+}
+
+.motion-beat-point-1 {
+  animation: softFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+.motion-beat-point-2 {
+  animation: softFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
+}
+
+.motion-beat-callout {
+  animation: softFadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.88s both;
+}
+
