@@ -171,9 +171,9 @@ export const CURRICULUM_DATA = {
             badge: "Kho Ngữ Liệu 1 Tỷ Từ",
             scenes: [
               {
+                cueTime: 0.0,
                 badge: "📊 KHO NGỮ LIỆU 1 TỶ TỪ (COCA)",
                 title: "Bí Mật Thống Kê COCA: 65% Ngữ Pháp Mỹ",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-0.mp3",
                 visualType: "coca-corpus-counter",
                 insight: "Theo kho ngữ liệu tiếng Anh Mỹ COCA với hơn 1.000.000.000 từ vựng đàm thoại thực tế...",
                 callout: "📊 Định luật Pareto 80/20: 20% âm vị cốt lõi sẽ tạo ra 80% kết quả phản xạ ngữ pháp!",
@@ -181,9 +181,9 @@ export const CURRICULUM_DATA = {
                 theme: "emerald"
               },
               {
+                cueTime: 2.05,
                 badge: "⚡ ĐỘ BAO PHỦ ÁP ĐẢO (65%)",
                 title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Ngữ Pháp",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-1.mp3",
                 visualType: "pareto-live-meter",
                 insight: "Hai âm vị /s/ và /t/ xuất hiện trong hơn 65% toàn bộ câu giao tiếp và cấu trúc đời thường của người Mỹ.",
                 callout: "⚡ Chỉ 2 âm vị nhưng bao phủ tới 2/3 hệ thống hình thái học tiếng Anh!",
@@ -191,9 +191,9 @@ export const CURRICULUM_DATA = {
                 theme: "cyan"
               },
               {
+                cueTime: 6.0,
                 badge: "🏗️ 4 TRỤ CỘT HÌNH THÁI HỌC",
                 title: "4 Cấu Trúc Ngữ Pháp Cốt Lõi Đều Kết Thúc Bằng /s/ và /t/",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-2.mp3",
                 visualType: "four-pillars-morphology",
                 insight: "Danh từ số nhiều (-s/es), động từ ngôi 3 (-s), thì quá khứ (-ed) và sở hữu cách ('s) đều dùng /s/ và /t/.",
                 callout: "🏗️ Nắm chắc 2 âm này là tự động làm đúng 4 cấu trúc ngữ pháp phổ biến nhất mà không cần dịch nhẩm!",
@@ -201,9 +201,9 @@ export const CURRICULUM_DATA = {
                 theme: "purple"
               },
               {
+                cueTime: 11.75,
                 badge: "🎯 ĐÒN BẨY SỬA TẬT PHÁT ÂM",
                 title: "Làm Chủ 2 Âm Này = Xử Lý Xong 65% Đuôi Từ Tiếng Anh",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-3.mp3",
                 visualType: "end-sound-scanner",
                 insight: "Chỉ cần phát âm chuẩn /s/ và /t/, bạn đã quét sạch phần lớn những âm đuôi mà người Việt hay nuốt mất.",
                 callout: "🎯 Bẻ gãy dứt điểm tật nuốt âm đuôi khiến câu nói bị cụt và người Mỹ khó hiểu!",
@@ -211,9 +211,9 @@ export const CURRICULUM_DATA = {
                 theme: "emerald"
               },
               {
+                cueTime: 16.85,
                 badge: "💡 BẢN CHẤT SƯ PHẠM THỰC CHIẾN",
                 title: "Tập Trung Cơ Miệng Trước — Không Nhồi Nhét Từ Vựng Vô Bổ",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-4.mp3",
                 visualType: "focus-vs-cramming",
                 insight: "Buổi đầu tiên tập trung tối đa vào cơ hàm và khẩu hình, thay vì chạy qua hàng trăm từ vựng rồi quên sạch.",
                 callout: "💡 Não bộ chỉ cần làm chủ khớp cơ miệng trước, từ vựng nạp vào sau sẽ tự động trơn tru!",
@@ -221,9 +221,9 @@ export const CURRICULUM_DATA = {
                 theme: "amber"
               },
               {
+                cueTime: 21.835,
                 badge: "🏛️ QUY LUẬT XÂY NHÀ",
                 title: "20% Công Sức Đầu Tiên Nằm Ở Móng & Khung",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-5.mp3",
                 visualType: "foundation-blueprint",
                 insight: "Hãy hình dung việc học nói như xây nhà. Móng cơ miệng có vững chắc thì thân nhà mới kiên cố và không bao giờ đổ.",
                 callout: "🏛️ Đặt móng phát âm chuẩn ngay từ Buổi 1 giúp tiết kiệm 80% thời gian sửa sai sau này!",
@@ -231,9 +231,9 @@ export const CURRICULUM_DATA = {
                 theme: "cyan"
               },
               {
+                cueTime: 27.385,
                 badge: "🚀 HIỆU ỨNG ĐÒN BẨY DÀI HẠN",
                 title: "Não Bộ Giải Phóng Năng Lượng Cho Việc Diễn Đạt",
-                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-6.mp3",
                 visualType: "cognitive-energy-meter",
                 insight: "Khi cơ miệng đã thành phản xạ tự nhiên, vùng Broca được giải phóng 100% để sáng tạo và kết nối cảm xúc.",
                 callout: "🚀 Sửa một lần ở gốc rễ — Kết quả đòn bẩy sẽ theo bạn suốt toàn bộ 600 giờ lộ trình!",

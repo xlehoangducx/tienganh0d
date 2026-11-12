@@ -1062,7 +1062,25 @@ function startCaptionSync(audio, file) {
 
   const tick = () => {
     if (!audio || audio.paused || audio.ended) return;
-    syncLectureCaption(entry, audio.currentTime || 0);
+    const time = audio.currentTime || 0;
+    syncLectureCaption(entry, time);
+
+    // Tự động chuyển cảnh khi audio chạy tới cueTime của scene tiếp theo (hoàn toàn không ngắt âm thanh!)
+    const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+    const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
+    if (slide && Array.isArray(slide.scenes) && slide.scenes.some(sc => typeof sc.cueTime === "number")) {
+      let targetIdx = 0;
+      for (let i = 0; i < slide.scenes.length; i++) {
+        const sc = slide.scenes[i];
+        if (typeof sc.cueTime === "number" && time >= sc.cueTime) {
+          targetIdx = i;
+        }
+      }
+      if (targetIdx !== currentSlideSceneIndex) {
+        window.switchScene(targetIdx);
+      }
+    }
+
     captionFrame = requestAnimationFrame(tick);
   };
   captionFrame = requestAnimationFrame(tick);
@@ -1406,26 +1424,58 @@ function getSceneVisualGraphicHTML(visualType, theme) {
 
   if (visualType === 'four-pillars-morphology') {
     return `
-      <div class="motion-beat-visual my-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
-          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">1. Số Nhiều</span>
-          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">cat<span class="text-purple-400 underline font-extrabold">s</span></span>
-          <span class="text-[9px] text-slate-400 font-mono">đuôi /s/, /z/, /ɪz/</span>
+      <div class="motion-beat-visual my-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div class="p-3 rounded-xl bg-slate-950/85 border border-purple-500/40 shadow-lg relative overflow-hidden group">
+          <div class="flex items-center justify-between text-[9px] font-mono text-purple-300 font-bold uppercase mb-1">
+            <span>CÔNG THỨC 1</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-300">
+            [Danh Từ] + <span class="text-purple-300 font-bold bg-purple-500/20 px-1 py-0.5 rounded border border-purple-500/40">-s/es</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs sm:text-sm font-black text-white font-mono">
+            <span>cats</span>
+            <span class="text-[10px] text-purple-300 font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">/s/</span>
+          </div>
         </div>
-        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
-          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">2. Ngôi Thứ 3</span>
-          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">like<span class="text-purple-400 underline font-extrabold">s</span></span>
-          <span class="text-[9px] text-slate-400 font-mono">đuôi /s/, /z/</span>
+        <div class="p-3 rounded-xl bg-slate-950/85 border border-purple-500/40 shadow-lg relative overflow-hidden group">
+          <div class="flex items-center justify-between text-[9px] font-mono text-purple-300 font-bold uppercase mb-1">
+            <span>CÔNG THỨC 2</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-300">
+            [Ngôi 3] + <span class="text-purple-300 font-bold bg-purple-500/20 px-1 py-0.5 rounded border border-purple-500/40">-s</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs sm:text-sm font-black text-white font-mono">
+            <span>likes</span>
+            <span class="text-[10px] text-purple-300 font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">/s/</span>
+          </div>
         </div>
-        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
-          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">3. Quá Khứ</span>
-          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">stopp<span class="text-purple-400 underline font-extrabold">ed</span></span>
-          <span class="text-[9px] text-slate-400 font-mono">bật đuôi /t/, /d/</span>
+        <div class="p-3 rounded-xl bg-slate-950/85 border border-purple-500/40 shadow-lg relative overflow-hidden group">
+          <div class="flex items-center justify-between text-[9px] font-mono text-purple-300 font-bold uppercase mb-1">
+            <span>CÔNG THỨC 3</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-300">
+            [Động Từ] + <span class="text-purple-300 font-bold bg-purple-500/20 px-1 py-0.5 rounded border border-purple-500/40">-ed</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs sm:text-sm font-black text-white font-mono">
+            <span>stopped</span>
+            <span class="text-[10px] text-purple-300 font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">/t/</span>
+          </div>
         </div>
-        <div class="p-2.5 rounded-xl bg-slate-900/85 border border-purple-500/30 flex flex-col justify-between shadow-md">
-          <span class="text-[10px] font-mono text-purple-300 font-bold uppercase">4. Sở Hữu</span>
-          <span class="text-xs sm:text-sm font-black text-white my-1 font-mono">David<span class="text-purple-400 underline font-extrabold">'s</span></span>
-          <span class="text-[9px] text-slate-400 font-mono">đuôi /z/, /s/</span>
+        <div class="p-3 rounded-xl bg-slate-950/85 border border-purple-500/40 shadow-lg relative overflow-hidden group">
+          <div class="flex items-center justify-between text-[9px] font-mono text-purple-300 font-bold uppercase mb-1">
+            <span>CÔNG THỨC 4</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-300">
+            [Chủ Thể] + <span class="text-purple-300 font-bold bg-purple-500/20 px-1 py-0.5 rounded border border-purple-500/40">'s</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-xs sm:text-sm font-black text-white font-mono">
+            <span>David's</span>
+            <span class="text-[10px] text-purple-300 font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">/z/</span>
+          </div>
         </div>
       </div>
     `;
@@ -1893,10 +1943,10 @@ async function playSceneAudio(sIdx, options = {}) {
   await loadLectureTiming();
 
   const scene = slide.scenes[sIdx];
-  const sceneAudioFile = scene.audioFile || slide.audioFile;
-  if (!sceneAudioFile) return;
+  const isContinuousSlide = slide.scenes.some(sc => typeof sc.cueTime === "number") && slide.audioFile;
+  const audioFile = isContinuousSlide ? slide.audioFile : (scene.audioFile || slide.audioFile);
+  if (!audioFile) return;
 
-  const audioFile = sceneAudioFile;
   const hint = document.getElementById("lectureHint");
   if (hint) hint.textContent = "";
 
@@ -1909,19 +1959,17 @@ async function playSceneAudio(sIdx, options = {}) {
     if (currentLectureMeta !== meta) return;
     if (!isSlideAudioPlaying) return;
 
-    if (sIdx < slide.scenes.length - 1) {
+    // Đối với slide dùng audio rời theo scene: chuyển ngay lập tức sau 100ms mà không ngắt quãng 2 giây
+    if (!isContinuousSlide && sIdx < slide.scenes.length - 1) {
       currentLectureMeta = null;
+      window.switchScene(sIdx + 1);
       setTimeout(() => {
-        if (!isSlideAudioPlaying) return;
-        window.switchScene(sIdx + 1);
-        setTimeout(() => {
-          if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
-        }, 1100);
-      }, 800);
+        if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
+      }, 100);
       return;
     }
 
-    // Hết cảnh cuối của slide: dừng tại đây, không tự nhảy slide khi người học chỉ bấm nghe.
+    // Hết cảnh cuối của slide (hoặc hết audio liên tục của slide):
     isSlideAudioPlaying = false;
     currentLectureMeta = null;
     updateLectureControls(false);
@@ -1935,7 +1983,7 @@ async function playSceneAudio(sIdx, options = {}) {
     if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
       setTimeout(() => {
         if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
-      }, 1600);
+      }, 1400);
     } else {
       window.unlockStep(1, false);
     }
@@ -1951,6 +1999,11 @@ async function playSceneAudio(sIdx, options = {}) {
   meta.audio = audioTrack;
   currentLectureMeta = meta;
   currentLectureAudioInstance = audioTrack;
+
+  // Nếu người dùng chọn một scene cụ thể trong slide liên tục, tua nhanh đến cueTime tương ứng
+  if (isContinuousSlide && audioTrack && typeof scene.cueTime === "number" && scene.cueTime > 0) {
+    audioTrack.currentTime = scene.cueTime;
+  }
 
   if (audioTrack) {
     const beginCaption = () => {
