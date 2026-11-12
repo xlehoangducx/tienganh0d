@@ -103,6 +103,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "👋 GIA SƯ AI KHAI MỞ",
                 title: "Lời Chào Mở Đầu & Định Hướng Buổi Học",
+                spokenText: "Chào mừng bạn đến với Buổi 01: Đánh thức cơ miệng và ba cụm giao tiếp đầu tiên.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
                 visualType: "intro-welcome",
                 insight: "Đánh thức các nhóm cơ miệng và làm chủ ngay 3 cụm từ giao tiếp sinh tồn đầu tiên mà không cần nhồi nhét ngữ pháp khô khan.",
@@ -113,6 +114,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔍 THỰC TRẠNG & CĂN CỨ KHOA HỌC",
                 title: "Rào Cản Khi Bắt Đầu Bằng Ngữ Pháp Trừu Tượng",
+                spokenText: "Bạn có từng thắc mắc: vì sao học ngữ pháp rất nhiều nhưng vẫn không dám mở miệng?",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
                 visualType: "neural-blockade",
                 insight: "Học công thức khô khan kích hoạt hạch hạnh nhân (Amygdala) phát tín hiệu phòng vệ, làm tê liệt phản xạ nói tự nhiên của vùng Broca.",
@@ -123,6 +125,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "💡 BẢN NĂNG HẤP THỤ NÃO BỘ",
                 title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
+                spokenText: "Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A. Các em học qua khuôn mặt, giọng điệu và cảm xúc.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-2.mp3",
                 visualType: "human-connection",
                 insight: "Trẻ em hấp thụ ngôn ngữ qua âm thanh và cảm xúc kết nối đời thường trước khi học bất kỳ công thức nào. Chỉ 3 cụm câu hạt nhân là đủ mở khóa phản xạ!",
@@ -143,6 +146,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚠️ TẬT PHÁT ÂM TIẾNG VIỆT",
                 title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
+                spokenText: "Quán tính rụt đầu lưỡi vào chân răng trong biến Thank you thành 'Thanh-kiu', và nuốt sạch âm đuôi /s/, /t/.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-0.mp3",
                 visualType: "vietnamese-habit",
                 insight: "Quán tính rụt đầu lưỡi vào chân răng trong biến Thank you thành 'Thanh-kiu', và nuốt sạch âm đuôi /s/, /t/ khiến Nice thành 'Nai', Meet thành 'Mít' người Mỹ không hiểu.",
@@ -153,6 +157,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🎯 TÁI CẤU TRÚC CƠ QUAN PHÁT ÂM",
                 title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
+                spokenText: "Kỹ thuật chuẩn: Âm /θ/ kẹp nhẹ đầu lưỡi thổi gió mát; Âm /s/ khép răng xì hơi; Âm /t/ nén nướu bật tách dứt khoát.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-1.mp3",
                 visualType: "mouth-kinematics",
                 insight: "Kỹ thuật chuẩn: Âm /θ/ kẹp nhẹ đầu lưỡi thổi gió mát; Âm /s/ khép 2 hàm răng xì hơi lốp xe; Âm /t/ nén hơi nướu trên rồi bật tách dứt khoát.",
@@ -174,7 +179,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 0.0,
                 badge: "📊 KHO DỮ LIỆU THỰC TẾ",
                 title: "Kho Ngữ Liệu Chuẩn 1 Tỷ Từ (COCA)",
+                spokenText: "Theo kho ngữ liệu tiếng Anh Mỹ,",
                 visualType: "coca-corpus-counter",
+                insight: "Corpus of Contemporary American English (COCA) tại Đại học BYU chứa hơn 1 tỷ từ ngữ đàm thoại thực tế Mỹ, cung cấp dữ liệu thực nghiệm về tần suất xuất hiện của mọi âm vị.",
+                callout: "📊 Dữ liệu thực nghiệm giúp người mới bắt đầu học đúng 20% cốt lõi mà người Mỹ dùng hàng ngày!",
                 icon: "database",
                 theme: "emerald"
               },
@@ -182,7 +190,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 2.05,
                 badge: "⚡ TỶ LỆ ĐỘT PHÁ",
                 title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Cấu Trúc",
+                spokenText: "âm gió và âm bật xuất hiện trong hơn sáu mươi lăm phần trăm cấu trúc thường gặp.",
                 visualType: "pareto-live-meter",
+                insight: "Thống kê COCA chứng minh âm xì gió răng /s/ và âm bật nén nướu /t/ bao phủ hơn 65% toàn bộ hệ thống hình thái học và đuôi từ trong hội thoại hàng ngày của người Mỹ.",
+                callout: "⚡ Chỉ cần làm chủ 2 âm vị này, bạn đã giải quyết xong 2/3 tổng khối lượng âm đuôi tiếng Anh!",
                 icon: "activity",
                 theme: "cyan"
               },
@@ -190,7 +201,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 6.0,
                 badge: "🏗️ 4 TRỤ CỘT HÌNH THÁI HỌC",
                 title: "4 Cấu Trúc Ngữ Pháp Cốt Lõi Đều Kết Thúc Bằng /s/ và /t/",
+                spokenText: "Danh từ số nhiều thêm s, động từ ngôi thứ ba thêm s, thì quá khứ thêm ed, và sở hữu cách thêm s.",
                 visualType: "four-pillars-morphology",
+                insight: "4 Cột mốc ngữ pháp nền tảng: Số nhiều (cats /s/), Ngôi thứ ba (works /s/), Quá khứ (-ed: looked /t/), và Sở hữu cách (David's /z/). Tất cả đều vận hành trên 2 âm này.",
+                callout: "🏗️ Toàn bộ ngữ pháp sơ cấp thực chất bám chặt vào kỹ thuật vận động cơ miệng /s/ và /t/!",
                 icon: "layers",
                 theme: "purple"
               },
@@ -198,7 +212,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 11.75,
                 badge: "🎯 BẺ GÃY TẬT NÓI BỒI",
                 title: "Làm Chủ 2 Âm Này = Xử Lý Xong Phần Lớn Âm Đuôi",
+                spokenText: "Nghĩa là chỉ cần làm chủ hai âm này, bạn đã xử lý phần lớn những đuôi từ khiến người Việt hay nuốt mất.",
                 visualType: "end-sound-scanner",
+                insight: "Người Việt hay nuốt âm đuôi biến 'Nice' thành 'Nai', 'Meet' thành 'Mít'. Luyện bật gió /s/ và nén nướu /t/ sẽ bẻ gãy hoàn toàn tật nuốt âm, giúp người Mỹ hiểu ngay từ đầu tiên.",
+                callout: "🎯 Chữa dứt điểm tật nuốt âm đuôi ngay từ Buổi 1 — nền tảng số 1 để người bản xứ hiểu bạn!",
                 icon: "check-circle",
                 theme: "emerald"
               },
@@ -206,7 +223,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 16.85,
                 badge: "💡 CHIẾN LƯỢC SƯ PHẠM",
                 title: "Tập Trung Cơ Miệng Trước — Không Nhồi Nhét Từ Vựng",
+                spokenText: "Đây là lý do buổi đầu tiên tập trung vào cơ miệng, thay vì chạy qua thật nhiều từ vựng.",
                 visualType: "focus-vs-cramming",
+                insight: "Học vẹt 1.000 từ khi cơ miệng chưa chuẩn chỉ tạo ra hàng nghìn từ phát âm sai. Ép cơ hàm và lưỡi vào khuôn chuẩn ngay từ đầu sẽ giúp mọi từ vựng học sau này tự động chuẩn.",
+                callout: "💡 Rèn trí nhớ cơ bắp (Muscle Memory) trước khi nhồi từ vựng — con đường ngắn nhất để nói chuẩn!",
                 icon: "shield-check",
                 theme: "amber"
               },
@@ -214,7 +234,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 21.835,
                 badge: "🏛️ ĐỊNH LUẬT PARETO 80/20",
                 title: "Mô Hình Xây Nhà: 20% Công Sức Móng Quyết Định 80% Thân Nhà",
+                spokenText: "Hãy hình dung việc học nói như xây nhà. Hai mươi phần trăm công sức đầu tiên nằm ở móng và khung.",
                 visualType: "foundation-blueprint",
+                insight: "20% Công sức móng nhà nằm ở 3 âm vị vận động cơ miệng (/s/, /t/, /θ/). Khi nền móng cơ học đã kiên cố, 80% tòa nhà ngữ pháp và từ vựng phía trên sẽ vững chãi không bao giờ sụp đổ.",
+                callout: "🏛️ Móng nhà không vững thì xây càng cao càng dễ đổ; cơ miệng chuẩn thì nói càng nhiều càng tự tin!",
                 icon: "building-2",
                 theme: "cyan"
               },
@@ -222,7 +245,10 @@ export const CURRICULUM_DATA = {
                 cueTime: 27.385,
                 badge: "🚀 HIỆU ỨNG ĐÒN BẨY NÃO BỘ",
                 title: "Giải Phóng Vùng Não Broca: Tập Trung Biểu Đạt Cảm Xúc",
+                spokenText: "Khi khẩu hình đã chuẩn, bạn không còn phải nghĩ đến âm cuối mỗi lần nói. Não bộ giải phóng năng lượng cho việc chọn từ và diễn đạt. Đó là hiệu ứng đòn bẩy: sửa một lần ở gốc, kết quả theo bạn suốt lộ trình.",
                 visualType: "cognitive-energy-meter",
+                insight: "Khi cơ miệng tự động phát âm chuẩn phản xạ vô thức, vùng não Broca được giải phóng 100% tải nhận thức để tập trung vào việc chọn ý tưởng, ánh mắt và cảm xúc khi đối thoại.",
+                callout: "🚀 Hiệu ứng đòn bẩy thần kinh: Sửa đúng 1 lần tại gốc rễ cơ miệng, hưởng thành quả phản xạ trọn đời!",
                 icon: "zap",
                 theme: "emerald"
               }
@@ -239,6 +265,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🤝 TAM GIÁC SINH TỒN XÃ HỘI",
                 title: "Hi, nice to meet you! → Thank you so much! → Have a great day!",
+                spokenText: "Ba câu hạt nhân của buổi hôm nay: Hi, nice to meet you! → Thank you so much! → Have a great day!",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-0.mp3",
                 visualType: "social-trinity",
                 insight: "Bộ ba câu sống còn xóa tan rào cản: Chào hỏi thân thiện nụ cười → Cảm ơn sâu sắc khi nhận trợ giúp → Lời chúc tốt lành để lại thiện cảm.",
@@ -249,6 +276,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚡ KÍCH HOẠT DOPAMINE NÃO BỘ",
                 title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
+                spokenText: "Chỉ cần nói chuẩn ba câu này, bạn sẽ nhận được nụ cười thân thiện của người bản xứ và giải phóng Dopamine tự tin!",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-1.mp3",
                 visualType: "dopamine-spark",
                 insight: "Chỉ cần phát âm đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn. Nụ cười đối phương kích hoạt Dopamine xóa tan 100% nỗi sợ nói tiếng Anh!",
@@ -269,6 +297,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔄 LỘ TRÌNH 6 BƯỚC ĐA GIÁC QUAN",
                 title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
+                spokenText: "Buổi học hai mươi lăm phút được chia thành sáu bước đa giác quan: từ Soi gương đến Ghép câu.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-0.mp3",
                 visualType: "multimodal-flow",
                 insight: "Kích hoạt đồng thời 6 vùng thần kinh: Vận động miệng, thính giác, thị giác, phản hồi âm thanh tức thì, không gian 3D và tái tạo chữ viết.",
@@ -279,6 +308,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🧠 CỐ ĐỊNH KHỚP THẦN KINH DÀI HẠN",
                 title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
+                spokenText: "Não bộ cần bảy lần lặp ngắt quãng qua nhiều giác quan để chuyển kiến thức vào vỏ não dài hạn vĩnh viễn.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-1.mp3",
                 visualType: "synaptic-consolidation",
                 insight: "Não bộ cần 7 lần truy xuất ngắt quãng đa giác quan để chuyển cụm từ sang vỏ não dài hạn (LTP), cố định phản xạ tự nhiên mà không bao giờ quên.",

@@ -733,7 +733,7 @@ body.cinema-mode .lecture-cinema-stage {
   border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
-  padding-bottom: 5.5rem; /* Để khoảng trống thoáng đãng cho dải sóng âm cinemaWave không bao giờ bị đè */
+  padding-bottom: 8.5rem; /* Để khoảng trống thoáng đãng cho cả thanh phụ đề và dải sóng âm cinemaWave */
   box-sizing: border-box;
 }
 
@@ -785,12 +785,35 @@ body.cinema-mode .scene-kicker {
 }
 
 body.cinema-mode .lecture-caption-ribbon {
-  margin: 0.4rem clamp(1rem, 6vw, 5rem) 0.5rem;
-  padding: 0.6rem 1.25rem;
-  font-size: clamp(0.95rem, 1.7vw, 1.35rem);
-  line-height: 1.45;
-  position: relative;
-  z-index: 25;
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 4.8rem !important; /* Neo cố định ngay phía trên dải sóng âm cinemaWave */
+  transform: translateX(-50%) !important;
+  z-index: 95 !important;
+  width: min(1040px, 92vw) !important;
+  min-height: 3.2rem !important;
+  background: rgba(4, 7, 16, 0.94) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(16, 185, 129, 0.25) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  padding: 0.6rem 1.5rem !important;
+  margin: 0 !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+body.cinema-mode #lectureCaptionText {
+  font-size: clamp(1.05rem, 2vw, 1.45rem) !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 15px rgba(16, 185, 129, 0.4) !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.4 !important;
 }
 
 body.cinema-live .cinema-wave {

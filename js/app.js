@@ -1034,6 +1034,17 @@ function stopCaptionSync() {
   captionFrame = null;
 }
 
+function updateCaptionForCurrentScene(scene) {
+  const ribbon = document.getElementById("lectureCaptionRibbon");
+  const textEl = document.getElementById("lectureCaptionText");
+  if (!ribbon || !textEl) return;
+  const text = scene?.spokenText || scene?.insight || scene?.title || "";
+  if (text) {
+    textEl.textContent = text;
+    ribbon.classList.remove("hidden");
+  }
+}
+
 function syncLectureCaption(entry, time) {
   const ribbon = document.getElementById("lectureCaptionRibbon");
   const textEl = document.getElementById("lectureCaptionText");
@@ -1048,8 +1059,6 @@ function syncLectureCaption(entry, time) {
       ribbon.classList.add("caption-pop");
     }
     ribbon.classList.remove("hidden");
-  } else if (time < (entry.captions[0]?.start || 0)) {
-    ribbon.classList.add("hidden");
   }
 }
 
@@ -1057,8 +1066,17 @@ function startCaptionSync(audio, file) {
   stopCaptionSync();
   const entry = getLectureTimingEntry(file);
   const ribbon = document.getElementById("lectureCaptionRibbon");
-  if (ribbon) ribbon.classList.add("hidden");
-  if (!audio || !entry) return;
+  if (!audio) return;
+  if (ribbon) ribbon.classList.remove("hidden");
+  if (!entry) {
+    loadLectureTiming().then(() => {
+      const e = getLectureTimingEntry(file);
+      if (e && audio && !audio.paused && !audio.ended) {
+        startCaptionSync(audio, file);
+      }
+    });
+    return;
+  }
 
   const tick = () => {
     if (!audio || audio.paused || audio.ended) return;
@@ -1088,8 +1106,6 @@ function startCaptionSync(audio, file) {
 
 function resetLecturePlaybackUI() {
   stopCaptionSync();
-  const ribbon = document.getElementById("lectureCaptionRibbon");
-  if (ribbon) ribbon.classList.add("hidden");
 }
 loadLectureTiming();
 
@@ -1844,6 +1860,7 @@ window.switchScene = function(sIdx) {
   const scene = slide.scenes[sIdx];
   const stage = document.getElementById("activeSlideCard");
   if (stage) stage.dataset.theme = scene.theme || "emerald";
+  updateCaptionForCurrentScene(scene);
 
   const container = document.getElementById("activeSceneContentContainer");
   if (!container) return;
@@ -1951,8 +1968,8 @@ function renderMasterLecture(lesson) {
           <div class="scene-layer is-current">${renderSceneCardHTML(currentScene, currentSlideSceneIndex, scenes.length)}</div>
         </div>
 
-        <div id="lectureCaptionRibbon" class="lecture-caption-ribbon hidden" aria-live="polite">
-          <span id="lectureCaptionText"></span>
+        <div id="lectureCaptionRibbon" class="lecture-caption-ribbon ${currentScene?.spokenText || currentScene?.insight ? '' : 'hidden'}" aria-live="polite">
+          <span id="lectureCaptionText">${currentScene?.spokenText || currentScene?.insight || ''}</span>
         </div>
 
         <div id="cinemaWave" class="cinema-wave hidden" onclick="exitCinemaMode(event)" title="Bấm để thoát chế độ trình chiếu (hoặc phím Esc)">
@@ -2157,6 +2174,7 @@ window.goToSlide = function(idx, keepPlaying = false) {
     if (window.lucide) window.lucide.createIcons();
 
     resetLecturePlaybackUI();
+    updateCaptionForCurrentScene(scene);
     updateLectureControls(isSlideAudioPlaying);
 
     if (keepPlaying) {
