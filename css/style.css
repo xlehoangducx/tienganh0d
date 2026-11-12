@@ -290,3 +290,112 @@ body {
   animation: softFadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.88s both;
 }
 
+
+
+/* ============================================================== */
+/* MAGIC UI & REACT BITS PRESENTATION UTILITIES */
+/* ============================================================== */
+
+/* Magic UI: Border Beam */
+.border-beam {
+  position: relative;
+  overflow: hidden;
+}
+.border-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle, 0deg) at 50% 50%,
+    transparent 0%,
+    rgba(16, 185, 129, 0.9) 20%,
+    rgba(6, 182, 212, 0.9) 45%,
+    rgba(139, 92, 246, 0.9) 65%,
+    transparent 80%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: borderBeamSpin 4.5s linear infinite;
+}
+@keyframes borderBeamSpin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Magic UI: Shimmer Button */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: shimmerPass 3.5s ease-in-out infinite;
+}
+@keyframes shimmerPass {
+  0% { left: -100%; }
+  35%, 100% { left: 160%; }
+}
+
+/* Magic UI / React Bits: Animated Gradient Text */
+.animated-gradient-text {
+  background: linear-gradient(
+    90deg,
+    #34d399 0%,
+    #22d3ee 30%,
+    #a78bfa 60%,
+    #34d399 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradientShine 6s linear infinite;
+}
+@keyframes textGradientShine {
+  to {
+    background-position: 250% center;
+  }
+}
+
+/* React Bits: Spotlight Card */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.spotlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px -8px rgba(16, 185, 129, 0.25);
+}
+
+/* Zero Extraneous Load on Mobile */
+@media (max-width: 640px) {
+  .mobile-tight-pad {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .scene-active-card {
+    padding: 1rem !important;
+  }
+}

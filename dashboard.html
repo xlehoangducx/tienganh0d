@@ -24,6 +24,9 @@
       }
     }
   </script>
+    <!-- GSAP 3.12.5 (GreenSock) & ScrollTrigger Presentation Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
 
   <style>
@@ -315,25 +318,37 @@
       <!-- ================= VIEW 1: BÀI HỌC HIỆN TẠI ================= -->
       <div id="curriculumView" class="space-y-4">
 
-        <!-- 1. COMPACT UNIFIED TOP FOCUS BAR -->
-        <div class="flex items-center justify-between gap-2 px-1">
-          <!-- Nút mở Danh Mục & Tiến Độ -->
-          <button onclick="openCurriculumDrawer()" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs font-bold flex items-center space-x-2 transition cursor-pointer shadow-md flex-shrink-0" title="Mở danh mục các buổi học">
-            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
-            <span class="hidden sm:inline">Danh Mục Bài</span>
-            <span id="headerProgressBadge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">0%</span>
-          </button>
+        <!-- 1. COMPACT UNIFIED FOCUS BAR (RESPONSIVE 2-TIER ON MOBILE, BALANCED ROW ON PC) -->
+        <div class="px-1 space-y-1.5 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-2">
+          
+          <!-- Hàng 1 trên Mobile: [📖 Danh Mục Bài 0%] bên trái + [Pre-A1] [🧭 Lộ Trình] bên phải -->
+          <div class="flex items-center justify-between sm:justify-start sm:space-x-2.5 w-full sm:w-auto">
+            <button onclick="openCurriculumDrawer()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs font-bold flex items-center space-x-1.5 transition cursor-pointer shadow-md flex-shrink-0" title="Mở danh mục các buổi học">
+              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+              <span>Danh Mục Bài</span>
+              <span id="headerProgressBadge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">0%</span>
+            </button>
 
-          <!-- Tiêu đề buổi học tinh gọn ở giữa -->
-          <div class="text-center min-w-0 flex-grow px-2">
-            <h1 id="currentLessonTitle" class="text-xs sm:text-sm md:text-base font-black text-white truncate glow-accent">
+            <!-- Cấp độ & Đổi lộ trình (Trên Mobile đưa về góc phải hàng 1) -->
+            <div class="flex items-center space-x-1.5 flex-shrink-0 sm:hidden">
+              <span id="currentPhaseBadgeMobile" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">Pre-A1</span>
+              <a href="tracks.html" class="px-2 py-1 rounded-lg text-xs bg-slate-800/90 text-slate-300 transition border border-slate-700 flex items-center space-x-1">
+                <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>Lộ Trình</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tiêu đề buổi học: Chiếm trọn bề ngang ở giữa, chữ rõ nét, không bị chèn ép -->
+          <div class="text-center w-full min-w-0 px-1 py-0.5 sm:py-0">
+            <h1 id="currentLessonTitle" class="text-sm sm:text-base md:text-lg font-black text-white glow-accent leading-snug">
               Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Giao Tiếp
             </h1>
           </div>
 
-          <!-- Đổi lộ trình & Cấp độ -->
-          <div class="flex items-center space-x-1.5 flex-shrink-0">
-            <span id="currentPhaseBadge" class="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">Pre-A1</span>
+          <!-- Cấp độ & Đổi lộ trình trên PC (Ẩn trên Mobile vì đã có ở hàng 1) -->
+          <div class="hidden sm:flex items-center space-x-1.5 flex-shrink-0">
+            <span id="currentPhaseBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">Pre-A1</span>
             <a href="tracks.html" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700 flex items-center space-x-1">
               <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i>
               <span class="hidden md:inline">Đổi Lộ Trình</span>

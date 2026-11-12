@@ -705,6 +705,8 @@ window.selectLesson = function(lessonId) {
   if (contextEl) contextEl.textContent = lesson.practicalContext;
   if (durationEl) durationEl.textContent = lesson.duration || "25 phút";
   if (phaseBadge && milestone) phaseBadge.textContent = milestone.badge;
+  const phaseBadgeMobile = document.getElementById("currentPhaseBadgeMobile");
+  if (phaseBadgeMobile && milestone) phaseBadgeMobile.textContent = milestone.badge;
 
   // Render các Module
   renderMasterLecture(lesson);
@@ -1032,42 +1034,60 @@ window.switchScene = function(sIdx, isAuto) {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
   if (!slide || !slide.scenes || !slide.scenes[sIdx]) return;
+  if (currentSlideSceneIndex === sIdx && !isAuto) return;
 
   currentSlideSceneIndex = sIdx;
   const container = document.getElementById("activeSceneContentContainer");
   if (!container) return;
 
-  // Hiệu ứng chuyển cảnh mượt mà GPU-accelerated
-  container.classList.add("scene-exit-left");
-  setTimeout(() => {
-    container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
-    container.classList.remove("scene-exit-left");
-    container.classList.add("scene-enter-right");
-    setTimeout(() => container.classList.remove("scene-enter-right"), 380);
+  if (window.gsap) {
+    // GSAP BUTTERY SMOOTH CROSS-DISSOLVE (TUYỆT ĐỐI KHÔNG CHỚP ĐEN)
+    gsap.killTweensOf(container);
+    gsap.to(container, {
+      opacity: 0.35, // Giữ 35% hiển thị, KHÔNG BAO GIỜ để opacity: 0 gây chớp đen
+      x: -10,
+      scale: 0.995,
+      duration: 0.22,
+      ease: "power2.inOut",
+      onComplete: () => {
+        container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
+        if (window.lucide) window.lucide.createIcons();
 
-    // Cập nhật trạng thái nút chuyển cảnh
-    document.querySelectorAll(".scene-tab-btn").forEach((btn, idx) => {
-      if (idx === sIdx) {
-        btn.className = "scene-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-md shadow-emerald-500/20";
-        const dot = btn.querySelector("span");
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
-      } else {
-        btn.className = "scene-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800";
-        const dot = btn.querySelector("span");
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-slate-600";
+        // Lướt vào êm ái
+        gsap.fromTo(container,
+          { opacity: 0.35, x: 12, scale: 0.995 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.42, ease: "power2.out" }
+        );
+
+        // Stagger các dòng điểm con
+        const points = container.querySelectorAll("[class*='motion-beat-point-']");
+        if (points.length > 0) {
+          gsap.fromTo(points,
+            { opacity: 0, y: 8 },
+            { opacity: 1, y: 0, duration: 0.35, stagger: 0.09, ease: "power2.out" }
+          );
+        }
+
+        if (isAuto) {
+          const card = document.getElementById("activeSlideCard");
+          if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     });
-
-    if (window.lucide) window.lucide.createIcons();
-
-    // Tự động căn chỉnh thẻ bài học về CHÍNH GIỮA MÀN HÌNH TẦM MẮT
-    if (isAuto) {
-      const card = document.getElementById("activeSlideCard");
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    // Fallback mượt mà không GSAP
+    container.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+    container.style.opacity = "0.4";
+    setTimeout(() => {
+      container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
+      if (window.lucide) window.lucide.createIcons();
+      container.style.opacity = "1";
+      if (isAuto) {
+        const card = document.getElementById("activeSlideCard");
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }
-  }, 160);
+    }, 200);
+  }
 };
 
 function renderMasterLecture(lesson) {
