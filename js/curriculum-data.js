@@ -368,6 +368,7 @@ export const CURRICULUM_DATA = {
           ipa: "/hæv ə naɪs ˈwiːkend/",
           meaning: "Chúc bạn cuối tuần vui vẻ nhé!",
           context: "Cách nói mở rộng: Chào tạm biệt đồng nghiệp vào chiều thứ Sáu",
+          audioFile: "assets/audio/have-a-nice-weekend.mp3",
           audioText: "Have a nice weekend!",
           type: "permutation",
           repetitionTarget: 7
@@ -377,6 +378,7 @@ export const CURRICULUM_DATA = {
           ipa: "/hæv ə seɪf trɪp/",
           meaning: "Chúc bạn chuyến đi thượng lộ bình an!",
           context: "Cách nói mở rộng: Tiễn bạn bè đi xa, ra sân bay hoặc đi du lịch",
+          audioFile: "assets/audio/have-a-safe-trip.mp3",
           audioText: "Have a safe trip!",
           type: "permutation",
           repetitionTarget: 7

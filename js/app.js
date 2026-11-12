@@ -187,7 +187,10 @@ const VIENEU_AUDIO_MAP = {
   "thanks a lot": "assets/audio/thanks-a-lot.mp3",
   "have a great day": "assets/audio/have-a-great-day.mp3",
   "have a good one": "assets/audio/have-a-good-one.mp3",
-  "take care see you later": "assets/audio/take-care-see-you-later.mp3"
+  "have a nice weekend": "assets/audio/have-a-nice-weekend.mp3",
+  "have a safe trip": "assets/audio/have-a-safe-trip.mp3",
+  "take care see you later": "assets/audio/take-care-see-you-later.mp3",
+  "youre welcome enjoy your trip": "assets/audio/david-buoi-01-turn-3.mp3"
 };
 
 export function speakText(text) {
@@ -2399,6 +2402,28 @@ function updateCurrentDialogueTurnUI() {
   if (userTurnsList.length === 0) return;
   const currentTurn = userTurnsList[currentDialogueTurnIndex];
 
+  // Tìm câu thoại của AI ngay trước lượt của user hiện tại để đồng bộ song song (Dual-coding)
+  const userIdx = currentDialogueScenario.turns.indexOf(currentTurn);
+  const aiTurn = userIdx > 0 ? currentDialogueScenario.turns[userIdx - 1] : currentDialogueScenario.turns[0];
+
+  const aiBox = document.getElementById("aiPartnerPromptBox");
+  const aiSpeaker = document.getElementById("aiPartnerSpeakerName");
+  const aiAvatar = document.getElementById("aiPartnerAvatar");
+  const aiText = document.getElementById("aiPartnerText");
+  const aiIpa = document.getElementById("aiPartnerIpa");
+  const aiMeaning = document.getElementById("aiPartnerMeaning");
+
+  if (aiTurn && aiTurn.role === 'ai') {
+    if (aiBox) aiBox.classList.remove("hidden");
+    if (aiSpeaker) aiSpeaker.textContent = `${aiTurn.speaker || 'David'} vừa nói:`;
+    if (aiAvatar) aiAvatar.textContent = currentDialogueScenario.characterAvatar || '👨‍💼';
+    if (aiText) aiText.textContent = `"${aiTurn.text}"`;
+    if (aiIpa) aiIpa.textContent = aiTurn.ipa || '';
+    if (aiMeaning) aiMeaning.textContent = aiTurn.meaning || '';
+  } else if (aiBox) {
+    aiBox.classList.add("hidden");
+  }
+
   const targetTextEl = document.getElementById("currentTurnTargetText");
   const targetMeaningEl = document.getElementById("currentTurnTargetMeaning");
   const indicatorEl = document.getElementById("dialogueTurnIndicator");
@@ -2410,6 +2435,8 @@ function updateCurrentDialogueTurnUI() {
   if (indicatorEl) indicatorEl.textContent = `Lượt đối thoại của bạn: ${currentDialogueTurnIndex + 1} / ${userTurnsList.length}`;
   if (resultBox) resultBox.classList.add("hidden");
   if (micStatus) micStatus.textContent = "Bấm nút Micro màu tím bên dưới và nói to câu tiếng Anh trên vào micro";
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
 window.narrateCurrentScenario = function() {
@@ -2459,9 +2486,23 @@ window.triggerAiPartnerPrompt = function() {
   const userIdx = currentDialogueScenario.turns.indexOf(currentTurn);
   const aiTurn = userIdx > 0 ? currentDialogueScenario.turns[userIdx - 1] : currentDialogueScenario.turns[0];
 
+  const aiBox = document.getElementById("aiPartnerPromptBox");
+  if (aiBox) {
+    aiBox.classList.add("ring-2", "ring-cyan-400", "shadow-[0_0_25px_rgba(6,182,212,0.4)]");
+    setTimeout(() => {
+      aiBox.classList.remove("ring-2", "ring-cyan-400", "shadow-[0_0_25px_rgba(6,182,212,0.4)]");
+    }, 2800);
+  }
+
   if (aiTurn && aiTurn.role === 'ai') {
-    if (aiTurn.audioFile) {
-      window.playTrack(aiTurn.audioFile);
+    let audioPath = aiTurn.audioFile;
+    if (!audioPath) {
+      const phrase = aiTurn.text || '';
+      const normKey = phrase.trim().toLowerCase().replace(/[.,!?;:"']/g, "").replace(/\s+/g, " ").trim();
+      audioPath = VIENEU_AUDIO_MAP[normKey];
+    }
+    if (audioPath) {
+      window.playTrack(audioPath);
     } else {
       speakText(aiTurn.text);
     }

@@ -563,8 +563,30 @@
             </div>
 
             <!-- Khu vực ghi âm & nhận diện giọng nói đối đáp -->
-            <div class="p-6 rounded-2xl cyber-card text-center border-dashed border-purple-500/40 bg-slate-950/40" id="dialogueSpeakingActionCard">
-              <div class="text-xs font-bold text-purple-300 mb-1" id="currentTurnPromptHeader">Đến lượt bạn mỉm cười và đáp lại:</div>
+            <div class="p-4 sm:p-6 rounded-2xl cyber-card text-center border-dashed border-purple-500/40 bg-slate-950/40" id="dialogueSpeakingActionCard">
+              <!-- KHỐI NGƯỜI BẢN XỨ MỞ LỜI: HIỂN THỊ TRỰC TIẾP CÂU NÓI & NGHĨA VIỆT NGAY TẠI TẦM MẮT (DUAL-CODING) -->
+              <div id="aiPartnerPromptBox" class="mb-5 p-3.5 sm:p-4 rounded-xl bg-purple-950/40 border border-purple-500/40 text-left transition-all duration-300 shadow-inner">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-base sm:text-lg" id="aiPartnerAvatar">👨‍💼</span>
+                    <span class="text-xs font-bold text-purple-300 tracking-wide" id="aiPartnerSpeakerName">David vừa nói:</span>
+                  </div>
+                  <button type="button" onclick="triggerAiPartnerPrompt()" class="px-2.5 py-1 rounded-lg bg-purple-800/70 hover:bg-purple-700 text-purple-200 text-xs font-semibold flex items-center space-x-1.5 border border-purple-500/40 transition active:scale-95 cursor-pointer shadow-sm" title="Bấm để người bản xứ phát âm lại">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-cyan-300"></i>
+                    <span>Nghe lại</span>
+                  </button>
+                </div>
+                <div id="aiPartnerText" class="text-base sm:text-lg font-bold text-white tracking-wide mb-0.5 font-mono leading-snug">"Hi there! Nice day, isn't it?"</div>
+                <div id="aiPartnerIpa" class="text-[11px] font-mono text-cyan-400 mb-1.5">/haɪ ðer! naɪs deɪ, ˈɪznt ɪt?/</div>
+                <div id="aiPartnerMeaning" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                  Chào bạn! Một ngày đẹp trời nhỉ?
+                </div>
+              </div>
+
+              <div class="text-xs font-bold text-emerald-400 mb-1 flex items-center justify-center space-x-1" id="currentTurnPromptHeader">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                <span>Đến lượt bạn mỉm cười và đáp lại:</span>
+              </div>
               <div id="currentTurnTargetText" class="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 font-mono">...</div>
               <div id="currentTurnTargetMeaning" class="text-xs text-emerald-400 mb-4">...</div>
 

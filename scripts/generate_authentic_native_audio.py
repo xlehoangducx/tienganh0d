@@ -26,6 +26,8 @@ chunks = [
     ("thanks-a-lot.mp3", "Thanks a lot!"),
     ("have-a-great-day.mp3", "Have a great day!"),
     ("have-a-good-one.mp3", "Have a good one!"),
+    ("have-a-nice-weekend.mp3", "Have a nice weekend!"),
+    ("have-a-safe-trip.mp3", "Have a safe trip!"),
     ("take-care-see-you-later.mp3", "Take care! See you later!")
 ]
 
@@ -33,7 +35,7 @@ chunks = [
 dialogues = [
     ("david-buoi-01-turn-1.mp3", "Hi there! Nice day, isn't it?"),
     ("david-buoi-01-turn-2.mp3", "Here is your heavy luggage. Let me help you with that!"),
-    ("david-buoi-01-turn-3.mp3", "You're very welcome! Have a wonderful trip in New York!")
+    ("david-buoi-01-turn-3.mp3", "You're welcome! Enjoy your trip!")
 ]
 
 async def generate_all():
