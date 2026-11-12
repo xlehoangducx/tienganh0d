@@ -258,39 +258,39 @@ body {
   animation: visualPulseWave 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-/* Chuyển động từng phần tử xuất hiện chậm rãi, êm ái, nhịp nhàng theo phong cách tài liệu khoa học */
+/* Chuyển động từng phần tử xuất hiện êm ái, nhịp nhàng không bị trễ */
 .scene-kicker,
 .motion-beat-badge {
-  animation: softFadeScale 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  animation: softFadeScale 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0s both;
 }
 
 .scene-title,
 .motion-beat-title {
   text-wrap: balance;
   letter-spacing: -0.02em;
-  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
+  animation: softFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both;
 }
 
 .motion-beat-visual {
-  animation: softFadeScale 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
+  animation: softFadeScale 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }
 
 .scene-insight,
 .motion-beat-point-0 {
-  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both;
+  animation: softFadeUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
 .motion-beat-point-1 {
-  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.38s both;
+  animation: softFadeUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
 }
 
 .motion-beat-point-2 {
-  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.70s both;
+  animation: softFadeUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
 }
 
 .scene-callout,
 .motion-beat-callout {
-  animation: softFadeScale 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.70s both;
+  animation: softFadeScale 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
 }
 
 
