@@ -1041,13 +1041,13 @@ window.switchScene = function(sIdx, isAuto) {
   if (!container) return;
 
   if (window.gsap) {
-    // GSAP BUTTERY SMOOTH CROSS-DISSOLVE (TUYỆT ĐỐI KHÔNG CHỚP ĐEN)
+    // GSAP BUTTERY SMOOTH CROSS-DISSOLVE (TUYỆT ĐỐI KHÔNG CHỚP ĐEN, CHẬM VÀ ÊM ÁI)
     gsap.killTweensOf(container);
     gsap.to(container, {
       opacity: 0.35, // Giữ 35% hiển thị, KHÔNG BAO GIỜ để opacity: 0 gây chớp đen
-      x: -10,
+      x: -12,
       scale: 0.995,
-      duration: 0.22,
+      duration: 0.32,
       ease: "power2.inOut",
       onComplete: () => {
         container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
@@ -1055,16 +1055,16 @@ window.switchScene = function(sIdx, isAuto) {
 
         // Lướt vào êm ái
         gsap.fromTo(container,
-          { opacity: 0.35, x: 12, scale: 0.995 },
-          { opacity: 1, x: 0, scale: 1, duration: 0.42, ease: "power2.out" }
+          { opacity: 0.35, x: 14, scale: 0.995 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.45, ease: "power2.out" }
         );
 
-        // Stagger các dòng điểm con
+        // Stagger các dòng điểm con nhịp nhàng
         const points = container.querySelectorAll("[class*='motion-beat-point-']");
         if (points.length > 0) {
           gsap.fromTo(points,
-            { opacity: 0, y: 8 },
-            { opacity: 1, y: 0, duration: 0.35, stagger: 0.09, ease: "power2.out" }
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.4, stagger: 0.12, ease: "power2.out" }
           );
         }
 
@@ -1076,7 +1076,7 @@ window.switchScene = function(sIdx, isAuto) {
     });
   } else {
     // Fallback mượt mà không GSAP
-    container.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+    container.style.transition = "opacity 0.25s ease, transform 0.25s ease";
     container.style.opacity = "0.4";
     setTimeout(() => {
       container.innerHTML = renderSceneCardHTML(slide.scenes[sIdx], sIdx, slide.scenes.length);
@@ -1086,7 +1086,15 @@ window.switchScene = function(sIdx, isAuto) {
         const card = document.getElementById("activeSlideCard");
         if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 200);
+    }, 250);
+  }
+
+  // Nếu học viên bấm đổi cảnh thủ công khi đang phát, lập tức phát âm thanh cảnh đó
+  if (!isAuto && isSlideAudioPlaying) {
+    window.stopAllAudios();
+    if (typeof playSceneAudio === "function") {
+      playSceneAudio(sIdx);
+    }
   }
 };
 
@@ -1144,10 +1152,7 @@ function renderMasterLecture(lesson) {
         
 
 
-        <!-- Video Time Progress Bar -->
-        <div class="w-full bg-slate-950/80 rounded-full h-1.5 mb-4 overflow-hidden border border-slate-800">
-          <div id="slideVideoProgressBar" class="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 video-progress-fill" style="width: 0%"></div>
-        </div>
+        
 
         <!-- ACTIVE SCENE CONTAINER (FULL WIDTH, PROMINENT TYPOGRAPHY, HARDWARE ACCELERATED ANIMATION) -->
         <div id="activeSceneContentContainer" class="video-scene-transition">
@@ -1204,22 +1209,96 @@ function renderMasterLecture(lesson) {
   if (window.lucide) window.lucide.createIcons();
 }
 
+function updateLectureControls(isPlaying) {
+  const btn = document.getElementById("btnPlaySlideAudio");
+  if (btn) {
+    btn.className = `w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold ${isPlaying ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30' : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'} transition flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0`;
+    btn.innerHTML = `
+      <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 fill-current"></i>
+      <span>${isPlaying ? '⏸️ Tạm Dừng' : '🎧 Nghe Thuyết Giảng'}</span>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+  }
+}
+
+function playSceneAudio(sIdx) {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
+  if (!slide || !slide.scenes || !slide.scenes[sIdx]) return;
+
+  const scene = slide.scenes[sIdx];
+  const audioFile = scene.audioFile || slide.audioFile;
+  if (!audioFile) return;
+
+  isSlideAudioPlaying = true;
+  updateLectureControls(true);
+
+  window.playTrack(audioFile, () => {
+    // Khi audio của cảnh này phát xong
+    if (!isSlideAudioPlaying) return;
+
+    if (sIdx < slide.scenes.length - 1) {
+      // Vẫn còn cảnh tiếp theo trong slide này:
+      // Nghỉ 650ms nhịp nhàng, chuyển cảnh êm ái, sau đó phát audio cảnh kế
+      setTimeout(() => {
+        if (!isSlideAudioPlaying) return;
+        window.switchScene(sIdx + 1, true);
+        setTimeout(() => {
+          if (!isSlideAudioPlaying) return;
+          playSceneAudio(sIdx + 1);
+        }, 500);
+      }, 650);
+    } else {
+      // Đã hết các cảnh của slide này
+      if (isSlideAutoAdvance) {
+        if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
+          setTimeout(() => {
+            if (!isSlideAudioPlaying) return;
+            window.nextSlide();
+            setTimeout(() => {
+              if (isSlideAutoAdvance) {
+                playSceneAudio(0);
+              }
+            }, 600);
+          }, 850);
+        } else {
+          // Slide cuối cùng kết thúc: tự động mở khóa Bước 1
+          isSlideAudioPlaying = false;
+          updateLectureControls(false);
+          window.unlockStep(1, false);
+        }
+      } else {
+        isSlideAudioPlaying = false;
+        updateLectureControls(false);
+        if (currentSlideIndex === lesson.masterLecture.slides.length - 1) {
+          window.unlockStep(1, false);
+        }
+      }
+    }
+  }, () => {
+    isSlideAudioPlaying = false;
+    updateLectureControls(false);
+  });
+}
+
 window.goToSlide = function(idx) {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   if (!lesson?.masterLecture?.slides) return;
   window.stopAllAudios();
   isSlideAudioPlaying = false;
-  currentSlideSceneIndex = 0;
+  currentSlideSceneIndex = 0; // Đặt lại Cảnh 0 ngay lập tức, triệt tiêu hoàn toàn giật/flash!
 
   const card = document.getElementById("activeSlideCard");
   if (card) {
     card.classList.add("slide-card-fadeout");
     setTimeout(() => {
       currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+      currentSlideSceneIndex = 0;
       renderMasterLecture(lesson);
     }, 140);
   } else {
     currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
+    currentSlideSceneIndex = 0;
     renderMasterLecture(lesson);
   }
 };
@@ -1243,64 +1322,12 @@ window.toggleAutoAdvance = function(checked) {
 };
 
 window.toggleSlideAudio = function() {
-  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
-  const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
-  if (!slide || !slide.audioFile) return;
-
   if (isSlideAudioPlaying) {
     window.stopAllAudios();
     isSlideAudioPlaying = false;
-    renderMasterLecture(lesson);
-    return;
-  }
-
-  isSlideAudioPlaying = true;
-  renderMasterLecture(lesson);
-
-  const audioTrack = window.playTrack(slide.audioFile, () => {
-    isSlideAudioPlaying = false;
-    renderMasterLecture(lesson);
-
-    // Nếu bật tự động chuyển slide và chưa phải slide cuối
-    if (isSlideAutoAdvance) {
-      if (currentSlideIndex < lesson.masterLecture.slides.length - 1) {
-        setTimeout(() => {
-          window.nextSlide();
-          setTimeout(() => {
-            window.toggleSlideAudio();
-          }, 400);
-        }, 800);
-      } else {
-        // Slide cuối kết thúc: tự động mở khóa Bước 1
-        window.unlockStep(1, false);
-      }
-    } else {
-      if (currentSlideIndex === lesson.masterLecture.slides.length - 1) {
-        window.unlockStep(1, false);
-      }
-    }
-  }, () => {
-    isSlideAudioPlaying = false;
-    renderMasterLecture(lesson);
-  });
-
-  // Gắn listener ontimeupdate đồng bộ timeline video & chuyển cảnh duy nhất 1 lần khi đạt mốc 48%
-  if (audioTrack) {
-    audioTrack.ontimeupdate = function() {
-      const pBar = document.getElementById("slideVideoProgressBar");
-      const timeEl = document.getElementById("slideTimeIndicator");
-      if (audioTrack.duration) {
-        const pct = (audioTrack.currentTime / audioTrack.duration) * 100;
-        if (pBar) pBar.style.width = `${pct}%`;
-        if (timeEl) timeEl.textContent = `${formatTime(audioTrack.currentTime)} / ${formatTime(audioTrack.duration)}`;
-
-        // Chỉ chuyển cảnh đúng 1 lần duy nhất khi audio vượt qua mốc thời gian 48%
-        const targetScene = audioTrack.currentTime >= audioTrack.duration * 0.48 ? 1 : 0;
-        if (targetScene !== currentSlideSceneIndex) {
-          window.switchScene(targetScene, true);
-        }
-      }
-    };
+    updateLectureControls(false);
+  } else {
+    playSceneAudio(currentSlideSceneIndex || 0);
   }
 };
 

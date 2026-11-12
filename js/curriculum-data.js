@@ -80,7 +80,7 @@ export const CURRICULUM_DATA = {
       id: "buoi-01",
       sessionNumber: 1,
       phaseId: 0,
-      title: "Đánh Thức Cơ Miệng & 3 Cụm Từ Giao Tiếp Đời Thường Đầu Tiên",
+      title: "Đánh Thức Cơ Miệng & 3 Cụm Giao Tiếp",
       topic: "Mở khóa khẩu hình cơ miệng, làm quen âm thè lưỡi /θ/, âm gió /s/, âm bật /t/ và phản xạ chào hỏi",
       duration: "25 phút",
       practicalContext: "Gặp gỡ làm quen người nước ngoài, chào hỏi xã giao, cảm ơn chân thành và tạm biệt vui vẻ.",
@@ -103,6 +103,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔍 THỰC TRẠNG & CĂN CỨ KHOA HỌC",
                 title: "Rào Cản Khi Bắt Đầu Bằng Ngữ Pháp Trừu Tượng",
+                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
                 visualType: "neural-blockade",
                 points: [
                   { icon: "shield-alert", text: "Học công thức ngữ pháp trừu tượng làm tăng Bộ Lọc Lo Âu (Affective Filter - GS. Stephen Krashen)." },
@@ -116,6 +117,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "💡 BẢN NĂNG HẤP THỤ CỦA NÃO BỘ",
                 title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
+                audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
                 visualType: "human-connection",
                 points: [
                   { icon: "smile", text: "Trẻ em bản xứ nghe và nói hàng nghìn câu đời thường từ cảm xúc trước khi học bất kỳ công thức nào." },
@@ -139,6 +141,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚠️ TẬT PHÁT ÂM TIẾNG VIỆT",
                 title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
+                audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-0.mp3",
                 visualType: "vietnamese-habit",
                 points: [
                   { icon: "alert-circle", text: "Tiếng Việt là tiếng đơn âm, không có âm kẹp lưỡi /θ/, âm gió xì /s/ hay âm bật hơi /t/." },
@@ -152,6 +155,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🎯 TÁI CẤU TRÚC CƠ QUAN PHÁT ÂM",
                 title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
+                audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-1.mp3",
                 visualType: "mouth-kinematics",
                 points: [
                   { icon: "check-circle-2", text: "Âm /θ/: Thè nhẹ đầu lưỡi ra giữa 2 hàm răng cửa, thổi luồng gió mát trượt êm ái trên mặt lưỡi." },
@@ -175,6 +179,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "📊 QUY LUẬT PARETO 80/20",
                 title: "Âm Gió /s/ & Bật /t/ Chiếm Hơn 65% Toàn Bộ Ngữ Pháp",
+                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-0.mp3",
                 visualType: "pareto-chart",
                 points: [
                   { icon: "bar-chart-2", text: "Theo ngữ liệu COCA (Corpus of Contemporary American English), /s/ và /t/ là 2 âm cốt lõi nhất." },
@@ -188,6 +193,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🏛️ MÓNG TRỤ KIÊN CỐ",
                 title: "Xây Móng Vững Chắc Trước Khi Dựng Nhà",
+                audioFile: "assets/audio/lecture-buoi-01-slide-3-scene-1.mp3",
                 visualType: "foundation-pillar",
                 points: [
                   { icon: "shield-check", text: "Không vội nhồi hàng nghìn từ vựng rời rạc khi cơ miệng chưa phát âm chuẩn xác 2 âm trụ cột này." },
@@ -211,10 +217,11 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🤝 TAM GIÁC SINH TỒN XÃ HỘI",
                 title: "Hi, nice to meet you! → Thank you so much! → Have a great day!",
+                audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-0.mp3",
                 visualType: "social-trinity",
                 points: [
                   { icon: "message-circle", text: "'Hi, nice to meet you!': Câu chào làm quen nụ cười, xóa tan rào cản xa lạ ban đầu." },
-                  { icon: "heart", text: "'Thank you so much!': Lời tri ân sâu sắc khi được người khác giúp đỡ nhấc hành lý, giữ thang máy." },
+                  { icon: "heart", text: "'Thank you so much!': Lời triân sâu sắc khi được người khác giúp đỡ nhấc hành lý, giữ thang máy." },
                   { icon: "sun", text: "'Have a great day!': Lời chúc lành tích cực để lại ấn tượng ấm áp và lịch thiệp khi chia tay." }
                 ],
                 callout: "🤝 Bộ 3 câu sinh tồn xã hội giúp bạn tự tin hòa nhập và nhận được sự hỗ trợ ở bất kỳ đâu trên thế giới!",
@@ -224,6 +231,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚡ KÍCH HOẠT DOPAMINE NÃO BỘ",
                 title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
+                audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-1.mp3",
                 visualType: "dopamine-spark",
                 points: [
                   { icon: "smile", text: "Dù ở sân bay JFK hay ngoài phố: Nói đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn." },
@@ -247,6 +255,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔄 LỘ TRÌNH 6 BƯỚC ĐA GIÁC QUAN",
                 title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
+                audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-0.mp3",
                 visualType: "multimodal-flow",
                 points: [
                   { icon: "camera", text: "Bước 1: Soi gương khẩu hình và nghe mẫu âm vị /θ/, /s/, /t/ chuẩn giọng bản xứ." },
@@ -260,6 +269,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🧠 CỐ ĐỊNH KHỚP THẦN KINH DÀI HẠN",
                 title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
+                audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-1.mp3",
                 visualType: "synaptic-consolidation",
                 points: [
                   { icon: "clock", text: "Não bộ cần 7 lần truy xuất ngắt quãng đa giác quan để chuyển 1 cụm từ sang vỏ não dài hạn." },
