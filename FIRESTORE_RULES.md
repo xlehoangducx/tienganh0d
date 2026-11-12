@@ -1,4 +1,4 @@
-# 🔒 CẤU HÌNH BẢO MẬT FIRESTORE CHO DỰ ÁN `tienganh-2adfd`
+# 🔒 CẤU HÌNH BẢO MẬT FIRESTORE CHO DỰ ÁN `giasucuatui-af129`
 
 Tài liệu này thay thế bộ rules công khai cũ. Rules cũ cho phép bất kỳ ai đọc hồ sơ/tiến độ của người khác và cho phép người dùng tự đổi `role` thành `admin` — đây là lỗ hổng nghiêm trọng, không được dùng lại.
 
