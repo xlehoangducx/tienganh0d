@@ -1,35 +1,4 @@
 {
-  "lecture-buoi-01-intro.mp3": {
-    "file": "assets/audio/lecture-buoi-01-intro.mp3",
-    "duration": 14.979,
-    "captions": [
-      {
-        "start": 0.368,
-        "end": 4.158,
-        "text": "Chào bạn! Mình là Hải Đăng, người đồng hành cùng bạn trong buổi học đầu tiên."
-      },
-      {
-        "start": 4.453,
-        "end": 8.029,
-        "text": "Trước khi bắt đầu, hãy bấm Nghe Thuyết Giảng. Bài giảng sẽ chạy từng cảnh,"
-      },
-      {
-        "start": 8.029,
-        "end": 10.011,
-        "text": "và phụ đề sẽ chạy theo đúng lời mình nói."
-      },
-      {
-        "start": 10.305,
-        "end": 13.224,
-        "text": "Khi cần dừng, bạn chỉ cần bấm Tạm Dừng. Còn bây giờ,"
-      },
-      {
-        "start": 13.224,
-        "end": 14.684,
-        "text": "chúng ta cùng bắt đầu nhé."
-      }
-    ]
-  },
   "lecture-buoi-01-slide-1-scene-0.mp3": {
     "file": "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
     "duration": 17.589,

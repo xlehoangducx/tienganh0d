@@ -90,7 +90,7 @@ export const CURRICULUM_DATA = {
       masterLecture: {
         title: "Bản Đồ Khai Mở Buổi 01: Tại Sao Học Như Vậy Là Chuẩn Xác Nhất?",
         subtitle: "Chuỗi thuyết giảng đa phương tiện có giọng nói Gia Sư AI hướng dẫn từng slide",
-        author: "Gia Sư Trí Tuệ Nhân Tạo (Hải Đăng)",
+        author: "Gia Sư Của Tui",
         slides: [
           {
             id: 1,
@@ -433,7 +433,7 @@ export const CURRICULUM_DATA = {
         }
       ],
 
-      // Step Guide Audios: Giọng Gia Sư AI Hải Đăng thuyết minh cho từng bước
+      // Step Guide Audios: Giọng Gia Sư AI thuyết minh cho từng bước
       stepGuideAudios: {
         moduleMouth: {
           stepNum: 1,
@@ -581,7 +581,7 @@ export const CURRICULUM_DATA = {
       masterLecture: {
         title: "Bản Đồ Khai Mở Buổi 02: Kế Thừa Mắt Xích & Âm Rung /z/",
         subtitle: "Chuỗi thuyết giảng mở rộng âm vị kế thừa từ Buổi 01",
-        author: "Gia Sư Trí Tuệ Nhân Tạo (Hải Đăng)",
+        author: "Gia Sư Của Tui",
         audioFile: "assets/audio/lecture-buoi-02.mp3",
         slides: [
           {

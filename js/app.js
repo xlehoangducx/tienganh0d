@@ -1005,8 +1005,6 @@ let lectureTimingMap = null;
 let lectureTimingPromise = null;
 let captionFrame = null;
 let currentLectureMeta = null;
-let lectureIntroPlayed = false;
-const LECTURE_INTRO_FILE = "assets/audio/lecture-buoi-01-intro.mp3";
 
 function loadLectureTiming() {
   if (lectureTimingMap) return Promise.resolve(lectureTimingMap);
@@ -1039,14 +1037,6 @@ function stopCaptionSync() {
 function syncLectureCaption(entry, time) {
   const ribbon = document.getElementById("lectureCaptionRibbon");
   const textEl = document.getElementById("lectureCaptionText");
-  const fill = document.getElementById("lectureTimelineFill");
-  const timeEl = document.getElementById("lectureTimeLabel");
-
-  if (fill) {
-    const duration = entry?.duration || 0;
-    fill.style.width = duration ? `${Math.min(100, (time / duration) * 100)}%` : "0%";
-  }
-  if (timeEl) timeEl.textContent = formatTime(time);
 
   if (!ribbon || !textEl || !entry || !Array.isArray(entry.captions)) return;
   const caption = entry.captions.find((item) => time >= item.start && time < item.end);
@@ -1070,9 +1060,6 @@ function startCaptionSync(audio, file) {
   if (ribbon) ribbon.classList.add("hidden");
   if (!audio || !entry) return;
 
-  const totalEl = document.getElementById("lectureTotalTime");
-  if (totalEl) totalEl.textContent = formatTime(entry.duration || audio.duration || 0);
-
   const tick = () => {
     if (!audio || audio.paused || audio.ended) return;
     syncLectureCaption(entry, audio.currentTime || 0);
@@ -1085,10 +1072,6 @@ function resetLecturePlaybackUI() {
   stopCaptionSync();
   const ribbon = document.getElementById("lectureCaptionRibbon");
   if (ribbon) ribbon.classList.add("hidden");
-  const fill = document.getElementById("lectureTimelineFill");
-  if (fill) fill.style.width = "0%";
-  const timeEl = document.getElementById("lectureTimeLabel");
-  if (timeEl) timeEl.textContent = "00:00";
 }
 loadLectureTiming();
 
@@ -1238,7 +1221,7 @@ function getSceneVisualGraphicHTML(visualType, theme) {
           </div>
           <div>
             <span class="text-xs font-bold text-emerald-300 block flex items-center space-x-1.5">
-              <span>Gia Sư Trí Tuệ Nhân Tạo (Gia Sư Của Tui)</span>
+              <span>Gia Sư Của Tui</span>
               <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Live</span>
             </span>
             <span class="text-[11px] text-slate-300">Khởi đầu lộ trình 600h chuẩn Cambridge CEFR • Đánh thức phản xạ tự nhiên</span>
@@ -1661,15 +1644,6 @@ function renderMasterLecture(lesson) {
           <span id="lectureCaptionText"></span>
         </div>
 
-        <div class="lecture-timeline" aria-hidden="true">
-          <div id="lectureTimelineFill" class="lecture-timeline-fill"></div>
-        </div>
-        <div class="lecture-time-row">
-          <span id="lectureTimeLabel">00:00</span>
-          <span class="text-slate-600">/</span>
-          <span id="lectureTotalTime">00:00</span>
-        </div>
-
         <div id="cinemaWave" class="cinema-wave hidden" onclick="exitCinemaMode(event)" title="Bấm để thoát chế độ trình chiếu (hoặc phím Esc)">
           ${[8, 14, 20, 26, 18, 22, 12, 24, 16, 10, 18, 26, 20, 14, 22, 16, 24, 12, 18, 10,
              12, 22, 16, 26, 18, 10, 24, 14, 20, 16, 26, 18, 12, 22, 14, 20, 26, 18, 10, 16,
@@ -1747,35 +1721,18 @@ async function playSceneAudio(sIdx, options = {}) {
   const sceneAudioFile = scene.audioFile || slide.audioFile;
   if (!sceneAudioFile) return;
 
-  const introEntry = getLectureTimingEntry(LECTURE_INTRO_FILE);
-  const shouldPlayIntro = !options.skipIntro &&
-    !lectureIntroPlayed &&
-    currentSlideIndex === 0 &&
-    sIdx === 0 &&
-    !!introEntry;
-
-  if (shouldPlayIntro) lectureIntroPlayed = true;
-
-  const audioFile = shouldPlayIntro ? LECTURE_INTRO_FILE : sceneAudioFile;
+  const audioFile = sceneAudioFile;
   const hint = document.getElementById("lectureHint");
-  if (hint) hint.textContent = shouldPlayIntro ? "Lời chào mở đầu • Bài giảng sẽ bắt đầu ngay sau đó" : "";
+  if (hint) hint.textContent = "";
 
   isSlideAudioPlaying = true;
   updateLectureControls(true);
 
-  const meta = { file: audioFile, sceneIndex: sIdx, audio: null, isIntro: shouldPlayIntro };
+  const meta = { file: audioFile, sceneIndex: sIdx, audio: null };
 
   const audioTrack = window.playTrack(audioFile, () => {
     if (currentLectureMeta !== meta) return;
     if (!isSlideAudioPlaying) return;
-
-    if (meta.isIntro) {
-      currentLectureMeta = null;
-      setTimeout(() => {
-        if (isSlideAudioPlaying) playSceneAudio(sIdx, { skipIntro: true });
-      }, 180);
-      return;
-    }
 
     if (sIdx < slide.scenes.length - 1) {
       currentLectureMeta = null;
@@ -1783,7 +1740,7 @@ async function playSceneAudio(sIdx, options = {}) {
         if (!isSlideAudioPlaying) return;
         window.switchScene(sIdx + 1);
         setTimeout(() => {
-          if (isSlideAudioPlaying) playSceneAudio(sIdx + 1, { skipIntro: true });
+          if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
         }, 220);
       }, 160);
       return;
