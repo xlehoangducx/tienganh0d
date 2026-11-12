@@ -261,36 +261,36 @@ body {
 /* Chuyển động từng phần tử xuất hiện chậm rãi, êm ái, nhịp nhàng theo phong cách tài liệu khoa học */
 .scene-kicker,
 .motion-beat-badge {
-  animation: softFadeScale 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  animation: softFadeScale 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
 }
 
 .scene-title,
 .motion-beat-title {
   text-wrap: balance;
   letter-spacing: -0.02em;
-  animation: softFadeUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
 }
 
 .motion-beat-visual {
-  animation: softFadeScale 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
+  animation: softFadeScale 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.72s both;
 }
 
 .scene-insight,
 .motion-beat-point-0 {
-  animation: softFadeUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.95s both;
+  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.05s both;
 }
 
 .motion-beat-point-1 {
-  animation: softFadeUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.25s both;
+  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.38s both;
 }
 
 .motion-beat-point-2 {
-  animation: softFadeUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.55s both;
+  animation: softFadeUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.70s both;
 }
 
 .scene-callout,
 .motion-beat-callout {
-  animation: softFadeScale 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.55s both;
+  animation: softFadeScale 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.70s both;
 }
 
 
@@ -455,31 +455,36 @@ body {
 #activeSceneContentContainer {
   position: relative;
   z-index: 2;
-  transition: min-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: grid;
+  grid-template-areas: "stage";
+  align-items: center;
+  justify-items: center;
+  width: 100%;
 }
 
 .scene-layer {
+  grid-area: stage;
   width: 100%;
-  opacity: 0;
+  max-width: 1080px;
+  opacity: 1;
   transform: translate3d(0, 0, 0);
   transition:
-    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  will-change: opacity, transform;
 }
 
 .scene-layer.is-current {
-  position: relative;
   opacity: 1;
   transform: translate3d(0, 0, 0);
+  pointer-events: auto;
 }
 
 .scene-layer.scene-layer-enter {
-  position: absolute;
-  inset: 0;
   opacity: 0;
-  transform: translate3d(0, 16px, 0);
+  transform: translate3d(0, 24px, 0);
   pointer-events: none;
 }
 
@@ -490,10 +495,8 @@ body {
 }
 
 .scene-layer.is-leaving {
-  position: absolute;
-  inset: 0;
   opacity: 0;
-  transform: translate3d(0, -10px, 0);
+  transform: translate3d(0, -18px, 0);
   pointer-events: none;
 }
 
@@ -685,9 +688,10 @@ body.cinema-mode .lecture-cinema-stage {
 
 body.cinema-mode #activeSceneContentContainer {
   flex: 1;
-  display: flex;
+  display: grid;
+  grid-template-areas: "stage";
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   min-height: 0;
   padding: clamp(0.75rem, 2vw, 1.75rem) clamp(0.75rem, 4vw, 3rem) 0.5rem;
   overflow-y: auto;

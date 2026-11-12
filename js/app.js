@@ -1083,7 +1083,7 @@ let isCinemaMode = false;
 let cinemaCountdownTimer = null;
 
 window.startCinemaPresentationMode = function() {
-  if (!isCurrentUserAdmin() || isCinemaMode) return;
+  if (isCinemaMode) return;
 
   window.stopAllAudios();
   isSlideAudioPlaying = false;
@@ -1556,7 +1556,7 @@ window.switchScene = function(sIdx) {
   if (!container) return;
 
   const html = renderSceneCardHTML(scene, sIdx, slide.scenes.length);
-  const currentLayer = container.querySelector(".scene-layer.is-current");
+  const currentLayer = container.querySelector(".scene-layer.is-current") || container.querySelector(".scene-layer:not(.scene-layer-enter)");
 
   if (!currentLayer) {
     container.innerHTML = `<div class="scene-layer is-current">${html}</div>`;
@@ -1564,10 +1564,7 @@ window.switchScene = function(sIdx) {
     return;
   }
 
-  // Khóa minHeight cố định để không bao giờ bị nhảy giật khung hình
-  const currentHeight = currentLayer.offsetHeight || container.offsetHeight;
-  if (currentHeight > 0) container.style.minHeight = `${currentHeight}px`;
-
+  // Tạo layer mới xếp chồng cùng grid-area: stage (không nhảy vị trí, không đổi position)
   const newLayer = document.createElement("div");
   newLayer.className = "scene-layer scene-layer-enter";
   newLayer.innerHTML = html;
@@ -1578,6 +1575,7 @@ window.switchScene = function(sIdx) {
 
   requestAnimationFrame(() => {
     newLayer.classList.add("is-visible");
+    currentLayer.classList.remove("is-current");
     currentLayer.classList.add("is-leaving");
   });
 
@@ -1585,8 +1583,7 @@ window.switchScene = function(sIdx) {
     if (currentLayer && currentLayer.parentNode) currentLayer.remove();
     newLayer.classList.remove("scene-layer-enter", "is-visible");
     newLayer.classList.add("is-current");
-    container.style.minHeight = "";
-  }, 700);
+  }, 900);
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -1662,7 +1659,7 @@ function renderMasterLecture(lesson) {
           <span>${isSlideAudioPlaying ? 'Tạm Dừng' : 'Nghe Thuyết Giảng'}</span>
         </button>
 
-        <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="${isAdmin ? 'flex' : 'hidden'} px-3.5 sm:px-4 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0" title="Chế độ trình chiếu tự động (Chỉ dành cho Admin)">
+        <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="flex px-3.5 sm:px-4 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0" title="Chế độ trình chiếu toàn màn hình (F11)">
           <i data-lucide="play-square" class="w-4 h-4 text-cyan-400"></i>
           <span>Trình Chiếu</span>
         </button>
@@ -1744,8 +1741,8 @@ async function playSceneAudio(sIdx, options = {}) {
         window.switchScene(sIdx + 1);
         setTimeout(() => {
           if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
-        }, 900);
-      }, 750);
+        }, 1100);
+      }, 800);
       return;
     }
 
@@ -1763,7 +1760,7 @@ async function playSceneAudio(sIdx, options = {}) {
     if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
       setTimeout(() => {
         if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
-      }, 1400);
+      }, 1600);
     } else {
       window.unlockStep(1, false);
     }
@@ -1805,6 +1802,47 @@ window.goToSlide = function(idx, keepPlaying = false) {
   currentSlideIndex = Math.max(0, Math.min(idx, lesson.masterLecture.slides.length - 1));
   currentSlideSceneIndex = 0;
   isSlideAudioPlaying = Boolean(keepPlaying);
+
+  const container = document.getElementById("lectureContainer");
+  const activeCard = document.getElementById("activeSlideCard");
+  const contentContainer = document.getElementById("activeSceneContentContainer");
+
+  // Nếu khung bài giảng đã tồn tại, chuyển slide êm ái mà không phá hủy toàn bộ DOM
+  if (container && activeCard && contentContainer) {
+    const slide = lesson.masterLecture.slides[currentSlideIndex];
+    const scenes = slide.scenes || [];
+    const scene = scenes[0];
+
+    // Cập nhật chấm tròn slide
+    const dotButtons = container.querySelectorAll("[aria-label='Chọn slide'] button");
+    dotButtons.forEach((btn, dIdx) => {
+      if (dIdx === currentSlideIndex) {
+        btn.className = "h-2 rounded-full transition-all duration-300 cursor-pointer w-8 bg-emerald-400 shadow-md shadow-emerald-500/50";
+      } else if (dIdx < currentSlideIndex) {
+        btn.className = "h-2 rounded-full transition-all duration-300 cursor-pointer w-3 bg-emerald-700 hover:bg-emerald-600";
+      } else {
+        btn.className = "h-2 rounded-full transition-all duration-300 cursor-pointer w-3 bg-slate-800 hover:bg-slate-700";
+      }
+    });
+
+    // Cập nhật tiêu đề slide
+    const titleEl = container.querySelector(".lecture-top-chrome h2");
+    if (titleEl) titleEl.textContent = slide.title || "";
+    const subEl = container.querySelector(".lecture-top-chrome p");
+    if (subEl) subEl.textContent = slide.subtitle || "";
+
+    if (activeCard && scene) activeCard.dataset.theme = scene.theme || "emerald";
+
+    window.switchScene(0);
+    resetLecturePlaybackUI();
+    updateLectureControls(isSlideAudioPlaying);
+
+    if (keepPlaying) {
+      setTimeout(() => playSceneAudio(0), 1100);
+    }
+    return;
+  }
+
   renderMasterLecture(lesson);
 
   const stage = document.getElementById("slideStageMainCard");
