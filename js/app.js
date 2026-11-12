@@ -1139,7 +1139,9 @@ window.startCinemaPresentationMode = function() {
 
     // Sau 5 giây: ẩn toàn bộ nút/chữ điều khiển, chỉ còn slide và sóng âm để quay màn hình.
     document.body.classList.add("cinema-live");
-    playSceneAudio(0);
+    setTimeout(() => {
+      if (isCinemaMode) playSceneAudio(0);
+    }, 600);
   }, 1000);
 };
 
@@ -1562,14 +1564,16 @@ window.switchScene = function(sIdx) {
     return;
   }
 
-  // Crossfade thật: giữ cảnh cũ trong lúc cảnh mới hiện lên, không có khung hình đen.
-  const oldHeight = container.offsetHeight;
-  container.style.minHeight = `${oldHeight}px`;
+  // Khóa minHeight cố định để không bao giờ bị nhảy giật khung hình
+  const currentHeight = currentLayer.offsetHeight || container.offsetHeight;
+  if (currentHeight > 0) container.style.minHeight = `${currentHeight}px`;
 
   const newLayer = document.createElement("div");
   newLayer.className = "scene-layer scene-layer-enter";
   newLayer.innerHTML = html;
   container.appendChild(newLayer);
+  if (window.lucide) window.lucide.createIcons();
+
   void newLayer.offsetHeight;
 
   requestAnimationFrame(() => {
@@ -1578,12 +1582,11 @@ window.switchScene = function(sIdx) {
   });
 
   setTimeout(() => {
-    currentLayer.remove();
+    if (currentLayer && currentLayer.parentNode) currentLayer.remove();
     newLayer.classList.remove("scene-layer-enter", "is-visible");
     newLayer.classList.add("is-current");
     container.style.minHeight = "";
-    if (window.lucide) window.lucide.createIcons();
-  }, 430);
+  }, 700);
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -1741,8 +1744,8 @@ async function playSceneAudio(sIdx, options = {}) {
         window.switchScene(sIdx + 1);
         setTimeout(() => {
           if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
-        }, 220);
-      }, 160);
+        }, 900);
+      }, 750);
       return;
     }
 
@@ -1760,7 +1763,7 @@ async function playSceneAudio(sIdx, options = {}) {
     if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
       setTimeout(() => {
         if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
-      }, 700);
+      }, 1400);
     } else {
       window.unlockStep(1, false);
     }
@@ -1812,7 +1815,7 @@ window.goToSlide = function(idx, keepPlaying = false) {
   }
 
   if (keepPlaying) {
-    setTimeout(() => playSceneAudio(0, { skipIntro: true }), 240);
+    setTimeout(() => playSceneAudio(0), 1000);
   } else {
     updateLectureControls(false);
   }
