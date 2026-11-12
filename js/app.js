@@ -472,6 +472,9 @@ Thầy giáo khuyên bạn hãy hoàn thành xong "${prevMod ? prevMod.title : '
   if (activeBtn) {
     activeBtn.classList.remove("text-slate-400", "border-transparent");
     activeBtn.classList.add("bg-emerald-500/15", "text-emerald-400", "border-emerald-500/30", "active");
+    try {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    } catch(e) {}
   }
 
   if (window.lucide) window.lucide.createIcons();
@@ -619,11 +622,8 @@ window.selectLesson = function(lessonId) {
   // Mặc định mở Tab 0: Thuyết Giảng Khai Mở
   switchLessonModule('moduleLecture', false);
 
-  // Đóng sidebar trên Mobile sau khi chọn bài
-  const sidebar = document.getElementById("curriculumSidebar");
-  if (sidebar && window.innerWidth < 1024) {
-    sidebar.classList.add("-translate-x-full");
-  }
+  // Đóng sidebar sau khi chọn bài (trên cả PC và Mobile để trả lại 100% không gian tập trung)
+  window.toggleSidebar(true);
 
   // Cập nhật lại cây thư mục
   renderCurriculumTree();
