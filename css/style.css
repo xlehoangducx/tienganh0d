@@ -469,8 +469,8 @@ body {
   opacity: 1;
   transform: translate3d(0, 0, 0);
   transition:
-    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   will-change: opacity, transform;
@@ -484,7 +484,7 @@ body {
 
 .scene-layer.scene-layer-enter {
   opacity: 0;
-  transform: translate3d(0, 16px, 0);
+  transform: translate3d(0, 24px, 0);
   pointer-events: none;
 }
 
@@ -496,8 +496,47 @@ body {
 
 .scene-layer.is-leaving {
   opacity: 0;
-  transform: translate3d(0, -12px, 0);
+  transform: translate3d(0, -16px, 0);
+  transition:
+    opacity 0.65s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.65s cubic-bezier(0.25, 0.1, 0.25, 1);
   pointer-events: none;
+}
+
+/* Hiệu ứng trồi nhẹ tuần tự từng phần tử trong cảnh (Staggered Cinematic Entrance) */
+.scene-layer.scene-layer-enter .scene-kicker {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+}
+.scene-layer.scene-layer-enter .scene-title {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+}
+.scene-layer.scene-layer-enter .motion-beat-visual {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0) scale(0.985);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.28s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.28s;
+}
+.scene-layer.scene-layer-enter .scene-insight {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.42s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.42s;
+}
+.scene-layer.scene-layer-enter .scene-callout {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.55s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.55s;
+}
+
+.scene-layer.scene-layer-enter.is-visible .scene-kicker,
+.scene-layer.scene-layer-enter.is-visible .scene-title,
+.scene-layer.scene-layer-enter.is-visible .motion-beat-visual,
+.scene-layer.scene-layer-enter.is-visible .scene-insight,
+.scene-layer.scene-layer-enter.is-visible .scene-callout {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* Scene typography motion */

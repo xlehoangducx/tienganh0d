@@ -1029,9 +1029,21 @@ function getLectureTimingEntry(file) {
   return lectureTimingMap[base] || null;
 }
 
+let currentSyncAudio = null;
+let currentSyncTimeHandler = null;
+
 function stopCaptionSync() {
-  if (captionFrame) cancelAnimationFrame(captionFrame);
-  captionFrame = null;
+  if (captionFrame) {
+    cancelAnimationFrame(captionFrame);
+    captionFrame = null;
+  }
+  if (currentSyncAudio && currentSyncTimeHandler) {
+    try {
+      currentSyncAudio.removeEventListener("timeupdate", currentSyncTimeHandler);
+    } catch(e) {}
+    currentSyncTimeHandler = null;
+    currentSyncAudio = null;
+  }
 }
 
 function updateCaptionForCurrentScene(scene) {
@@ -1050,7 +1062,8 @@ function syncLectureCaption(entry, time) {
   const textEl = document.getElementById("lectureCaptionText");
 
   if (!ribbon || !textEl || !entry || !Array.isArray(entry.captions)) return;
-  const caption = entry.captions.find((item) => time >= item.start && time < item.end);
+  // Dung sai 0.35s giúp phụ đề giữ vững trên màn hình trong khoảng nghỉ ngắn giữa 2 câu
+  const caption = entry.captions.find((item) => time >= item.start && time < (item.end + 0.35));
   if (caption) {
     if (textEl.textContent !== caption.text) {
       textEl.textContent = caption.text;
@@ -1068,19 +1081,21 @@ function startCaptionSync(audio, file) {
   const ribbon = document.getElementById("lectureCaptionRibbon");
   if (!audio) return;
   if (ribbon) ribbon.classList.remove("hidden");
+
   if (!entry) {
     loadLectureTiming().then(() => {
       const e = getLectureTimingEntry(file);
-      if (e && audio && !audio.paused && !audio.ended) {
+      if (e && audio && !audio.ended && isSlideAudioPlaying) {
         startCaptionSync(audio, file);
       }
     });
     return;
   }
 
-  const tick = () => {
-    if (!audio || audio.paused || audio.ended) return;
-    const time = audio.currentTime || 0;
+  currentSyncAudio = audio;
+
+  const performSync = (time) => {
+    if (!audio || audio.ended || !isSlideAudioPlaying) return;
     syncLectureCaption(entry, time);
 
     // Tự động chuyển cảnh khi audio chạy tới cueTime của scene tiếp theo (hoàn toàn không ngắt âm thanh!)
@@ -1090,7 +1105,7 @@ function startCaptionSync(audio, file) {
       let targetIdx = 0;
       for (let i = 0; i < slide.scenes.length; i++) {
         const sc = slide.scenes[i];
-        if (typeof sc.cueTime === "number" && time >= sc.cueTime) {
+        if (typeof sc.cueTime === "number" && time >= (sc.cueTime - 0.05)) {
           targetIdx = i;
         }
       }
@@ -1098,10 +1113,30 @@ function startCaptionSync(audio, file) {
         window.switchScene(targetIdx);
       }
     }
+  };
 
+  // 1. timeupdate: Native browser audio event - đảm bảo 100% không bao giờ bị dừng giữa chừng khi audio đang phát
+  currentSyncTimeHandler = () => {
+    performSync(audio.currentTime || 0);
+  };
+  audio.addEventListener("timeupdate", currentSyncTimeHandler);
+
+  // 2. rAF loop: 60fps high precision sync cho chuyển động mượt mà
+  const tick = () => {
+    if (!audio || audio.ended || !isSlideAudioPlaying) {
+      stopCaptionSync();
+      return;
+    }
+    if (!audio.paused) {
+      performSync(audio.currentTime || 0);
+    }
+    // TUYỆT ĐỐI không hủy rAF khi audio tạm buffering; giữ loop sống suốt khi isSlideAudioPlaying = true
     captionFrame = requestAnimationFrame(tick);
   };
   captionFrame = requestAnimationFrame(tick);
+
+  // Thực hiện đồng bộ ngay lập tức cho thời điểm hiện tại
+  performSync(audio.currentTime || 0);
 }
 
 function resetLecturePlaybackUI() {
@@ -1911,7 +1946,7 @@ window.switchScene = function(sIdx) {
     newLayer.classList.remove("scene-layer-enter", "is-visible");
     newLayer.classList.add("is-current");
     sceneTransitionTimer = null;
-  }, 420);
+  }, 880);
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -2112,11 +2147,10 @@ async function playSceneAudio(sIdx, options = {}) {
     const beginCaption = () => {
       if (currentLectureMeta === meta) startCaptionSync(audioTrack, audioFile);
     };
-    if (!audioTrack.paused) {
-      beginCaption();
-    } else {
-      audioTrack.addEventListener("playing", beginCaption, { once: true });
-    }
+    // Gắn ngay startCaptionSync để timeupdate và rAF luôn sẵn sàng từ microsecond đầu tiên
+    startCaptionSync(audioTrack, audioFile);
+    audioTrack.addEventListener("playing", beginCaption, { once: true });
+    audioTrack.addEventListener("play", beginCaption, { once: true });
   }
 }
 
