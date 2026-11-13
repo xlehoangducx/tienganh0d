@@ -133,3 +133,21 @@ export function setupAuthUI(onUserLoaded) {
     }
   });
 }
+
+// Lưu Lead Gmail đăng ký nhận thông báo ESP hoặc bài học mới
+export async function saveEspLead(email) {
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    throw new Error("Vui lòng nhập địa chỉ Gmail hợp lệ!");
+  }
+  const leadId = cleanEmail.replace(/[^a-zA-Z0-9]/g, "_");
+  const leadRef = doc(db, "esp_leads", leadId);
+  await setDoc(leadRef, {
+    email: cleanEmail,
+    type: "esp_notification",
+    createdAt: serverTimestamp(),
+    status: "subscribed",
+    source: "landing_esp_card"
+  }, { merge: true });
+  return true;
+}

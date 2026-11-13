@@ -894,6 +894,13 @@ window.selectLesson = function(lessonId) {
   // Mặc định mở Tab 0: Thuyết Giảng Khai Mở
   switchLessonModule('moduleLecture', false);
 
+  // Tự động cuộn cửa sổ nhảy tới Tab 0: Thuyết Giảng Khai Mở để tinh gọn thao tác
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const stage = document.getElementById("slideStageMainCard") || document.getElementById("lectureContainer");
+    if (stage) stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) {}
+
   // Đóng sidebar sau khi chọn bài (trên cả PC và Mobile để trả lại 100% không gian tập trung)
   window.toggleSidebar(true);
 
@@ -3707,9 +3714,10 @@ setupAuthUI(async (user, profile) => {
       if (restoreHeaderBtn) restoreHeaderBtn.classList.add("hidden");
       if (mainHeader) mainHeader.classList.remove("hidden");
       document.body.classList.remove("header-hidden");
-      if (cinemaBtn) {
-        cinemaBtn.classList.add("hidden");
-        cinemaBtn.classList.remove("flex");
+      // Mở quyền Trình Chiếu (Cinema Mode) cho tất cả học viên trải nghiệm học tập tập trung
+      if (cinemaBtn && !isCinemaMode) {
+        cinemaBtn.classList.remove("hidden");
+        cinemaBtn.classList.add("flex");
       }
       if (mainHeader) mainHeader.classList.remove("hidden");
     }

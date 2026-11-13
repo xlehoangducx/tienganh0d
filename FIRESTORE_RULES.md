@@ -73,7 +73,17 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 3. Chặn mọi truy cập ngoài phạm vi hai collection trên.
+    // 3. Đăng ký nhận thông báo bài học / ESP (Leads)
+    match /esp_leads/{leadId} {
+      // Bất kỳ ai (kể cả khách chưa đăng nhập) được gửi Gmail để nhận thông báo
+      allow create: if request.resource.data.keys().hasAll(["email", "type", "createdAt"])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 100;
+      // Chỉ Admin mới được đọc danh sách email và quản lý
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 4. Chặn mọi truy cập ngoài phạm vi ba collection trên.
     match /{document=**} {
       allow read, write: if false;
     }
