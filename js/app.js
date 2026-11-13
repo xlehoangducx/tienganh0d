@@ -3095,6 +3095,7 @@ window.toggleDialogueSpeechRecording = function() {
   startEnglishSpeechRecognition({
     button: micBtn,
     statusElement: micStatus,
+    targetText: currentTurn.targetText,
     activeClasses: ["animate-pulse", "ring-4", "ring-purple-400"],
     listeningText: "Đang nghe... Hãy nói câu đối đáp ngay.",
     onStateChange(isActive) {
@@ -3398,7 +3399,7 @@ let speechStartSequence = 0;
 let activeMicSetup = null;
 const PREFERRED_MIC_KEY = "gsc-preferred-microphone-device";
 
-function speechRecognitionErrorMessage(code) {
+function speechRecognitionErrorMessage(code, microphoneDetected = null) {
   switch (code) {
     case "not-allowed":
     case "service-not-allowed":
@@ -3412,7 +3413,13 @@ function speechRecognitionErrorMessage(code) {
     case "network":
       return "Dịch vụ nhận dạng giọng nói không kết nối được. Kiểm tra Internet rồi thử lại bằng Chrome hoặc Edge.";
     case "no-speech":
-      return "Trình duyệt không nhận được tiếng nói. Có thể máy đang chọn nhầm micro hoặc mức âm đầu vào quá thấp. Hãy kiểm tra/chọn micro bên dưới rồi thử lại.";
+      if (microphoneDetected === true) {
+        return "Micro đã thu được âm thanh nhưng Chrome chưa tách thành lời nói. Hãy chờ dòng “Đang nghe”, nói trọn từ rõ và gần mic hơn một chút rồi thử lại.";
+      }
+      if (microphoneDetected === false) {
+        return "Trong lúc nghe, ứng dụng không thấy tín hiệu từ micro. Hãy chọn đúng đầu vào trong Windows/Chrome hoặc bấm “Chọn và kiểm tra micro”.";
+      }
+      return "Trình duyệt chưa nhận được lời nói. Chờ dòng “Đang nghe” rồi nói trọn từ rõ ràng; nếu vẫn lỗi, hãy kiểm tra/chọn micro bên dưới.";
     case "aborted":
       return "Lượt nghe đã dừng. Bấm “Nói thử” để bắt đầu lại.";
     case "language-not-supported":
@@ -3462,6 +3469,63 @@ function stopMicrophoneMeter(setup) {
   const audioContext = setup.audioContext;
   setup.audioContext = null;
   try { audioContext?.close(); } catch (e) {}
+}
+
+function startSpeechInputMonitor(options, stream) {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const anchor = options.feedbackElement || options.statusElement;
+  if (!AudioContextClass || !anchor || !stream?.getAudioTracks?.().length) return null;
+
+  const hostId = `${anchor.id || "speech-status"}-live-mic-level`;
+  document.getElementById(hostId)?.remove();
+  const host = document.createElement("div");
+  host.id = hostId;
+  host.className = "mt-2 rounded-lg border border-slate-700 bg-slate-950/80 px-2.5 py-2 text-[10px] text-slate-300";
+  host.innerHTML = `
+    <div class="mb-1 flex items-center justify-between gap-2"><span class="mic-live-label">Đang kiểm tra tín hiệu micro…</span><span class="mic-live-value tabular-nums">0%</span></div>
+    <div class="h-1.5 overflow-hidden rounded-full bg-slate-800"><div class="mic-live-bar h-full w-0 rounded-full bg-cyan-400 transition-[width] duration-75"></div></div>
+  `;
+  anchor.insertAdjacentElement("afterend", host);
+
+  const context = new AudioContextClass();
+  const analyser = context.createAnalyser();
+  analyser.fftSize = 512;
+  context.createMediaStreamSource(stream).connect(analyser);
+  const samples = new Uint8Array(analyser.fftSize);
+  const label = host.querySelector(".mic-live-label");
+  const value = host.querySelector(".mic-live-value");
+  const bar = host.querySelector(".mic-live-bar");
+  const monitor = { context, host, rafId: 0, hasSignal: false, maxRms: 0, sampleCount: 0 };
+
+  const measure = () => {
+    if (!host.isConnected) return;
+    analyser.getByteTimeDomainData(samples);
+    let power = 0;
+    for (const sample of samples) power += (sample - 128) ** 2;
+    const rms = Math.sqrt(power / samples.length);
+    monitor.sampleCount++;
+    monitor.maxRms = Math.max(monitor.maxRms, rms);
+    monitor.hasSignal = monitor.hasSignal || rms >= 1.5;
+    const percent = Math.min(100, Math.round(rms * 5));
+    bar.style.width = `${percent}%`;
+    value.textContent = `${percent}%`;
+    label.textContent = rms >= 1.5
+      ? "Đã thấy tiếng vào mic — nói trọn từ tiếng Anh."
+      : "Chưa thấy tiếng vào — nói gần mic hơn hoặc kiểm tra đầu vào.";
+    label.className = `mic-live-label ${rms >= 1.5 ? "text-emerald-300" : "text-amber-300"}`;
+    monitor.rafId = requestAnimationFrame(measure);
+  };
+  context.resume().catch(() => {});
+  measure();
+  return monitor;
+}
+
+function stopSpeechInputMonitor(monitor) {
+  if (!monitor) return;
+  if (monitor.rafId) cancelAnimationFrame(monitor.rafId);
+  monitor.rafId = 0;
+  try { monitor.context?.close(); } catch (e) {}
+  monitor.host?.remove();
 }
 
 function closeMicrophoneSetup() {
@@ -3630,7 +3694,10 @@ function startEnglishSpeechRecognition(options) {
 
   const requestId = ++speechStartSequence;
   let mediaStream = null;
+  let speechMonitor = null;
   const releaseInput = () => {
+    stopSpeechInputMonitor(speechMonitor);
+    speechMonitor = null;
     if (mediaStream) stopMicrophoneStream(mediaStream);
     mediaStream = null;
   };
@@ -3638,10 +3705,49 @@ function startEnglishSpeechRecognition(options) {
   const recognition = new SpeechRecognition();
   let hasResult = false;
   let errorCode = "";
+  let latestTranscript = "";
   recognition.lang = "en-US";
   recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+
+  const deliverTranscript = transcript => {
+    if (activeSpeechRecognition !== recognition || hasResult || !transcript) return;
+    hasResult = true;
+    if (options.statusElement && options.statusElement !== options.feedbackElement) {
+      showSpeechStatus(options, "Đã nhận giọng nói, đang chấm điểm…", "info");
+    }
+    if (options.onResult) options.onResult(transcript, { transcript });
+  };
+
+  const readEventTranscript = event => {
+    const finalParts = [];
+    const interimParts = [];
+    const target = options.targetText || "";
+    for (let resultIndex = 0; resultIndex < (event.results?.length || 0); resultIndex++) {
+      const result = event.results[resultIndex];
+      let best = null;
+      let bestScore = -Infinity;
+      for (let alternativeIndex = 0; alternativeIndex < result.length; alternativeIndex++) {
+        const alternative = result[alternativeIndex];
+        const text = alternative.transcript?.trim() || "";
+        if (!text) continue;
+        const confidence = Number.isFinite(alternative.confidence) ? alternative.confidence : 0.5;
+        const score = target
+          ? calculateSimilarity(text, target) * 0.72 + confidence * 0.28
+          : confidence;
+        if (score > bestScore) {
+          best = text;
+          bestScore = score;
+        }
+      }
+      if (best) (result.isFinal ? finalParts : interimParts).push(best);
+    }
+    return {
+      transcript: [...finalParts, ...interimParts].join(" ").trim(),
+      isFinal: finalParts.length > 0 && interimParts.length === 0
+    };
+  };
 
   const button = options.button;
   const activeClasses = options.activeClasses || ["animate-pulse"];
@@ -3663,34 +3769,42 @@ function startEnglishSpeechRecognition(options) {
 
   recognition.onresult = function(event) {
     if (activeSpeechRecognition !== recognition) return;
-    const transcript = event.results?.[0]?.[0]?.transcript?.trim() || "";
-    if (!transcript) return;
-    hasResult = true;
-    if (options.statusElement && options.statusElement !== options.feedbackElement) {
-      showSpeechStatus(options, "Đã nhận giọng nói, đang chấm điểm...", "info");
-    }
-    if (options.onResult) options.onResult(transcript, event);
+    const result = readEventTranscript(event);
+    if (!result.transcript) return;
+    latestTranscript = result.transcript;
+    if (result.isFinal) deliverTranscript(result.transcript);
   };
 
   recognition.onerror = function(event) {
-    if (activeSpeechRecognition !== recognition) return;
+    if (activeSpeechRecognition !== recognition) {
+      releaseInput();
+      return;
+    }
     errorCode = event.error || "";
+    if (!hasResult && latestTranscript) deliverTranscript(latestTranscript);
+    const microphoneDetected = speechMonitor?.sampleCount ? speechMonitor.hasSignal : null;
     clearActiveState();
     if (options.onStateChange) options.onStateChange(false);
     releaseInput();
-    showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
-    if (["no-speech", "audio-capture", "NotReadableError", "NotFoundError"].includes(errorCode)) {
+    if (!hasResult) showSpeechStatus(options, speechRecognitionErrorMessage(errorCode, microphoneDetected), "error");
+    if (!hasResult && ["no-speech", "audio-capture", "NotReadableError", "NotFoundError"].includes(errorCode)) {
       showMicrophoneSetupShortcut(options);
     }
   };
 
   recognition.onend = function() {
-    if (activeSpeechRecognition === recognition) activeSpeechRecognition = null;
+    if (activeSpeechRecognition !== recognition) {
+      releaseInput();
+      return;
+    }
+    if (!hasResult && latestTranscript) deliverTranscript(latestTranscript);
+    const microphoneDetected = speechMonitor?.sampleCount ? speechMonitor.hasSignal : null;
+    activeSpeechRecognition = null;
     clearActiveState();
     if (options.onStateChange) options.onStateChange(false);
     releaseInput();
     if (!hasResult && !errorCode) {
-      showSpeechStatus(options, speechRecognitionErrorMessage("no-speech"), "error");
+      showSpeechStatus(options, speechRecognitionErrorMessage("no-speech", microphoneDetected), "error");
       showMicrophoneSetupShortcut(options);
     }
   };
@@ -3704,7 +3818,11 @@ function startEnglishSpeechRecognition(options) {
       if (navigator.mediaDevices?.getUserMedia) {
         const preferredDeviceId = getPreferredMicrophoneId();
         mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: preferredDeviceId ? { deviceId: { exact: preferredDeviceId } } : true
+          audio: {
+            ...(preferredDeviceId ? { deviceId: { exact: preferredDeviceId } } : {}),
+            autoGainControl: true,
+            noiseSuppression: false
+          }
         });
         if (activeSpeechRecognition !== recognition || requestId !== speechStartSequence) {
           releaseInput();
@@ -3713,10 +3831,11 @@ function startEnglishSpeechRecognition(options) {
 
         const track = mediaStream.getAudioTracks()[0];
         if (!track) throw new DOMException("No audio input track", "NotFoundError");
+        speechMonitor = startSpeechInputMonitor(options, mediaStream);
         try {
           recognition.start(track);
         } catch (trackError) {
-          if (trackError instanceof TypeError && !preferredDeviceId) {
+          if (trackError instanceof TypeError) {
             releaseInput();
             recognition.start();
           } else {
@@ -3753,6 +3872,7 @@ window.practiceMouthSound = function(targetWord, idx) {
   startEnglishSpeechRecognition({
     button: micBtn,
     feedbackElement: feedbackEl,
+    targetText: targetWord,
     activeClasses: ["animate-pulse", "bg-rose-600", "text-white"],
     listeningText: `Đang nghe... Hãy phát âm từ: “${targetWord}”.`,
     onResult(transcript) {
@@ -3783,6 +3903,7 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
   startEnglishSpeechRecognition({
     button: micBtn,
     feedbackElement: feedbackEl,
+    targetText: targetPhrase,
     activeClasses: ["animate-pulse", "bg-rose-600", "text-white"],
     listeningText: "Đang nghe... Hãy nói câu tiếng Anh ngay.",
     onResult(transcript) {
