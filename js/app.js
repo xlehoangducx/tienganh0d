@@ -1,3 +1,5 @@
+Warning: fs was declared with const; use let for reassignable variables.
+Warning: body was declared with const; use let for reassignable variables.
 // ============================================================================
 // HỆ ĐIỀU HÀNH HỌC TẬP AI (COGNITIVE LEARNING OS ENGINE) - PHIÊN BẢN 2.2 ĐÃ KIỂM ĐỊNH
 // Khắc phục triệt để lỗi ngầm, đồng bộ khẩu hình động, xác thực lặp 7 lần thực chất,
@@ -1207,6 +1209,14 @@ window.startCinemaPresentationMode = function() {
   const oldOverlay = document.getElementById("cinemaCountdownOverlay");
   if (oldOverlay) oldOverlay.remove();
 
+  // Mobile browsers require audio playback to start directly from a user gesture.
+  // Skip the delayed countdown on touch screens so the first slide can use the tap.
+  if (window.matchMedia?.("(pointer: coarse)").matches) {
+    document.body.classList.add("cinema-live");
+    playSceneAudio(0);
+    return;
+  }
+
   const overlay = document.createElement("div");
   overlay.id = "cinemaCountdownOverlay";
   overlay.className = "cinema-countdown-overlay";
@@ -2102,12 +2112,10 @@ function updateLectureControls(isPlaying) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-async function playSceneAudio(sIdx, options = {}) {
+function playSceneAudio(sIdx, options = {}) {
   const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
   const slide = lesson?.masterLecture?.slides?.[currentSlideIndex];
   if (!slide || !slide.scenes || !slide.scenes[sIdx]) return;
-
-  await loadLectureTiming();
 
   const scene = slide.scenes[sIdx];
   const isContinuousSlide = slide.scenes.some(sc => typeof sc.cueTime === "number") && slide.audioFile;
@@ -3081,34 +3089,23 @@ window.nextDialogueTurn = function() {
 };
 
 window.toggleDialogueSpeechRecording = function() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Hãy dùng Google Chrome hoặc Microsoft Edge để nói và chấm điểm 0đ nhé!");
-    return;
-  }
-
   const micBtn = document.getElementById("btnRecordVoice");
   const micStatus = document.getElementById("micStatusText");
+  const currentTurn = userTurnsList[currentDialogueTurnIndex];
+  if (!micBtn || !currentTurn?.targetText) return;
 
-  const recog = new SpeechRecognition();
-  recog.lang = "en-US";
-  recog.continuous = false;
-  recog.interimResults = false;
-
-  recog.onstart = function() {
-    isDialogueRecording = true;
-    if (micBtn) micBtn.classList.add("animate-pulse", "ring-4", "ring-purple-400");
-    if (micStatus) micStatus.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe... Hãy nói câu đối đáp ngay!</span>`;
-  };
-
-  recog.onresult = function(event) {
-    isDialogueRecording = false;
-    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
-
-    const transcript = event.results[0][0].transcript;
-    const currentTurn = userTurnsList[currentDialogueTurnIndex];
+  startEnglishSpeechRecognition({
+    button: micBtn,
+    statusElement: micStatus,
+    activeClasses: ["animate-pulse", "ring-4", "ring-purple-400"],
+    listeningText: "Đang nghe... Hãy nói câu đối đáp ngay.",
+    onStateChange(isActive) {
+      isDialogueRecording = isActive;
+    },
+    onResult(transcript) {
     const similarity = calculateSimilarity(transcript, currentTurn.targetText);
     const percentScore = Math.round(similarity * 100);
+    const safeTargetText = escapeHtml(currentTurn.targetText);
 
     const resultBox = document.getElementById("speechResultBox");
     const transcribedEl = document.getElementById("speechTranscribedText");
@@ -3141,26 +3138,10 @@ window.toggleDialogueSpeechRecording = function() {
 
     } else {
       playIncorrectSound();
-      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-amber-400 font-semibold">Gần đúng rồi!</span> Hãy bấm nút <em>Nghe câu mẫu</em> và nói lại rõ ràng: "${currentTurn.targetText}".`;
+      if (feedbackEl) feedbackEl.innerHTML = `<span class="text-amber-400 font-semibold">Gần đúng rồi!</span> Hãy bấm nút <em>Nghe câu mẫu</em> và nói lại rõ ràng: “${safeTargetText}”.`;
     }
-  };
-
-  recog.onerror = function() {
-    isDialogueRecording = false;
-    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
-    if (micStatus) micStatus.textContent = "Chưa nhận được âm thanh. Hãy bấm lại micro và nói to hơn nhé!";
-  };
-
-  recog.onend = function() {
-    isDialogueRecording = false;
-    if (micBtn) micBtn.classList.remove("animate-pulse", "ring-4", "ring-purple-400");
-  };
-
-  try {
-    recog.start();
-  } catch (err) {
-    console.warn("Lỗi start mic:", err);
-  }
+    }
+  });
 };
 
 // ==============================================================
@@ -3414,89 +3395,402 @@ function calculateSimilarity(str1, str2) {
   return Math.max(0, Math.min(1, 1 - distance / Math.max(words1.length, words2.length)));
 }
 
-window.practiceMouthSound = function(targetWord, idx) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Hãy dùng Google Chrome hoặc Microsoft Edge để nói và chấm điểm 0đ nhé!");
+let activeSpeechRecognition = null;
+let speechStartSequence = 0;
+let activeMicSetup = null;
+const PREFERRED_MIC_KEY = "gsc-preferred-microphone-device";
+
+function speechRecognitionErrorMessage(code) {
+  switch (code) {
+    case "not-allowed":
+    case "service-not-allowed":
+    case "NotAllowedError":
+    case "SecurityError":
+      return "Micro đang bị chặn. Mở cài đặt trang/biểu tượng cạnh địa chỉ web → Micro → Cho phép, tải lại trang rồi thử lại.";
+    case "audio-capture":
+    case "NotReadableError":
+    case "NotFoundError":
+      return "Không mở được micro. Hãy chọn đúng micro trong cài đặt âm thanh của máy, đóng ứng dụng đang dùng micro rồi thử lại.";
+    case "network":
+      return "Dịch vụ nhận dạng giọng nói không kết nối được. Kiểm tra Internet rồi thử lại bằng Chrome hoặc Edge.";
+    case "no-speech":
+      return "Trình duyệt không nhận được tiếng nói. Có thể máy đang chọn nhầm micro hoặc mức âm đầu vào quá thấp. Hãy kiểm tra/chọn micro bên dưới rồi thử lại.";
+    case "aborted":
+      return "Lượt nghe đã dừng. Bấm “Nói thử” để bắt đầu lại.";
+    case "language-not-supported":
+      return "Trình duyệt hiện không hỗ trợ nhận dạng tiếng Anh Mỹ. Hãy thử Chrome hoặc Edge mới hơn.";
+    default:
+      return "Chưa nhận được giọng nói. Kiểm tra quyền và micro đầu vào, sau đó bấm thử lại.";
+  }
+}
+
+function showSpeechStatus(options, message, tone = "info") {
+  const target = options.statusElement || options.feedbackElement;
+  if (!target) return;
+
+  if (target === options.feedbackElement) {
+    target.classList.remove("hidden");
+    const classes = {
+      info: "mt-2 p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-[11px] text-cyan-200",
+      listening: "mt-2 p-2 rounded-lg bg-rose-950/40 border border-rose-500/30 text-[11px] text-rose-300",
+      error: "mt-2 p-2 rounded-lg bg-amber-950/50 border border-amber-500/40 text-[11px] text-amber-200"
+    };
+    target.className = classes[tone] || classes.info;
+  } else {
+    const toneClass = tone === "error" ? "text-amber-300" : tone === "listening" ? "text-rose-400" : "text-cyan-300";
+    target.className = `text-xs ${toneClass} mb-4`;
+  }
+
+  target.textContent = message;
+}
+
+function stopMicrophoneStream(stream) {
+  stream?.getTracks?.().forEach(track => track.stop());
+}
+
+function getPreferredMicrophoneId() {
+  try { return localStorage.getItem(PREFERRED_MIC_KEY) || ""; } catch (e) { return ""; }
+}
+
+function savePreferredMicrophoneId(deviceId) {
+  if (!deviceId) return;
+  try { localStorage.setItem(PREFERRED_MIC_KEY, deviceId); } catch (e) {}
+}
+
+function stopMicrophoneMeter(setup) {
+  if (!setup) return;
+  if (setup.rafId) cancelAnimationFrame(setup.rafId);
+  setup.rafId = 0;
+  const audioContext = setup.audioContext;
+  setup.audioContext = null;
+  try { audioContext?.close(); } catch (e) {}
+}
+
+function closeMicrophoneSetup() {
+  if (!activeMicSetup) return;
+  stopMicrophoneMeter(activeMicSetup);
+  stopMicrophoneStream(activeMicSetup.stream);
+  activeMicSetup.panel?.remove();
+  activeMicSetup = null;
+}
+
+function showMicrophoneSetupShortcut(options) {
+  const anchor = options.feedbackElement || options.statusElement;
+  if (!anchor) return;
+
+  const hostId = `${anchor.id || "speech-status"}-mic-setup`;
+  let host = document.getElementById(hostId);
+  if (!host) {
+    host = document.createElement("div");
+    host.id = hostId;
+    anchor.insertAdjacentElement("afterend", host);
+  }
+
+  host.innerHTML = `<button type="button" class="mt-2 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2 text-[11px] font-semibold text-cyan-200 hover:bg-cyan-900/60">🎙️ Chọn và kiểm tra micro</button>`;
+  host.querySelector("button").addEventListener("click", () => openMicrophoneSetup(options, host));
+}
+
+async function openMicrophoneSetup(options, host) {
+  closeMicrophoneSetup();
+  if (!navigator.mediaDevices?.getUserMedia || !navigator.mediaDevices?.enumerateDevices) {
+    showSpeechStatus(options, "Trình duyệt không hỗ trợ kiểm tra thiết bị micro. Hãy chọn micro mặc định trong cài đặt âm thanh của Windows và Chrome.", "error");
     return;
   }
 
+  const panel = document.createElement("section");
+  panel.className = "mt-2 rounded-xl border border-cyan-500/30 bg-slate-950/95 p-3 text-xs text-slate-200";
+  panel.innerHTML = `
+    <label class="mb-1 block font-semibold text-cyan-200">Micro đầu vào của máy</label>
+    <select class="mic-device-select w-full rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-white"></select>
+    <div class="mt-2 flex flex-wrap gap-2">
+      <button type="button" class="mic-measure rounded-lg bg-slate-800 px-3 py-2 font-semibold text-cyan-200">Đo tín hiệu mic</button>
+      <button type="button" class="mic-use rounded-lg bg-emerald-700 px-3 py-2 font-semibold text-white">Dùng micro này</button>
+      <button type="button" class="mic-close rounded-lg bg-slate-800 px-3 py-2 text-slate-300">Đóng</button>
+    </div>
+    <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-800"><div class="mic-level h-full w-0 rounded-full bg-emerald-400 transition-[width]"></div></div>
+    <p class="mic-help mt-2 text-[11px] text-slate-400">Nói thử sau khi bấm “Đo tín hiệu mic”. Thanh xanh nhúc nhích nghĩa là máy đang thu được tiếng.</p>
+  `;
+  host.replaceChildren(panel);
+
+  const select = panel.querySelector(".mic-device-select");
+  const help = panel.querySelector(".mic-help");
+  const levelBar = panel.querySelector(".mic-level");
+  const currentSetup = { panel, stream: null, audioContext: null, rafId: 0 };
+  activeMicSetup = currentSetup;
+
+  async function openDevice(deviceId = "") {
+    stopMicrophoneMeter(currentSetup);
+    stopMicrophoneStream(currentSetup.stream);
+    currentSetup.stream = null;
+    currentSetup.stream = await navigator.mediaDevices.getUserMedia({
+      audio: deviceId ? { deviceId: { exact: deviceId } } : true
+    });
+    if (activeMicSetup !== currentSetup) {
+      stopMicrophoneStream(currentSetup.stream);
+      return;
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const microphones = devices.filter(device => device.kind === "audioinput");
+    const liveDeviceId = currentSetup.stream.getAudioTracks()[0]?.getSettings?.().deviceId || deviceId;
+    select.replaceChildren();
+    microphones.forEach((device, index) => {
+      const option = document.createElement("option");
+      option.value = device.deviceId;
+      option.textContent = device.label || `Micro ${index + 1}`;
+      select.append(option);
+    });
+    if (liveDeviceId && [...select.options].some(option => option.value === liveDeviceId)) {
+      select.value = liveDeviceId;
+    }
+    help.textContent = microphones.length
+      ? "Chọn đúng micro đang cắm. Bấm “Đo tín hiệu mic” và nói thử; thanh xanh nhúc nhích nghĩa là máy đang thu được tiếng."
+      : "Không thấy thiết bị đầu vào. Kiểm tra mic trong Windows rồi tải lại trang.";
+  }
+
+  panel.querySelector(".mic-close").addEventListener("click", closeMicrophoneSetup);
+  panel.querySelector(".mic-use").addEventListener("click", () => {
+    const chosenId = select.value || currentSetup.stream?.getAudioTracks?.()[0]?.getSettings?.().deviceId || "";
+    savePreferredMicrophoneId(chosenId);
+    closeMicrophoneSetup();
+    showSpeechStatus(options, "Đã lưu micro này. Bấm “Nói thử” và nói ngay khi thấy trạng thái đang nghe.", "info");
+  });
+  select.addEventListener("change", async () => {
+    try {
+      help.textContent = "Đang mở micro đã chọn…";
+      await openDevice(select.value);
+    } catch (error) {
+      help.textContent = `Không mở được micro này (${error?.name || "lỗi thiết bị"}). Hãy chọn micro khác hoặc kiểm tra quyền mic của Windows.`;
+    }
+  });
+  panel.querySelector(".mic-measure").addEventListener("click", async () => {
+    try {
+      if (!currentSetup.stream) await openDevice(select.value);
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        help.textContent = "Trình duyệt không hỗ trợ đo mức âm. Hãy chọn micro này rồi thử Nói thử.";
+        return;
+      }
+      stopMicrophoneMeter(currentSetup);
+      currentSetup.audioContext = new AudioContextClass();
+      await currentSetup.audioContext.resume();
+      const analyser = currentSetup.audioContext.createAnalyser();
+      analyser.fftSize = 512;
+      currentSetup.audioContext.createMediaStreamSource(currentSetup.stream).connect(analyser);
+      const samples = new Uint8Array(analyser.fftSize);
+      const measure = () => {
+        if (activeMicSetup !== currentSetup) return;
+        analyser.getByteTimeDomainData(samples);
+        let power = 0;
+        for (const sample of samples) power += (sample - 128) ** 2;
+        const rms = Math.sqrt(power / samples.length);
+        levelBar.style.width = `${Math.min(100, Math.round(rms * 3))}%`;
+        help.textContent = rms > 1.8
+          ? "Đã thấy tín hiệu âm thanh từ micro. Bấm “Dùng micro này”, sau đó nói ngay khi trạng thái Đang nghe xuất hiện."
+          : "Chưa thấy tiếng vào. Kiểm tra nút tắt mic/dây cắm và Windows > Hệ thống > Âm thanh > Đầu vào; thử chọn thiết bị khác ở trên.";
+        currentSetup.rafId = requestAnimationFrame(measure);
+      };
+      measure();
+    } catch (error) {
+      help.textContent = `Không đo được micro (${error?.name || "lỗi thiết bị"}). Kiểm tra cài đặt quyền micro của Windows/Chrome.`;
+    }
+  });
+
+  try {
+    const preferredDeviceId = getPreferredMicrophoneId();
+    try {
+      await openDevice(preferredDeviceId);
+    } catch (error) {
+      if (!preferredDeviceId) throw error;
+      await openDevice();
+      help.textContent = "Micro đã lưu không còn kết nối. Chọn micro hiện có ở trên và bấm “Dùng micro này”.";
+    }
+  } catch (error) {
+    help.textContent = `Không mở được micro (${error?.name || "lỗi thiết bị"}). Chọn Cho phép nếu Chrome hỏi quyền, rồi thử tải lại trang.`;
+  }
+}
+
+// Request the physical input track from the button tap and pass that exact device
+// to Web Speech, instead of relying only on the OS/browser's default input.
+function startEnglishSpeechRecognition(options) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showSpeechStatus(options, "Trình duyệt này chưa hỗ trợ nhận dạng giọng nói. Hãy mở trang HTTPS bằng Chrome hoặc Edge.", "error");
+    return;
+  }
+
+  if (window.isSecureContext === false) {
+    showSpeechStatus(options, "Micro chỉ hoạt động trên trang HTTPS hoặc localhost. Hãy mở lại website bằng địa chỉ HTTPS.", "error");
+    return;
+  }
+
+  if (activeSpeechRecognition) {
+    const previousRecognition = activeSpeechRecognition;
+    activeSpeechRecognition = null;
+    try { previousRecognition.abort(); } catch (e) {}
+  }
+  closeMicrophoneSetup();
+
+  const requestId = ++speechStartSequence;
+  let mediaStream = null;
+  const releaseInput = () => {
+    if (mediaStream) stopMicrophoneStream(mediaStream);
+    mediaStream = null;
+  };
+
+  const recognition = new SpeechRecognition();
+  let hasResult = false;
+  let errorCode = "";
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  const button = options.button;
+  const activeClasses = options.activeClasses || ["animate-pulse"];
+  const clearActiveState = () => {
+    if (!button) return;
+    button.classList.remove(...activeClasses);
+    button.setAttribute("aria-pressed", "false");
+  };
+
+  recognition.onstart = function() {
+    if (activeSpeechRecognition !== recognition) return;
+    if (button) {
+      button.classList.add(...activeClasses);
+      button.setAttribute("aria-pressed", "true");
+    }
+    if (options.onStateChange) options.onStateChange(true);
+    showSpeechStatus(options, options.listeningText || "Đang nghe... Hãy nói câu tiếng Anh ngay.", "listening");
+  };
+
+  recognition.onresult = function(event) {
+    if (activeSpeechRecognition !== recognition) return;
+    const transcript = event.results?.[0]?.[0]?.transcript?.trim() || "";
+    if (!transcript) return;
+    hasResult = true;
+    if (options.statusElement && options.statusElement !== options.feedbackElement) {
+      showSpeechStatus(options, "Đã nhận giọng nói, đang chấm điểm...", "info");
+    }
+    if (options.onResult) options.onResult(transcript, event);
+  };
+
+  recognition.onerror = function(event) {
+    if (activeSpeechRecognition !== recognition) return;
+    errorCode = event.error || "";
+    clearActiveState();
+    if (options.onStateChange) options.onStateChange(false);
+    releaseInput();
+    showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
+    if (["no-speech", "audio-capture", "NotReadableError", "NotFoundError"].includes(errorCode)) {
+      showMicrophoneSetupShortcut(options);
+    }
+  };
+
+  recognition.onend = function() {
+    if (activeSpeechRecognition === recognition) activeSpeechRecognition = null;
+    clearActiveState();
+    if (options.onStateChange) options.onStateChange(false);
+    releaseInput();
+    if (!hasResult && !errorCode) {
+      showSpeechStatus(options, speechRecognitionErrorMessage("no-speech"), "error");
+      showMicrophoneSetupShortcut(options);
+    }
+  };
+
+  showSpeechStatus(options, "Đang mở micro. Nếu trình duyệt hỏi quyền lần đầu, chọn “Cho phép”.", "info");
+  if (window.stopAllAudios) window.stopAllAudios();
+  activeSpeechRecognition = recognition;
+
+  (async () => {
+    try {
+      if (navigator.mediaDevices?.getUserMedia) {
+        const preferredDeviceId = getPreferredMicrophoneId();
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: preferredDeviceId ? { deviceId: { exact: preferredDeviceId } } : true
+        });
+        if (activeSpeechRecognition !== recognition || requestId !== speechStartSequence) {
+          releaseInput();
+          return;
+        }
+
+        const track = mediaStream.getAudioTracks()[0];
+        if (!track) throw new DOMException("No audio input track", "NotFoundError");
+        try {
+          recognition.start(track);
+        } catch (trackError) {
+          if (trackError instanceof TypeError && !preferredDeviceId) {
+            releaseInput();
+            recognition.start();
+          } else {
+            throw trackError;
+          }
+        }
+      } else {
+        recognition.start();
+      }
+    } catch (error) {
+      if (activeSpeechRecognition !== recognition) {
+        releaseInput();
+        return;
+      }
+      errorCode = error?.name || "";
+      activeSpeechRecognition = null;
+      clearActiveState();
+      if (options.onStateChange) options.onStateChange(false);
+      releaseInput();
+      showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
+      if (["NotFoundError", "NotReadableError", "OverconstrainedError"].includes(errorCode)) {
+        showMicrophoneSetupShortcut(options);
+      }
+      console.warn("Lỗi khởi động micro:", error);
+    }
+  })();
+}
+
+window.practiceMouthSound = function(targetWord, idx) {
   const micBtn = document.getElementById(`btn-mouth-mic-${idx}`);
   const feedbackEl = document.getElementById(`mouth-feedback-${idx}`);
   if (!micBtn || !feedbackEl) return;
 
-  const recog = new SpeechRecognition();
-  recog.lang = "en-US";
-  recog.continuous = false;
-  recog.interimResults = false;
-
-  recog.onstart = function() {
-    micBtn.classList.add("animate-pulse", "bg-rose-600", "text-white");
-    feedbackEl.classList.remove("hidden");
-    feedbackEl.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe... Hãy phát âm từ: "${targetWord}"</span>`;
-  };
-
-  recog.onresult = function(event) {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-    const transcript = event.results[0][0].transcript;
+  startEnglishSpeechRecognition({
+    button: micBtn,
+    feedbackElement: feedbackEl,
+    activeClasses: ["animate-pulse", "bg-rose-600", "text-white"],
+    listeningText: `Đang nghe... Hãy phát âm từ: “${targetWord}”.`,
+    onResult(transcript) {
     const similarity = calculateSimilarity(transcript, targetWord);
     const score = Math.round(similarity * 100);
+    const safeTranscript = escapeHtml(transcript);
+    const safeTargetWord = escapeHtml(targetWord);
 
     feedbackEl.classList.remove("hidden");
     if (score >= 70) {
       playCorrectSound();
       feedbackEl.className = "mt-2 p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-[11px] text-emerald-300";
-      feedbackEl.innerHTML = `🎯 <strong>AI nghe bạn nói:</strong> "${transcript}" • <span class="font-mono font-bold text-emerald-400">Độ chuẩn xác: ${score}%</span> • Phát âm rất chuẩn!`;
+      feedbackEl.innerHTML = `🎯 <strong>AI nghe bạn nói:</strong> “${safeTranscript}” • <span class="font-mono font-bold text-emerald-400">Độ chuẩn xác: ${score}%</span> • Phát âm rất chuẩn!`;
     } else {
       playIncorrectSound();
       feedbackEl.className = "mt-2 p-2 rounded-lg bg-amber-950/50 border border-amber-500/40 text-[11px] text-amber-300";
-      feedbackEl.innerHTML = `💡 <strong>AI nghe bạn nói:</strong> "${transcript}" • <span class="font-mono font-bold text-amber-400">Độ chuẩn xác: ${score}%</span> • Hãy phát âm to và rõ hơn từ: "${targetWord}" nhé!`;
+      feedbackEl.innerHTML = `💡 <strong>AI nghe bạn nói:</strong> “${safeTranscript}” • <span class="font-mono font-bold text-amber-400">Độ chuẩn xác: ${score}%</span> • Hãy phát âm to và rõ hơn từ: “${safeTargetWord}” nhé!`;
     }
-  };
-
-  recog.onerror = function() {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-    feedbackEl.innerHTML = `<span class="text-slate-400">Chưa nghe rõ âm thanh. Bấm lại nút để thử lại!</span>`;
-  };
-
-  recog.onend = function() {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-  };
-
-  try {
-    recog.start();
-  } catch (err) {
-    console.warn("Lỗi start mic:", err);
-  }
+    }
+  });
 };
 
 window.practiceChunkSpeech = function(targetPhrase, idx) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Hãy dùng Google Chrome hoặc Microsoft Edge để nói và chấm điểm 0đ nhé!");
-    return;
-  }
-
   const micBtn = document.getElementById(`btn-chunk-mic-${idx}`);
   const feedbackEl = document.getElementById(`chunk-feedback-${idx}`);
   if (!micBtn || !feedbackEl) return;
 
-  const recog = new SpeechRecognition();
-  recog.lang = "en-US";
-  recog.continuous = false;
-  recog.interimResults = false;
-
-  recog.onstart = function() {
-    micBtn.classList.add("animate-pulse", "bg-rose-600", "text-white");
-    feedbackEl.classList.remove("hidden");
-    feedbackEl.innerHTML = `<span class="text-rose-400 font-bold animate-pulse">● Đang lắng nghe bạn nói câu này...</span>`;
-  };
-
-  recog.onresult = function(event) {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-    const transcript = event.results[0][0].transcript;
+  startEnglishSpeechRecognition({
+    button: micBtn,
+    feedbackElement: feedbackEl,
+    activeClasses: ["animate-pulse", "bg-rose-600", "text-white"],
+    listeningText: "Đang nghe... Hãy nói câu tiếng Anh ngay.",
+    onResult(transcript) {
     const similarity = calculateSimilarity(transcript, targetPhrase);
     const score = Math.round(similarity * 100);
+    const safeTranscript = escapeHtml(transcript);
 
     feedbackEl.classList.remove("hidden");
     if (score >= 70) {
@@ -3505,7 +3799,7 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
       feedbackEl.className = "mt-3 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300";
       feedbackEl.innerHTML = `
         <div class="flex items-center justify-between mb-1">
-          <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
+          <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
           <span class="font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Độ chính xác: ${score}%</span>
         </div>
         <p class="text-emerald-400/90 text-[11px]">🎉 Xuất sắc! Bạn phát âm câu này rất chuẩn xác và rõ ràng. Đã xác nhận +2 điểm phát âm nơ-ron!</p>
@@ -3515,28 +3809,14 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
       feedbackEl.className = "mt-3 p-3 rounded-xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-300";
       feedbackEl.innerHTML = `
         <div class="flex items-center justify-between mb-1">
-          <span>🎙️ <strong>AI nghe bạn nói:</strong> "${transcript}"</span>
+          <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
           <span class="font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Độ chính xác: ${score}%</span>
         </div>
         <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và chú ý phát âm rõ âm đuôi nhé (cần ≥ 70% để ghi nhận điểm).</p>
       `;
     }
-  };
-
-  recog.onerror = function() {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-    feedbackEl.innerHTML = `<span class="text-slate-400">Không thu được âm thanh. Hãy bấm nút và nói lại nhé!</span>`;
-  };
-
-  recog.onend = function() {
-    micBtn.classList.remove("animate-pulse", "bg-rose-600", "text-white");
-  };
-
-  try {
-    recog.start();
-  } catch (err) {
-    console.warn("Lỗi start mic:", err);
-  }
+    }
+  });
 };
 
 // ==============================================================

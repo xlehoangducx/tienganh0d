@@ -1,3 +1,5 @@
+Warning: fs was declared with const; use let for reassignable variables.
+Warning: body was declared with const; use let for reassignable variables.
 /* ==========================================================================
    AI ENGLISH HUB - ADVANCED CYBER AI THEME
    Tái hiện phong cách Nexus Quant: Glassmorphism, 3D Perspective & Neon Glow
@@ -755,7 +757,10 @@ body.cinema-mode #slideStageMainCard {
   display: flex;
   flex-direction: column;
   width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
   height: 100dvh;
+  min-height: 100dvh;
   padding: 0;
   border: 0;
   border-radius: 0;
