@@ -148,12 +148,6 @@ async def render_scene(engine, out_name, segments, timing, caption_key):
     print(f"Generated {out_name}: {round(total_without_tempo * scale, 1)}s, {len(captions)} captions")
 
 
-INTRO = [
-    ("vi", "Chào bạn! Mình là Hải Đăng, người đồng hành cùng bạn trong buổi học đầu tiên."),
-    ("vi", "Trước khi bắt đầu, hãy bấm Nghe Thuyết Giảng. Bài giảng sẽ chạy từng cảnh, và phụ đề sẽ chạy theo đúng lời mình nói."),
-    ("vi", "Khi cần dừng, bạn chỉ cần bấm Tạm Dừng. Còn bây giờ, chúng ta cùng bắt đầu nhé."),
-]
-
 SCENES = [
     (
         "lecture-buoi-01-slide-1-scene-0.mp3",
@@ -282,7 +276,6 @@ async def main():
     engine = Vieneu()
     timing = {}
 
-    await render_scene(engine, "lecture-buoi-01-intro.mp3", INTRO, timing, "lecture-buoi-01-intro.mp3")
     for name, segments in SCENES:
         await render_scene(engine, name, segments, timing, name)
 

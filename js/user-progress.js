@@ -1,5 +1,6 @@
 // QUẢN LÝ TIẾN ĐỘ ĐỘC LẬP TỪNG TÀI KHOẢN GMAIL & CHỐNG QUÊN (SPACED REPETITION)
 import { db } from "./auth.js";
+import { CURRICULUM_DATA } from "./curriculum-data.js";
 import { 
   doc, 
   getDoc, 
@@ -8,6 +9,34 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const LOCAL_STORAGE_KEY_PREFIX = "ai_english_progress_";
+
+// Số buổi mục tiêu của từng chặng CEFR (Chặng 0 → 4).
+const PHASE_TARGETS = [10, 35, 60, 100, 120];
+
+// Tính % tiến độ theo đúng chặng đang học, không cố định 10 buổi.
+function recalculateProgress(progress) {
+  const completed = Array.isArray(progress.completedLessons) ? progress.completedLessons : [];
+  const lessons = CURRICULUM_DATA.lessons || [];
+
+  let currentPhase = 0;
+  completed.forEach(id => {
+    const lesson = lessons.find(l => l.id === id);
+    if (lesson && Number.isFinite(lesson.phaseId)) {
+      currentPhase = Math.max(currentPhase, lesson.phaseId);
+    }
+  });
+
+  const completedInPhase = completed.filter(id => {
+    const lesson = lessons.find(l => l.id === id);
+    return lesson && lesson.phaseId === currentPhase;
+  }).length;
+  const target = Math.max(PHASE_TARGETS[currentPhase] || 10, 1);
+
+  progress.progressPhaseId = currentPhase;
+  progress.progressPercent = Math.min(100, Math.round((completedInPhase / target) * 100));
+  progress.hoursAccumulated = (completed.length * 0.5).toFixed(1);
+  return progress;
+}
 
 // Cấu trúc tiến độ mặc định cho một học viên mới
 export function getDefaultProgress(user) {
@@ -67,6 +96,7 @@ export async function loadUserProgress(user) {
 
   // Cập nhật ngày hoạt động hôm nay
   progress.lastActiveDate = today.toISOString().split("T")[0];
+  recalculateProgress(progress);
 
   // Lưu vào localStorage
   localStorage.setItem(localKey, JSON.stringify(progress));
@@ -94,11 +124,8 @@ export async function saveLessonCompletion(user, lessonId, score, total) {
     }
   }
 
-  // Tính lại phần trăm tiến độ Chặng 0 (10 buổi nền móng chuẩn A0 -> A1)
-  const phase0Target = 10;
-  const completedCount = progress.completedLessons.length;
-  progress.progressPercent = Math.min(100, Math.round((completedCount / phase0Target) * 100));
-  progress.hoursAccumulated = (completedCount * 0.5).toFixed(1);
+  // Tính lại % tiến độ theo chặng hiện tại (không cố định 10 buổi)
+  recalculateProgress(progress);
 
   // Tắt cờ cần review nếu vừa làm xong
   progress.needsReview = false;

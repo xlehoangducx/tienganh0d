@@ -464,12 +464,12 @@ window.playTrack = function(audioPath, onEnded, onError, rate = 1) {
 
 export const MODULE_FLOW = [
   { id: 'moduleLecture', step: 0, title: '0. Thuyết Giảng Khai Mở', icon: 'book-open' },
-  { id: 'moduleMouth', step: 1, title: '1. Khẩu Hình & Phát Âm', icon: 'mic', guideAudio: 'assets/audio/guide-buoi-01-step-1.mp3' },
-  { id: 'moduleChunks', step: 2, title: '2. Cụm Từ & Phản Xạ', icon: 'volume-2', guideAudio: 'assets/audio/guide-buoi-01-step-2.mp3' },
-  { id: 'moduleQuiz', step: 3, title: '3. Trắc Nghiệm', icon: 'help-circle', guideAudio: 'assets/audio/guide-buoi-01-step-3.mp3' },
-  { id: 'moduleFlashcard', step: 4, title: '4. Sổ Thẻ 3D', icon: 'layers', guideAudio: 'assets/audio/guide-buoi-01-step-4.mp3' },
-  { id: 'moduleSpeaking', step: 5, title: '5. Đối Thoại AI 2 Chiều', icon: 'radio', guideAudio: 'assets/audio/guide-buoi-01-step-5.mp3' },
-  { id: 'moduleTyping', step: 6, title: '6. Gõ Phản Xạ & Ghép Khối', icon: 'keyboard', guideAudio: 'assets/audio/guide-buoi-01-step-6.mp3' }
+  { id: 'moduleMouth', step: 1, title: '1. Khẩu Hình & Phát Âm', icon: 'mic' },
+  { id: 'moduleChunks', step: 2, title: '2. Cụm Từ & Phản Xạ', icon: 'volume-2' },
+  { id: 'moduleQuiz', step: 3, title: '3. Trắc Nghiệm', icon: 'help-circle' },
+  { id: 'moduleFlashcard', step: 4, title: '4. Sổ Thẻ 3D', icon: 'layers' },
+  { id: 'moduleSpeaking', step: 5, title: '5. Đối Thoại AI 2 Chiều', icon: 'radio' },
+  { id: 'moduleTyping', step: 6, title: '6. Gõ Phản Xạ & Ghép Khối', icon: 'keyboard' }
 ];
 
 let internalUnlockedStep = 0; // 0: chỉ mở moduleLecture, 1: mở đến moduleMouth, ..., 6: mở tất cả
@@ -703,7 +703,9 @@ function isLessonUnlocked(lesson) {
 
   const completed = (userProgress && userProgress.completedLessons) || [];
   const prevLesson = CURRICULUM_DATA.lessons.find(l => l.sessionNumber === lesson.sessionNumber - 1);
-  if (!prevLesson) return true;
+  // Không có bài trước trong dữ liệu runtime nghĩa là bài này chưa đủ điều kiện mở.
+  // Chỉ Buổi 01 được miễn kiểm tra ở phía trên.
+  if (!prevLesson) return false;
   return completed.includes(prevLesson.id);
 }
 
@@ -907,9 +909,23 @@ let isSlideAutoAdvance = true;
 let isSlideAudioPlaying = false;
 let currentPlayingGuideStep = null;
 
+// Reusable Helper: lấy metadata hướng dẫn của bước hiện tại từ dữ liệu bài học.
+// Không hardcode audio của Buổi 01: bài chưa có audio hướng dẫn thì ẩn nút nghe.
+function getGuideMetaForStep(stepNum) {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const guides = lesson?.stepGuideAudios || {};
+  return Object.values(guides).find(g => Number(g.stepNum) === Number(stepNum)) || null;
+}
+
 // Reusable Helper: Render Teacher Guide Banner ở đầu mỗi module (Steps 1 to 6)
 window.renderTeacherGuideBanner = function(stepNum, title, instruction) {
   const isPlaying = currentPlayingGuideStep === stepNum;
+  const audioFile = getGuideMetaForStep(stepNum)?.audioFile || null;
+  const buttonHTML = audioFile ? `
+      <button id="btnGuideAudio-${stepNum}" onclick="playTeacherGuideAudio(${stepNum})" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold ${isPlaying ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40'} transition flex items-center space-x-1.5 cursor-pointer">
+        <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-3.5 h-3.5 fill-current"></i>
+        <span>${isPlaying ? 'Tạm Dừng' : '🎧 Nghe Lời Thầy Hướng Dẫn'}</span>
+      </button>` : '';
   return `
     <div class="mb-5 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner">
       <div class="flex items-start space-x-3">
@@ -919,17 +935,21 @@ window.renderTeacherGuideBanner = function(stepNum, title, instruction) {
         <div>
           <div class="text-xs font-bold text-white flex items-center space-x-2">
             <span>${title}</span>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"></span>
           </div>
           <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${instruction}</p>
         </div>
       </div>
-      <button id="btnGuideAudio-${stepNum}" onclick="playTeacherGuideAudio(${stepNum})" class="flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold ${isPlaying ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40'} transition flex items-center space-x-1.5 cursor-pointer">
-        <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-3.5 h-3.5 fill-current"></i>
-        <span>${isPlaying ? 'Tạm Dừng' : '🎧 Nghe Lời Thầy Hướng Dẫn'}</span>
-      </button>
+      ${buttonHTML}
     </div>
   `;
+};
+
+// Banner ưu tiên tên/instruction/audio của bài đang mở; fallback chỉ dùng khi bài thiếu dữ liệu.
+window.renderGuideBanner = function(stepNum, fallbackTitle, fallbackInstruction) {
+  const meta = getGuideMetaForStep(stepNum);
+  const title = meta?.name ? `Hướng Dẫn ${meta.name}` : fallbackTitle;
+  const instruction = meta?.instruction || fallbackInstruction;
+  return window.renderTeacherGuideBanner(stepNum, title, instruction);
 };
 
 // Reusable Helper: Render Next Step Transition CTA
@@ -949,8 +969,9 @@ window.renderNextStepCTA = function(nextStepNum, label, tip) {
 };
 
 window.playTeacherGuideAudio = function(stepNum) {
-  const audioFile = `assets/audio/guide-buoi-01-step-${stepNum}.mp3`;
+  const audioFile = getGuideMetaForStep(stepNum)?.audioFile;
   const btn = document.getElementById(`btnGuideAudio-${stepNum}`);
+  if (!audioFile) return;
 
   if (currentPlayingGuideStep === stepNum) {
     window.stopAllAudios();
@@ -1000,26 +1021,27 @@ function formatTime(sec) {
 // 5.4. VISUAL MOTION GRAPHICS GENERATOR CHO TỪNG CẢNH THUYẾT GIẢNG
 // ==============================================================
 let currentLectureAudioInstance = null;
-let currentLecturePlaybackSpeed = 0.95; // Audio đã được thu chậm sẵn; không chỉnh tốc độ khi phát để hình - tiếng khớp tuyệt đối
 let lectureTimingMap = null;
 let lectureTimingPromise = null;
+let lectureTimingLessonId = null;
 let captionFrame = null;
 let currentLectureMeta = null;
 
-function loadLectureTiming() {
-  if (lectureTimingMap) return Promise.resolve(lectureTimingMap);
-  if (!lectureTimingPromise) {
-    lectureTimingPromise = fetch("assets/audio/lecture-buoi-01-timing.json", { cache: "force-cache" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        lectureTimingMap = data || {};
-        return lectureTimingMap;
-      })
-      .catch(() => {
-        lectureTimingMap = {};
-        return lectureTimingMap;
-      });
-  }
+function loadLectureTiming(lessonId = currentActiveLessonId) {
+  if (lectureTimingMap && lectureTimingLessonId === lessonId) return Promise.resolve(lectureTimingMap);
+  lectureTimingLessonId = lessonId;
+  lectureTimingMap = null;
+  lectureTimingPromise = fetch(`assets/audio/lecture-${lessonId}-timing.json`, { cache: "force-cache" })
+    .then((res) => (res.ok ? res.json() : null))
+    .then((data) => {
+      if (lectureTimingLessonId !== lessonId) return lectureTimingMap || {};
+      lectureTimingMap = data || {};
+      return lectureTimingMap;
+    })
+    .catch(() => {
+      if (lectureTimingLessonId === lessonId) lectureTimingMap = {};
+      return lectureTimingMap || {};
+    });
   return lectureTimingPromise;
 }
 
@@ -2290,7 +2312,7 @@ window.finishMasterLectureAndUnlockStep1 = function() {
 function renderMouthTechniques(techniques) {
   const guideBanner = document.getElementById("mouthGuideBanner");
   if (guideBanner) {
-    guideBanner.innerHTML = window.renderTeacherGuideBanner(1, "Hướng Dẫn Bước 1: Khẩu Hình & Phát Âm", "Làm chủ 3 âm then chốt /θ/, /s/ và /t/. Bấm loa nghe mẫu và bấm micro để AI chấm điểm từng âm nhé!");
+    guideBanner.innerHTML = window.renderGuideBanner(1, "Hướng Dẫn Bước 1: Khẩu Hình & Phát Âm", "Bấm loa nghe mẫu và bấm micro để AI chấm điểm từng âm nhé!");
   }
   const nextStepArea = document.getElementById("mouthNextStepArea");
   if (nextStepArea) {
@@ -2453,7 +2475,7 @@ function renderChunks(chunks) {
 
   const chunksGuide = document.getElementById("chunksGuideBanner");
   if (chunksGuide) {
-    chunksGuide.innerHTML = window.renderTeacherGuideBanner(2, "Hướng Dẫn Bước 2: Cụm Từ & Phản Xạ Đời Thường", "Làm chủ 3 cụm từ phản xạ cốt lõi. Hãy lắng nghe và luyện nói để hoàn thành mục tiêu 7 lần lặp đa giác quan nhé!");
+    chunksGuide.innerHTML = window.renderGuideBanner(2, "Hướng Dẫn Bước 2: Cụm Từ & Phản Xạ Đời Thường", "Hãy lắng nghe và luyện nói để hoàn thành mục tiêu 7 lần lặp đa giác quan nhé!");
   }
   const chunksNextArea = document.getElementById("chunksNextStepArea");
   if (chunksNextArea) {
@@ -2537,7 +2559,7 @@ window.handleListenChunk = function(phrase) {
 function renderQuizzes(quizzes) {
   const quizGuide = document.getElementById("quizGuideBanner");
   if (quizGuide) {
-    quizGuide.innerHTML = window.renderTeacherGuideBanner(3, "Hướng Dẫn Bước 3: Luyện Tập Trắc Nghiệm Phản Xạ", "Bước 3 là bài trắc nghiệm phản xạ tình huống. Bạn cần đạt từ 70% trở lên để mở khóa tiếp nhé!");
+    quizGuide.innerHTML = window.renderGuideBanner(3, "Hướng Dẫn Bước 3: Luyện Tập Trắc Nghiệm Phản Xạ", "Bạn cần đạt từ 70% trở lên để mở khóa bước tiếp theo nhé!");
   }
 
   const quizContainer = document.getElementById("quizContainer");
@@ -2690,7 +2712,7 @@ window.resetQuizAttempt = function() {
 function renderFlashcards(chunks) {
   const flashGuide = document.getElementById("flashcardGuideBanner");
   if (flashGuide) {
-    flashGuide.innerHTML = window.renderTeacherGuideBanner(4, "Hướng Dẫn Bước 4: Sổ Thẻ Ghi Nhớ 3D", "Bước 4 là Sổ thẻ 3D. Hãy chạm vào các thẻ để lật mặt xem giải nghĩa và nghe phát âm chuẩn nhé!");
+    flashGuide.innerHTML = window.renderGuideBanner(4, "Hướng Dẫn Bước 4: Sổ Thẻ Ghi Nhớ 3D", "Hãy chạm vào các thẻ để lật mặt xem giải nghĩa và nghe phát âm chuẩn nhé!");
   }
   const flashNextArea = document.getElementById("flashcardNextStepArea");
   if (flashNextArea) {
@@ -2760,7 +2782,8 @@ function setupDialogueModule(lesson) {
 
   const speakGuide = document.getElementById("speakingGuideBanner");
   if (speakGuide) {
-    speakGuide.innerHTML = window.renderTeacherGuideBanner(5, "Hướng Dẫn Bước 5: Đối Thoại AI 2 Chiều Cùng David", "Nhập vai đối thoại trực tiếp 2 chiều với David tại sân bay New York. Lắng nghe David mở lời và bấm micro đáp lại thật tự tin!");
+    const partnerName = currentDialogueScenario.characterName || "người bản xứ";
+    speakGuide.innerHTML = window.renderGuideBanner(5, `Hướng Dẫn Bước 5: Đối Thoại AI 2 Chiều Cùng ${partnerName}`, `Nhập vai đối thoại trực tiếp 2 chiều cùng ${partnerName}. Lắng nghe ${partnerName} mở lời và bấm micro đáp lại thật tự tin!`);
   }
   const speakNextArea = document.getElementById("speakingNextStepArea");
   if (speakNextArea) {
@@ -2769,9 +2792,15 @@ function setupDialogueModule(lesson) {
 
   const titleEl = document.getElementById("dialogueScenarioTitle");
   const narrativeEl = document.getElementById("dialogueStoryNarrative");
+  const subtitleEl = document.getElementById("dialogueScenarioSubtitle");
 
   if (titleEl) titleEl.textContent = currentDialogueScenario.title;
   if (narrativeEl) narrativeEl.textContent = currentDialogueScenario.storyNarrativeVi;
+  if (subtitleEl) {
+    const partner = currentDialogueScenario.characterName || "Người bản xứ";
+    const role = currentDialogueScenario.roleContext ? `${currentDialogueScenario.roleContext}: ` : "";
+    subtitleEl.textContent = `${role}${partner} mở lời → Bạn nói đối đáp`;
+  }
 
   userTurnsList = (currentDialogueScenario.turns || []).filter(t => t.role === 'user');
   currentDialogueTurnIndex = 0;
@@ -2855,7 +2884,7 @@ function updateCurrentDialogueTurnUI() {
 
   if (aiTurn && aiTurn.role === 'ai') {
     if (aiBox) aiBox.classList.remove("hidden");
-    if (aiSpeaker) aiSpeaker.textContent = `${aiTurn.speaker || 'David'} vừa nói:`;
+    if (aiSpeaker) aiSpeaker.textContent = `${aiTurn.speaker || currentDialogueScenario.characterName || 'Người bản xứ'} vừa nói:`;
     if (aiAvatar) aiAvatar.textContent = currentDialogueScenario.characterAvatar || '👨‍💼';
     if (aiText) aiText.textContent = `"${aiTurn.text}"`;
     if (aiIpa) aiIpa.textContent = aiTurn.ipa || '';
@@ -2957,7 +2986,8 @@ window.playFullConversationLoop = function() {
   function playTurn() {
     if (idx >= turns.length) {
       document.querySelectorAll('[id^="dialogueBubble-"]').forEach(b => b.classList.remove('ring-2', 'ring-cyan-400', 'bg-cyan-950/30'));
-      alert("🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên cùng David!");
+      const partnerName = currentDialogueScenario?.characterName || "người bản xứ";
+      alert(`🎉 Bạn vừa nghe trọn vẹn đoạn phim hội thoại tự nhiên cùng ${partnerName}!`);
       return;
     }
 
@@ -3131,29 +3161,48 @@ window.toggleDialogueSpeechRecording = function() {
 // ==============================================================
 const typingUserState = {};
 
+window.playTypingSample = function(challengeId) {
+  const challenge = (CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId)?.typingChallenges || []).find(c => c.id === challengeId);
+  if (!challenge) return;
+  if (challenge.audioFile) {
+    window.playTrack(challenge.audioFile);
+  } else {
+    speakText(challenge.audioText);
+  }
+};
+
 function renderTypingChallenges(challenges) {
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const sessionNum = lesson?.sessionNumber || 1;
+  const sessionLabel = sessionNum < 10 ? `0${sessionNum}` : `${sessionNum}`;
+  const nextLesson = CURRICULUM_DATA.lessons.find(l => l.sessionNumber === sessionNum + 1) || null;
+  const nextLabel = nextLesson ? (nextLesson.sessionNumber < 10 ? `0${nextLesson.sessionNumber}` : `${nextLesson.sessionNumber}`) : null;
+
   const typeGuide = document.getElementById("typingGuideBanner");
   if (typeGuide) {
-    typeGuide.innerHTML = window.renderTeacherGuideBanner(6, "Hướng Dẫn Bước 6: Thử Thách Gõ Phản Xạ & Ghép Khối Câu", "Bước cuối cùng là Gõ và ghép khối câu phản xạ. Hoàn thành bước này là bạn đã hoàn tất 100% Buổi 1 xuất sắc!");
+    typeGuide.innerHTML = window.renderGuideBanner(6, "Hướng Dẫn Bước 6: Thử Thách Gõ Phản Xạ & Ghép Khối Câu", "Hoàn thành bước này là bạn đã hoàn tất trọn vẹn buổi học!");
   }
   const typeNextArea = document.getElementById("typingNextStepArea");
   if (typeNextArea) {
+    const nextCta = nextLesson ? `
+          <button onclick="selectLesson('${nextLesson.id}')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 cursor-pointer">
+            <span>Tiến Lên Buổi ${nextLabel}</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>` : `
+          <div class="text-xs text-slate-400 italic px-2 py-1">Buổi tiếp theo đang được biên soạn. Hãy ôn lại buổi này để khắc sâu phản xạ nhé!</div>`;
     typeNextArea.innerHTML = `
       <div class="mt-8 p-6 rounded-2xl bg-gradient-to-tr from-emerald-950/40 via-slate-900 to-cyan-950/40 border border-emerald-500/40 text-center">
         <div class="text-3xl mb-2">🎉</div>
-        <h3 class="text-lg font-black text-white mb-1">Chúc Mừng Bạn Đã Hoàn Thành Toàn Diện Buổi 01!</h3>
+        <h3 class="text-lg font-black text-white mb-1">Chúc Mừng Bạn Đã Hoàn Thành Toàn Diện Buổi ${sessionLabel}!</h3>
         <p class="text-xs text-emerald-300 max-w-lg mx-auto mb-4 leading-relaxed">
-          Bạn đã kích hoạt trọn vẹn 6 giác quan: Thuyết giảng mở đầu, Khẩu hình 3 âm /θ/, /s/, /t/, Phản xạ 3 cụm từ, Trắc nghiệm, Thẻ 3D, Đối thoại cùng David và Gõ câu tái tạo!
+          Bạn đã hoàn thành trọn vẹn 7 module: thuyết giảng khai mở, khẩu hình, cụm từ phản xạ, trắc nghiệm, thẻ 3D, đối thoại và gõ câu tái tạo.
         </p>
         <div class="flex flex-wrap items-center justify-center gap-3">
           <button onclick="resetGatingFlow()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-1.5 cursor-pointer">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
             <span>Bắt Đầu Lại Lộ Trình</span>
           </button>
-          <button onclick="selectLesson('buoi-02')" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:scale-105 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 cursor-pointer">
-            <span>Tiến Lên Buổi 02</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
+          ${nextCta}
         </div>
       </div>
     `;
@@ -3182,7 +3231,7 @@ function renderTypingChallenges(challenges) {
             <span class="text-[10px] font-mono uppercase text-amber-400 font-bold">Thử thách #${idx + 1}</span>
             <div class="text-base font-bold text-white mt-0.5">${c.vietnameseCue}</div>
           </div>
-          <button onclick="speakText('${c.audioText.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition">
+          <button onclick="playTypingSample('${c.id}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
             <span>Nghe câu mẫu</span>
           </button>
@@ -3494,11 +3543,17 @@ function updateProgressUI(progress) {
   const sessionCountEl = document.getElementById("personalCompletedCount") || document.getElementById("overallSessionCount");
   const hoursAccumulatedEl = document.getElementById("personalHoursCount") || document.getElementById("hoursAccumulated");
 
-  const completedCount = (progress.completedLessons || []).length;
+  const phaseTargets = [10, 35, 60, 100, 120];
+  const phaseId = progress.progressPhaseId || 0;
+  const phaseTarget = phaseTargets[phaseId] || 10;
+  const completedInPhase = (progress.completedLessons || []).filter(id => {
+    const lesson = CURRICULUM_DATA.lessons.find(l => l.id === id);
+    return lesson && lesson.phaseId === phaseId;
+  }).length;
 
-  if (percentEl) percentEl.textContent = `${progress.progressPercent || 0}% Chặng 0`;
+  if (percentEl) percentEl.textContent = `${progress.progressPercent || 0}% Chặng ${phaseId}`;
   if (barEl) barEl.style.width = `${progress.progressPercent || 0}%`;
-  if (sessionCountEl) sessionCountEl.textContent = `Đã học: ${completedCount}/10 buổi chặng`;
+  if (sessionCountEl) sessionCountEl.textContent = `Đã học: ${completedInPhase}/${phaseTarget} buổi chặng`;
   if (hoursAccumulatedEl) hoursAccumulatedEl.textContent = `Tích lũy: ${progress.hoursAccumulated || '0.0'}h`;
 
   const headerBadge = document.getElementById("headerProgressBadge");

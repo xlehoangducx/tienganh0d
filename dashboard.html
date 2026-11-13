@@ -361,7 +361,7 @@
           <!-- Tiêu đề buổi học (Hàng 2 trên Mobile, Cột Giữa DEAD-CENTER trên PC) -->
           <div class="text-center w-full min-w-0 px-2 py-0.5 sm:py-0">
             <h1 id="currentLessonTitle" class="text-sm sm:text-base md:text-lg font-black text-white glow-accent leading-snug tracking-tight text-center">
-              Buổi 01: Đánh Thức Cơ Miệng & 3 Cụm Giao Tiếp
+              Buổi học đang tải...
             </h1>
           </div>
 
@@ -547,8 +547,8 @@
                   <i data-lucide="message-square-text" class="w-5 h-5"></i>
                 </div>
                 <div>
-                  <h3 class="text-base sm:text-lg font-bold text-white" id="dialogueScenarioTitle">Cuộc Gặp Gỡ Tình Cờ Tại Sân Bay Quốc Tế New York</h3>
-                  <p class="text-xs text-slate-400 mt-0.5">Mô phỏng 100% cuộc đối thoại thực tế: Người bản xứ David mở lời → Bạn nói đối đáp</p>
+                  <h3 class="text-base sm:text-lg font-bold text-white" id="dialogueScenarioTitle">Phòng Đối Thoại Nhập Vai</h3>
+                  <p class="text-xs text-slate-400 mt-0.5" id="dialogueScenarioSubtitle">Người bản xứ mở lời → Bạn nói đối đáp</p>
                 </div>
               </div>
               <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
@@ -575,17 +575,17 @@
                 <div class="flex items-center justify-between gap-2 mb-1.5">
                   <div class="flex items-center space-x-2">
                     <span class="text-base sm:text-lg" id="aiPartnerAvatar">👨‍💼</span>
-                    <span class="text-xs font-bold text-purple-300 tracking-wide" id="aiPartnerSpeakerName">David vừa nói:</span>
+                    <span class="text-xs font-bold text-purple-300 tracking-wide" id="aiPartnerSpeakerName">Người bản xứ vừa nói:</span>
                   </div>
                   <button type="button" onclick="triggerAiPartnerPrompt()" class="px-2.5 py-1 rounded-lg bg-purple-800/70 hover:bg-purple-700 text-purple-200 text-xs font-semibold flex items-center space-x-1.5 border border-purple-500/40 transition active:scale-95 cursor-pointer shadow-sm" title="Bấm để người bản xứ phát âm lại">
                     <i data-lucide="volume-2" class="w-3.5 h-3.5 text-cyan-300"></i>
                     <span>Nghe lại</span>
                   </button>
                 </div>
-                <div id="aiPartnerText" class="text-base sm:text-lg font-bold text-white tracking-wide mb-0.5 font-mono leading-snug">"Hi there! Nice day, isn't it?"</div>
-                <div id="aiPartnerIpa" class="text-[11px] font-mono text-cyan-400 mb-1.5">/haɪ ðer! naɪs deɪ, ˈɪznt ɪt?/</div>
+                <div id="aiPartnerText" class="text-base sm:text-lg font-bold text-white tracking-wide mb-0.5 font-mono leading-snug">...</div>
+                <div id="aiPartnerIpa" class="text-[11px] font-mono text-cyan-400 mb-1.5"></div>
                 <div id="aiPartnerMeaning" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-                  Chào bạn! Một ngày đẹp trời nhỉ?
+                  Nội dung hội thoại sẽ hiển thị khi bạn mở buổi học.
                 </div>
               </div>
 
