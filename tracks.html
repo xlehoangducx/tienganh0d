@@ -266,10 +266,18 @@
               </div>
             </div>
 
-            <a href="mailto:xlehoangducx@gmail.com?subject=Nhan Thong Bao Tieng Anh Chuyen Nganh" class="w-full py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm text-center border border-slate-700 transition flex items-center justify-center space-x-1.5 cursor-pointer">
-              <i data-lucide="mail" class="w-4 h-4 text-cyan-400"></i>
-              <span>Nhận Thông Báo Khi Mở</span>
-            </a>
+            <div id="espNotificationAreaTracks" class="pt-2">
+              <form id="formEspTracks" onsubmit="window.handleEspNotificationTracks(event)" class="space-y-2">
+                <div class="flex flex-col sm:flex-row items-center gap-2">
+                  <input type="email" id="espEmailInputTracks" required placeholder="Nhập Gmail nhận thông báo..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition" />
+                  <button type="submit" id="btnSubmitEspTracks" class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-1.5 flex-shrink-0 cursor-pointer shadow-md shadow-cyan-500/20">
+                    <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                    <span>Nhận Tin</span>
+                  </button>
+                </div>
+                <p id="espLeadSuccessTracks" class="hidden text-[11px] text-emerald-400 font-medium text-left"></p>
+              </form>
+            </div>
           </div>
 
         </div>
@@ -277,6 +285,46 @@
 
     </div>
   </main>
+
+  <script type="module">
+    import { saveEspLead } from "./js/auth.js";
+
+    window.handleEspNotificationTracks = async function(e) {
+      e.preventDefault();
+      const input = document.getElementById("espEmailInputTracks");
+      const btn = document.getElementById("btnSubmitEspTracks");
+      const msg = document.getElementById("espLeadSuccessTracks");
+      const email = input?.value?.trim();
+      if (!email) return;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin mr-1">⏳</span><span>Đang lưu...</span>`;
+      }
+
+      try {
+        await saveEspLead(email);
+        if (msg) {
+          msg.textContent = `✅ Đã lưu Gmail "${email}"! Bạn sẽ nhận thông báo qua email ngay khi bài học mở khóa.`;
+          msg.classList.remove("hidden");
+        }
+        if (input) input.value = "";
+        localStorage.setItem("subscribed_esp_email", email);
+        if (btn) {
+          btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>Đã Đăng Ký</span>`;
+          btn.classList.remove("from-cyan-500", "to-emerald-500");
+          btn.classList.add("bg-emerald-600", "text-white");
+        }
+      } catch (err) {
+        alert("Lỗi khi đăng ký nhận tin: " + (err.message || err));
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="bell-ring" class="w-4 h-4"></i><span>Thử Lại</span>`;
+        }
+      }
+      if (window.lucide) window.lucide.createIcons();
+    };
+  </script>
 
   <script>
     if (window.lucide) window.lucide.createIcons();
