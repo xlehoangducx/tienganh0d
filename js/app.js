@@ -210,6 +210,8 @@ const VIENEU_AUDIO_MAP = {
   "have a nice weekend": "assets/audio/have-a-nice-weekend.mp3",
   "have a safe trip": "assets/audio/have-a-safe-trip.mp3",
   "take care see you later": "assets/audio/take-care-see-you-later.mp3",
+  "hi there nice day isnt it": "assets/audio/david-buoi-01-turn-1.mp3",
+  "here let me help you with your bag": "assets/audio/david-buoi-01-turn-2.mp3",
   "youre welcome enjoy your trip": "assets/audio/david-buoi-01-turn-3.mp3"
 };
 

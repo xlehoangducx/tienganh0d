@@ -34,7 +34,7 @@ chunks = [
 # 3. Module 5 Dialogue with David at JFK airport
 dialogues = [
     ("david-buoi-01-turn-1.mp3", "Hi there! Nice day, isn't it?"),
-    ("david-buoi-01-turn-2.mp3", "Here is your heavy luggage. Let me help you with that!"),
+    ("david-buoi-01-turn-2.mp3", "Here, let me help you with your bag!"),
     ("david-buoi-01-turn-3.mp3", "You're welcome! Enjoy your trip!")
 ]
 

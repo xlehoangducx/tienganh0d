@@ -103,7 +103,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "👋 GIA SƯ AI KHAI MỞ",
                 title: "Lời Chào Mở Đầu & Định Hướng Buổi Học",
-                spokenText: "Chào mừng bạn đến với Buổi 01: Đánh thức cơ miệng và ba cụm giao tiếp đầu tiên.",
+                spokenText: "Chào mừng bạn đến với Buổi 01: Đánh thức cơ miệng và ba cụm giao tiếp đầu tiên. Mục tiêu hôm nay rất gọn: làm quen ba âm thè lưỡi, âm gió, âm bật, và dùng được ba câu chào hỏi, cảm ơn, tạm biệt. Bạn không cần học thuộc bảng chữ cái hay công thức ngữ pháp. Chúng ta bắt đầu bằng những câu có thể nói được ngay.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-0.mp3",
                 visualType: "intro-welcome",
                 insight: "Đánh thức các nhóm cơ miệng và làm chủ ngay 3 cụm từ giao tiếp sinh tồn đầu tiên mà không cần nhồi nhét ngữ pháp khô khan.",
@@ -114,7 +114,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔍 THỰC TRẠNG & CĂN CỨ KHOA HỌC",
                 title: "Rào Cản Khi Bắt Đầu Bằng Ngữ Pháp Trừu Tượng",
-                spokenText: "Bạn có từng thắc mắc: vì sao học ngữ pháp rất nhiều nhưng vẫn không dám mở miệng?",
+                spokenText: "Bạn có từng thắc mắc: vì sao học ngữ pháp rất nhiều nhưng vẫn không dám mở miệng? Khi phải nhớ quá nhiều quy tắc cùng lúc, não bộ rơi vào quá tải nhận thức. Vùng hạch hạnh nhân bật tín hiệu phòng vệ, còn vùng Broca, nơi tạo câu nói, bị chậm lại. Kết quả là bạn biết công thức, nhưng miệng không phản xạ kịp. Vì vậy buổi học này bắt đầu bằng âm thanh và ngữ cảnh, không bằng lý thuyết.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-1.mp3",
                 visualType: "neural-blockade",
                 insight: "Học công thức khô khan kích hoạt hạch hạnh nhân (Amygdala) phát tín hiệu phòng vệ, làm tê liệt phản xạ nói tự nhiên của vùng Broca.",
@@ -125,7 +125,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "💡 BẢN NĂNG HẤP THỤ NÃO BỘ",
                 title: "Trẻ Em Bản Xứ Nói Hàng Nghìn Câu Trước Khi Biết Viết Chữ A",
-                spokenText: "Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A. Các em học qua khuôn mặt, giọng điệu và cảm xúc.",
+                spokenText: "Trẻ em bản xứ nói hàng nghìn câu trước khi biết viết chữ A. Các em học qua khuôn mặt, giọng điệu, cảm xúc và những tình huống lặp lại mỗi ngày. Người lớn cũng vậy. Khi một câu gắn với một khoảnh khắc thật, não bộ lưu nó như một trải nghiệm, không phải một bài học thuộc lòng. Hôm nay bạn chỉ cần ba câu hạt nhân. Ít nhưng dùng được ngay, đó mới là điểm khởi đầu bền vững.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-1-scene-2.mp3",
                 visualType: "human-connection",
                 insight: "Trẻ em hấp thụ ngôn ngữ qua âm thanh và cảm xúc kết nối đời thường trước khi học bất kỳ công thức nào. Chỉ 3 cụm câu hạt nhân là đủ mở khóa phản xạ!",
@@ -146,7 +146,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚠️ TẬT PHÁT ÂM TIẾNG VIỆT",
                 title: "Thói Quen Rụt Lưỡi & Nuốt Sạch Toàn Bộ Âm Đuôi",
-                spokenText: "Quán tính rụt đầu lưỡi vào chân răng trong biến Thank you thành 'Thanh-kiu', và nuốt sạch âm đuôi /s/, /t/.",
+                spokenText: "Tiếng Việt là ngôn ngữ đơn âm. Thói quen rụt lưỡi và nuốt âm cuối khiến nhiều người Việt nói tiếng Anh rất khó nghe. Thank you thường bị đọc thành thanh kiu. Nice thành nai. Meet thành mít. Người Mỹ vẫn hiểu đại ý, nhưng họ phải căng tai. Chúng ta sẽ sửa đúng ba điểm này ngay hôm nay.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-0.mp3",
                 visualType: "vietnamese-habit",
                 insight: "Quán tính rụt đầu lưỡi vào chân răng trong biến Thank you thành 'Thanh-kiu', và nuốt sạch âm đuôi /s/, /t/ khiến Nice thành 'Nai', Meet thành 'Mít' người Mỹ không hiểu.",
@@ -157,7 +157,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🎯 TÁI CẤU TRÚC CƠ QUAN PHÁT ÂM",
                 title: "Ép Cơ Hàm & Đầu Lưỡi Đặt Chuẩn Kẽ Răng",
-                spokenText: "Kỹ thuật chuẩn: Âm /θ/ kẹp nhẹ đầu lưỡi thổi gió mát; Âm /s/ khép răng xì hơi; Âm /t/ nén nướu bật tách dứt khoát.",
+                spokenText: "Với âm thè lưỡi, bạn kẹp nhẹ đầu lưỡi giữa hai hàm răng và thổi ra một luồng gió mát. Thank you. Đầu lưỡi phải chạm nhẹ, không rụt vào. Với âm gió, hai hàm răng khép gần lại, đầu lưỡi đặt sau răng cửa và xì hơi như xả lốp xe. Nice. Với âm bật, đầu lưỡi nén lên nướu trên rồi bật ra dứt khoát. Meet. Chỉ cần ba khẩu hình này đúng, ba câu hôm nay sẽ nghe tự nhiên hơn rất nhiều.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-2-scene-1.mp3",
                 visualType: "mouth-kinematics",
                 insight: "Kỹ thuật chuẩn: Âm /θ/ kẹp nhẹ đầu lưỡi thổi gió mát; Âm /s/ khép 2 hàm răng xì hơi lốp xe; Âm /t/ nén hơi nướu trên rồi bật tách dứt khoát.",
@@ -265,7 +265,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🤝 TAM GIÁC SINH TỒN XÃ HỘI",
                 title: "Hi, nice to meet you! → Thank you so much! → Have a great day!",
-                spokenText: "Ba câu hạt nhân của buổi hôm nay: Hi, nice to meet you! → Thank you so much! → Have a great day!",
+                spokenText: "Ba câu hạt nhân của buổi hôm nay nằm trong một vòng giao tiếp tự nhiên. Hi, nice to meet you! khi gặp và làm quen. Thank you so much! khi nhận được giúp đỡ. Have a great day! khi tạm biệt. Chúng ngắn, dễ nói và mở được hầu hết cuộc trò chuyện xã giao.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-0.mp3",
                 visualType: "social-trinity",
                 insight: "Bộ ba câu sống còn xóa tan rào cản: Chào hỏi thân thiện nụ cười → Cảm ơn sâu sắc khi nhận trợ giúp → Lời chúc tốt lành để lại thiện cảm.",
@@ -276,7 +276,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "⚡ KÍCH HOẠT DOPAMINE NÃO BỘ",
                 title: "Nhận Nụ Cười Đón Nhận Của Người Bản Xứ",
-                spokenText: "Chỉ cần nói chuẩn ba câu này, bạn sẽ nhận được nụ cười thân thiện của người bản xứ và giải phóng Dopamine tự tin!",
+                spokenText: "Khi bạn nói đúng một câu và người bản xứ mỉm cười đáp lại, não bộ nhận một phần thưởng nhỏ. Phần thưởng đó giải phóng dopamine, làm giảm căng thẳng và khiến bạn muốn nói thêm. Vì vậy đừng chờ đến khi hoàn hảo. Hãy nói ba câu này ngay khi có cơ hội. Mỗi phản hồi tích cực là một lần củng cố phản xạ.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-4-scene-1.mp3",
                 visualType: "dopamine-spark",
                 insight: "Chỉ cần phát âm đúng 3 câu này, người bản xứ sẽ mỉm cười đón nhận bạn. Nụ cười đối phương kích hoạt Dopamine xóa tan 100% nỗi sợ nói tiếng Anh!",
@@ -297,7 +297,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🔄 LỘ TRÌNH 6 BƯỚC ĐA GIÁC QUAN",
                 title: "Từ Soi Gương, Nghe, Nói, Trắc Nghiệm Đến Ghép Câu",
-                spokenText: "Buổi học hai mươi lăm phút được chia thành sáu bước đa giác quan: từ Soi gương đến Ghép câu.",
+                spokenText: "Buổi học được chia thành sáu bước đa giác quan. Bạn soi khẩu hình, nghe mẫu, nói vào micro để nhận phản hồi, làm trắc nghiệm, lật thẻ ghi nhớ, đối thoại cùng người bản xứ và ghép lại câu. Mỗi bước đánh vào một vùng xử lý khác nhau, nên não bộ có nhiều đường để gọi lại kiến thức. Bạn không cần làm tất cả trong một lần. Hãy đi theo thứ tự, não sẽ tự kết nối.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-0.mp3",
                 visualType: "multimodal-flow",
                 insight: "Kích hoạt đồng thời 6 vùng thần kinh: Vận động miệng, thính giác, thị giác, phản hồi âm thanh tức thì, không gian 3D và tái tạo chữ viết.",
@@ -308,7 +308,7 @@ export const CURRICULUM_DATA = {
               {
                 badge: "🧠 CỐ ĐỊNH KHỚP THẦN KINH DÀI HẠN",
                 title: "Chạm Mốc 7 Lần Lặp Để Ghi Nhớ Vĩnh Viễn",
-                spokenText: "Não bộ cần bảy lần lặp ngắt quãng qua nhiều giác quan để chuyển kiến thức vào vỏ não dài hạn vĩnh viễn.",
+                spokenText: "Học một lần rồi bỏ quên là chuyện bình thường. Sau hai mươi bốn giờ, phần lớn chi tiết mới sẽ rơi rụng nếu không được gọi lại. Ngược lại, mỗi lần bạn nhớ lại một cách chủ động, kết nối thần kinh lại mạnh thêm một chút. Bảy lần lặp ngắt quãng, trải qua nghe, nói, gõ và đối thoại, là đủ để câu nói đi vào trí nhớ dài hạn. Đó là mục tiêu của buổi hôm nay: không học cho biết, mà học để dùng được.",
                 audioFile: "assets/audio/lecture-buoi-01-slide-5-scene-1.mp3",
                 visualType: "synaptic-consolidation",
                 insight: "Não bộ cần 7 lần truy xuất ngắt quãng đa giác quan để chuyển cụm từ sang vỏ não dài hạn (LTP), cố định phản xạ tự nhiên mà không bao giờ quên.",

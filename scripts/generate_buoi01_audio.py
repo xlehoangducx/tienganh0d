@@ -78,14 +78,14 @@ for fname, txt in guides_data:
     make_audio_file(txt, voice="Hải Đăng", out_name=fname, tempo=0.90, pause_sec=0.45)
 
 # 3. Boi Canh San Bay (Hai Dang)
-story_txt = "Bạn vừa hạ cánh xuống sân bay quốc tế JFK New York sau một chuyến bay dài. Bạn đang đứng đợi lấy hành lý bên băng chuyền, thì một người đàn ông Mỹ thân thiện tên là David đứng cạnh quay sang nhìn bạn, mỉm cười và chào hỏi. Bạn hãy mỉm cười và đáp lại câu chào làm quen: Hi, nice to meet you! Sau đó, hãy cảm ơn khi anh ấy nhiệt tình giúp bạn nhấc chiếc vali nặng: Thank you so much! Và trước khi chia tay, đừng quên chúc anh ấy một ngày thật tuyệt vời nhé: Have a great day!"
-make_audio_file(story_txt, voice="Hải Đăng", out_name="story-buoi-01.mp3", tempo=0.90, pause_sec=0.50)
+story_txt = "Bối cảnh thực tế: Bạn vừa hạ cánh xuống sân bay quốc tế JFK New York sau chuyến bay dài. Bạn đang đứng đợi lấy hành lý bên băng chuyền thì một người đàn ông Mỹ thân thiện tên David đứng cạnh quay sang nhìn bạn, mỉm cười và cởi mở chào hỏi. Trong văn hóa phương Tây, bạn hãy mỉm cười và đáp lại câu chào làm quen, cảm ơn khi anh ấy giúp bạn nhấc vali, và chúc anh ấy một ngày tuyệt vời nhé!"
+make_audio_file(story_txt, voice="Hải Đăng", out_name="story-buoi-01.mp3", tempo=0.95, pause_sec=0.45)
 
-# 4. Giong My Ban Xu David (Giong Adam)
+# 4. Giong My Ban Xu David
 david_turns = [
     ("david-buoi-01-turn-1.mp3", "Hi there! Nice day, isn't it?"),
-    ("david-buoi-01-turn-2.mp3", "Here is your heavy luggage. Let me help you with that!"),
-    ("david-buoi-01-turn-3.mp3", "You're very welcome! Have a wonderful trip in New York!")
+    ("david-buoi-01-turn-2.mp3", "Here, let me help you with your bag!"),
+    ("david-buoi-01-turn-3.mp3", "You're welcome! Enjoy your trip!")
 ]
 
 for fname, txt in david_turns:
