@@ -80,42 +80,49 @@ function updateChunkUIBadge(phrase) {
   const data = getChunkRepetitionData(phrase);
   const score = calculateRepetitionScore(data);
 
-  const countEl = document.getElementById(`rep-count-${phrase}`);
-  const barEl = document.getElementById(`rep-bar-${phrase}`);
-  const statusEl = document.getElementById(`rep-status-${phrase}`);
-  const tagsEl = document.getElementById(`rep-tags-${phrase}`);
+  // Cập nhật tất cả các thẻ cụm từ có data-phrase khớp
+  document.querySelectorAll(`[data-phrase="${phrase.replace(/"/g, '\\"')}"]`).forEach(card => {
+    const countEl = card.querySelector('.rep-count-badge');
+    const barEl = card.querySelector('.rep-bar-fill');
+    const statusEl = card.querySelector('.rep-status-badge');
+    const tagsEl = card.querySelector('.rep-tags-container');
 
+    if (countEl) countEl.textContent = `${score}/7 lần`;
+    if (barEl) {
+      barEl.style.width = `${(score / 7) * 100}%`;
+      if (score >= 7) {
+        barEl.className = "h-full rounded-full transition-all duration-500 bg-emerald-400 rep-bar-fill";
+      } else if (score >= 3) {
+        barEl.className = "h-full rounded-full transition-all duration-500 bg-amber-400 rep-bar-fill";
+      } else {
+        barEl.className = "h-full rounded-full transition-all duration-500 bg-cyan-400 rep-bar-fill";
+      }
+    }
+    if (statusEl) {
+      if (score >= 7) {
+        statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold rep-status-badge";
+        statusEl.textContent = "Đã khắc sâu vĩnh viễn ✨";
+      } else if (score >= 3) {
+        statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold rep-status-badge";
+        statusEl.textContent = "Phản xạ cơ miệng";
+      } else {
+        statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold rep-status-badge";
+        statusEl.textContent = "Ghi nhận âm thanh";
+      }
+    }
+    if (tagsEl) {
+      tagsEl.innerHTML = `
+        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
+      `;
+    }
+  });
+
+  // Tương thích ngược với các ID cũ
+  const countEl = document.getElementById(`rep-count-${phrase}`);
   if (countEl) countEl.textContent = `${score}/7 lần`;
-  if (barEl) {
-    barEl.style.width = `${(score / 7) * 100}%`;
-    if (score >= 7) {
-      barEl.className = "h-full rounded-full transition-all duration-500 bg-emerald-400";
-    } else if (score >= 3) {
-      barEl.className = "h-full rounded-full transition-all duration-500 bg-amber-400";
-    } else {
-      barEl.className = "h-full rounded-full transition-all duration-500 bg-cyan-400";
-    }
-  }
-  if (statusEl) {
-    if (score >= 7) {
-      statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold";
-      statusEl.textContent = "Đã khắc sâu vĩnh viễn ✨";
-    } else if (score >= 3) {
-      statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold";
-      statusEl.textContent = "Phản xạ cơ miệng";
-    } else {
-      statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold";
-      statusEl.textContent = "Ghi nhận âm thanh";
-    }
-  }
-  if (tagsEl) {
-    tagsEl.innerHTML = `
-      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
-      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
-      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold' : 'bg-slate-800 text-slate-500'}">⌨️ Gõ đúng ${data.typedCorrectly ? '✓' : '○'}</span>
-      <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold' : 'bg-slate-800 text-slate-500'}">💬 Đối thoại ${data.dialoguePassed ? '✓' : '○'}</span>
-    `;
-  }
 }
 
 function markChunkListened(phrase) {
@@ -2114,9 +2121,9 @@ function renderMasterLecture(lesson) {
           <span>${isSlideAudioPlaying ? 'Tạm Dừng' : 'Nghe Thuyết Giảng'}</span>
         </button>
 
-        <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="flex px-3.5 sm:px-4 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0" title="Chế độ trình chiếu toàn màn hình (F11)">
-          <i data-lucide="play-square" class="w-4 h-4 text-cyan-400"></i>
-          <span>Trình Chiếu</span>
+        <button id="btnCinemaMode" onclick="startCinemaPresentationMode()" class="flex px-3.5 sm:px-4 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 hover:scale-105 active:scale-95 transition items-center justify-center space-x-1.5 cursor-pointer flex-shrink-0" title="Chế độ Gia sư tự động dẫn dắt toàn cảnh bài giảng từ A-Z (F11)">
+          <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
+          <span>Gia Sư Dẫn Đường</span>
         </button>
 
         <div id="lectureWaveVisualizer" class="flex items-center space-x-1.5 ${isSlideAudioPlaying ? 'opacity-100' : 'opacity-30'} transition-all duration-500" aria-hidden="true">
@@ -2129,14 +2136,12 @@ function renderMasterLecture(lesson) {
 
       <p id="lectureHint" class="relative z-10 text-center text-[10px] sm:text-[11px] text-slate-500 px-2 min-h-[16px]" data-cinema-hide></p>
 
-      ${isLast ? `
-        <div class="relative z-10 pt-2.5 mt-1 border-t border-slate-800 flex justify-center" data-cinema-hide>
-          <button onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-[11px] sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer">
-            <span>Hoàn Thành Bài Giảng • Chuyển Sang Bước 1: Khẩu Hình</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-      ` : ''}
+      <div id="lectureFinishCtaContainer" class="relative z-10 pt-2.5 mt-1 border-t border-slate-800 flex justify-center ${isLast ? '' : 'hidden'}" data-cinema-hide>
+        <button id="btnFinishLectureToStep1" onclick="finishMasterLectureAndUnlockStep1()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-[11px] sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center space-x-2 cursor-pointer ring-2 ring-emerald-400/50">
+          <span>Hoàn Thành Bài Giảng • Chuyển Sang Bước 1: Khẩu Hình</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
     </div>
   `;
 
@@ -2203,19 +2208,37 @@ function playSceneAudio(sIdx, options = {}) {
     currentLectureMeta = null;
     updateLectureControls(false);
     resetLecturePlaybackUI();
-    if (hint) {
-      hint.textContent = isLastSlide()
-        ? "Đã nghe hết bài giảng. Bạn có thể hoàn thành để mở khóa Bước 1."
-        : "Đã hết slide này. Chọn chấm tròn phía trên để sang slide tiếp theo.";
+
+    const isFinalSlide = isLastSlide();
+
+    if (!isFinalSlide) {
+      // Tự động chuyển tiếp mượt mà sang slide tiếp theo (Slide 1 -> 2 -> 3 -> 4 -> 5)
+      if (hint) hint.textContent = "Chuẩn bị chuyển sang slide tiếp theo...";
+      setTimeout(() => {
+        if (!isLastSlide()) {
+          window.goToSlide(currentSlideIndex + 1, true);
+        }
+      }, 1200);
+      return;
     }
 
-    if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
-      setTimeout(() => {
-        if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
-      }, 1000);
-    } else {
-      window.unlockStep(1, false);
+    // ĐÃ HẾT SLIDE CUỐI CÙNG (Slide 5) - HOÀN THÀNH BÀI GIẢNG!
+    if (hint) hint.textContent = "🎉 Chúc mừng bạn đã hoàn thành bài thuyết giảng! Đang chuyển sang Bước 1: Khẩu Hình...";
+    playVictorySound();
+    window.unlockStep(1, false);
+
+    const finishBtn = document.getElementById("btnFinishLectureToStep1");
+    if (finishBtn) {
+      finishBtn.classList.add("ring-4", "ring-emerald-400", "animate-bounce");
     }
+
+    // Tự động chuyển màn hình sang Bước 1 sau 1.5 giây
+    setTimeout(() => {
+      if (isCinemaMode) {
+        window.exitCinemaMode();
+      }
+      window.finishMasterLectureAndUnlockStep1();
+    }, 1500);
   }, (err) => {
     if (currentLectureMeta !== meta) return;
     console.warn("Lecture audio error:", err);
@@ -2302,6 +2325,12 @@ window.goToSlide = function(idx, keepPlaying = false) {
     resetLecturePlaybackUI();
     updateCaptionForCurrentScene(scene);
     updateLectureControls(isSlideAudioPlaying);
+
+    const finishContainer = document.getElementById("lectureFinishCtaContainer");
+    if (finishContainer) {
+      const isLast = currentSlideIndex >= (lesson.masterLecture.slides.length - 1);
+      finishContainer.classList.toggle("hidden", !isLast);
+    }
 
     if (keepPlaying) {
       playSceneAudio(0);
@@ -2557,7 +2586,7 @@ function renderChunks(chunks) {
     const score = calculateRepetitionScore(data);
 
     return `
-    <div class="p-4 rounded-xl cyber-card card-3d ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}">
+    <div class="p-4 rounded-xl cyber-card card-3d ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}" data-phrase="${escapeHtml(c.phrase)}">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex-grow">
           <div class="flex flex-wrap items-baseline gap-2 mb-1">
@@ -2574,7 +2603,7 @@ function renderChunks(chunks) {
             <i data-lucide="volume-2" class="w-4 h-4"></i>
             <span>Nghe</span>
           </button>
-          <button id="btn-chunk-mic-${idx}" onclick="practiceChunkSpeech('${c.phrase.replace(/'/g, "\\'")}', ${idx})" class="px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 flex items-center space-x-1.5 transition active:scale-95 text-xs font-semibold" title="Bấm để nói và AI chấm điểm">
+          <button id="btn-chunk-mic-${idx}" onclick="practiceChunkSpeech('${c.phrase.replace(/'/g, "\\'")}', ${idx})" class="px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 flex items-center space-x-1.5 transition active:scale-95 text-xs font-semibold cursor-pointer" title="Bấm để nói và AI chấm điểm">
             <i data-lucide="mic" class="w-4 h-4"></i>
             <span>Nói thử</span>
           </button>
@@ -2586,18 +2615,28 @@ function renderChunks(chunks) {
         <div class="flex items-center space-x-2">
           <span class="text-xs">🧠</span>
           <span class="text-slate-400">Khắc sâu não bộ:</span>
-          <strong class="${score >= 7 ? 'text-emerald-400' : 'text-cyan-400'}" id="rep-count-${c.phrase}">${score}/7 lần</strong>
-          <span id="rep-status-${c.phrase}" class="text-[10px] px-1.5 py-0.5 rounded ${score >= 7 ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (score >= 3 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'bg-blue-500/20 text-blue-300 font-semibold')}">
+          <strong class="${score >= 7 ? 'text-emerald-400' : 'text-cyan-400'} rep-count-badge" id="rep-count-${idx}">${score}/7 lần</strong>
+          <span id="rep-status-${idx}" class="text-[10px] px-1.5 py-0.5 rounded rep-status-badge ${score >= 7 ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (score >= 3 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'bg-blue-500/20 text-blue-300 font-semibold')}">
             ${score >= 7 ? 'Đã khắc sâu vĩnh viễn ✨' : (score >= 3 ? 'Phản xạ cơ miệng' : 'Ghi nhận âm thanh')}
           </span>
         </div>
 
-        <div class="flex items-center space-x-2" id="rep-tags-${c.phrase}">
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold' : 'bg-slate-800 text-slate-500'}">⌨️ Gõ đúng ${data.typedCorrectly ? '✓' : '○'}</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold' : 'bg-slate-800 text-slate-500'}">💬 Đối thoại ${data.dialoguePassed ? '✓' : '○'}</span>
+        <div class="flex items-center space-x-1.5 rep-tags-container" id="rep-tags-${idx}">
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
         </div>
+
+        <div class="w-full sm:w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div id="rep-bar-${idx}" class="h-full rounded-full transition-all duration-500 rep-bar-fill ${score >= 7 ? 'bg-emerald-400' : (score >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(score / 7) * 100}%"></div>
+        </div>
+
+        <div class="w-full text-[10px] text-slate-400 mt-1 italic flex items-center space-x-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+          <span>Tại Bước 2: Hãy hoàn thành <strong>Nghe (+1đ)</strong> và <strong>Nói (+2đ)</strong>. Kênh <strong>Đối thoại (+2đ)</strong> và <strong>Gõ câu (+2đ)</strong> sẽ mở khóa ở Bước 5 & 6 để đạt trọn vẹn 7/7 điểm khắc sâu!</span>
+        </div>
+      </div>
 
         <div class="w-full sm:w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
           <div id="rep-bar-${c.phrase}" class="h-full rounded-full transition-all duration-500 ${score >= 7 ? 'bg-emerald-400' : (score >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(score / 7) * 100}%"></div>
@@ -3438,17 +3477,24 @@ function levenshteinDistance(a, b) {
   return previous[b.length];
 }
 
-// So khớp theo chuỗi từ: đúng thứ tự, sai vị trí hoặc thiếu từ đều bị trừ điểm.
+// So khớp theo chuỗi từ kết hợp âm vị ký tự: ưu tiên trật tự từ nhưng dung sai phát âm cho người mới học
 function calculateSimilarity(str1, str2) {
   const s1 = normalizeText(str1);
   const s2 = normalizeText(str2);
   if (s1 === s2) return 1.0;
   if (!s1 || !s2) return 0.0;
 
-  const words1 = s1.split(/\s+/);
-  const words2 = s2.split(/\s+/);
-  const distance = levenshteinDistance(words1, words2);
-  return Math.max(0, Math.min(1, 1 - distance / Math.max(words1.length, words2.length)));
+  const words1 = s1.split(/\s+/).filter(Boolean);
+  const words2 = s2.split(/\s+/).filter(Boolean);
+  const wordDist = levenshteinDistance(words1, words2);
+  const wordSim = Math.max(0, 1 - wordDist / Math.max(words1.length, words2.length));
+
+  // Đo thêm khoảng cách ký tự (âm vị) để tránh phạt quá nặng các âm đuôi hoặc tạp âm micro
+  const charDist = levenshteinDistance(s1, s2);
+  const charSim = Math.max(0, 1 - charDist / Math.max(s1.length, s2.length));
+
+  // Kết hợp tối ưu: ưu tiên độ khớp từ nhưng bù đắp bởi âm vị tương đồng
+  return Math.max(wordSim, wordSim * 0.7 + charSim * 0.3);
 }
 
 let activeSpeechRecognition = null;
@@ -3742,10 +3788,31 @@ function startEnglishSpeechRecognition(options) {
     return;
   }
 
+  const button = options.button;
+  const activeClasses = options.activeClasses || ["animate-pulse"];
+  const clearActiveState = () => {
+    if (!button) return;
+    button.classList.remove(...activeClasses);
+    button.setAttribute("aria-pressed", "false");
+  };
+
+  // Hành vi đảo trạng thái (Toggle): Nếu người dùng bấm lại vào nút đang nghe dở thì DỪNG êm ái
+  if (button && button.getAttribute("aria-pressed") === "true" && activeSpeechRecognition) {
+    try { activeSpeechRecognition.abort(); } catch (e) {}
+    activeSpeechRecognition = null;
+    clearActiveState();
+    if (options.onStateChange) options.onStateChange(false);
+    showSpeechStatus(options, "Đã dừng micro.", "info");
+    return;
+  }
+
+  // Dọn dẹp an toàn session trước và tạo khoảng đệm thời gian chống khóa luồng mic
+  let delayStartMs = 0;
   if (activeSpeechRecognition) {
     const previousRecognition = activeSpeechRecognition;
     activeSpeechRecognition = null;
     try { previousRecognition.abort(); } catch (e) {}
+    delayStartMs = 120;
   }
   closeMicrophoneSetup();
 
@@ -3806,14 +3873,6 @@ function startEnglishSpeechRecognition(options) {
     };
   };
 
-  const button = options.button;
-  const activeClasses = options.activeClasses || ["animate-pulse"];
-  const clearActiveState = () => {
-    if (!button) return;
-    button.classList.remove(...activeClasses);
-    button.setAttribute("aria-pressed", "false");
-  };
-
   recognition.onstart = function() {
     if (activeSpeechRecognition !== recognition) return;
     if (button) {
@@ -3858,21 +3917,29 @@ function startEnglishSpeechRecognition(options) {
 
   showSpeechStatus(options, "Đang mở micro. Nếu trình duyệt hỏi quyền lần đầu, chọn “Cho phép”.", "info");
   if (window.stopAllAudios) window.stopAllAudios();
-  activeSpeechRecognition = recognition;
 
-  try {
-    recognition.start();
-  } catch (error) {
-    if (activeSpeechRecognition !== recognition) return;
-    errorCode = error?.name || "";
-    activeSpeechRecognition = null;
-    clearActiveState();
-    if (options.onStateChange) options.onStateChange(false);
-    showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
-    if (["NotFoundError", "NotReadableError", "OverconstrainedError"].includes(errorCode)) {
-      showMicrophoneSetupShortcut(options);
+  const launchMic = () => {
+    try {
+      activeSpeechRecognition = recognition;
+      recognition.start();
+    } catch (error) {
+      if (activeSpeechRecognition !== recognition) return;
+      errorCode = error?.name || "";
+      activeSpeechRecognition = null;
+      clearActiveState();
+      if (options.onStateChange) options.onStateChange(false);
+      showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
+      if (["NotFoundError", "NotReadableError", "OverconstrainedError"].includes(errorCode)) {
+        showMicrophoneSetupShortcut(options);
+      }
+      console.warn("Lỗi khởi động speech recognition:", error);
     }
-    console.warn("Lỗi khởi động speech recognition:", error);
+  };
+
+  if (delayStartMs > 0) {
+    setTimeout(launchMic, delayStartMs);
+  } else {
+    launchMic();
   }
 }
 
@@ -3907,10 +3974,31 @@ window.practiceMouthSound = function(targetWord, idx) {
   });
 };
 
+function playPraiseForChunk(idx, chunk) {
+  const praiseAudioPath = `assets/audio/praise-chunk-buoi01-${idx + 1}.mp3`;
+  const praiseAudio = new Audio(praiseAudioPath);
+  praiseAudio.play().catch(() => {
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`Tuyệt vời! ${chunk.meaning || ""}. Bạn đã phát âm rất chuẩn và khắc sâu vào não bộ!`);
+        utter.lang = 'vi-VN';
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+  });
+}
+
 window.practiceChunkSpeech = function(targetPhrase, idx) {
   const micBtn = document.getElementById(`btn-chunk-mic-${idx}`);
   const feedbackEl = document.getElementById(`chunk-feedback-${idx}`);
   if (!micBtn || !feedbackEl) return;
+
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const chunk = lesson?.chunks?.[idx] || { phrase: targetPhrase, meaning: "" };
+  const repData = getChunkRepetitionData(targetPhrase);
+  const isFirstTimeSpoken = !repData.spokenCorrectly;
 
   startEnglishSpeechRecognition({
     button: micBtn,
@@ -3919,33 +4007,41 @@ window.practiceChunkSpeech = function(targetPhrase, idx) {
     activeClasses: ["animate-pulse", "bg-rose-600", "text-white"],
     listeningText: "Đang nghe... Hãy nói câu tiếng Anh ngay.",
     onResult(transcript) {
-    const similarity = calculateSimilarity(transcript, targetPhrase);
-    const score = Math.round(similarity * 100);
-    const safeTranscript = escapeHtml(transcript);
+      const similarity = calculateSimilarity(transcript, targetPhrase);
+      const score = Math.round(similarity * 100);
+      const safeTranscript = escapeHtml(transcript);
 
-    feedbackEl.classList.remove("hidden");
-    if (score >= 70) {
-      playCorrectSound();
-      markChunkSpoken(targetPhrase);
-      feedbackEl.className = "mt-3 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300";
-      feedbackEl.innerHTML = `
-        <div class="flex items-center justify-between mb-1">
-          <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
-          <span class="font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Độ chính xác: ${score}%</span>
-        </div>
-        <p class="text-emerald-400/90 text-[11px]">🎉 Xuất sắc! Bạn phát âm câu này rất chuẩn xác và rõ ràng. Đã xác nhận +2 điểm phát âm nơ-ron!</p>
-      `;
-    } else {
-      playIncorrectSound();
-      feedbackEl.className = "mt-3 p-3 rounded-xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-300";
-      feedbackEl.innerHTML = `
-        <div class="flex items-center justify-between mb-1">
-          <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
-          <span class="font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Độ chính xác: ${score}%</span>
-        </div>
-        <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và chú ý phát âm rõ âm đuôi nhé (cần ≥ 70% để ghi nhận điểm).</p>
-      `;
-    }
+      feedbackEl.classList.remove("hidden");
+      if (score >= 70) {
+        playCorrectSound();
+        markChunkSpoken(targetPhrase);
+
+        // Khen thưởng dopamine & neo nghĩa tiếng Việt vào lần đầu tiên phát âm chuẩn
+        if (isFirstTimeSpoken) {
+          setTimeout(() => {
+            playPraiseForChunk(idx, chunk);
+          }, 350);
+        }
+
+        feedbackEl.className = "mt-3 p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-xs text-emerald-300";
+        feedbackEl.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
+            <span class="font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Độ chính xác: ${score}%</span>
+          </div>
+          <p class="text-emerald-400/90 text-[11px]">🎉 <strong>Xuất sắc!</strong> “${escapeHtml(chunk.meaning || targetPhrase)}” — Bạn đã phát âm rất chuẩn và khắc sâu +2 điểm vào nơ-ron não bộ!</p>
+        `;
+      } else {
+        playIncorrectSound();
+        feedbackEl.className = "mt-3 p-3 rounded-xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-300";
+        feedbackEl.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span>🎙️ <strong>AI nghe bạn nói:</strong> “${safeTranscript}”</span>
+            <span class="font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Độ chính xác: ${score}%</span>
+          </div>
+          <p class="text-amber-400/90 text-[11px]">💡 Gần đúng rồi! Hãy nghe lại mẫu và nói to, rõ ràng hơn nhé (cần ≥ 70% để ghi nhận điểm).</p>
+        `;
+      }
     }
   });
 };
