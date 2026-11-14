@@ -886,6 +886,41 @@ body.cinema-live #slideStageMainCard {
   cursor: none;
 }
 
+/* Floating Exit Cinema button for touch & mobile devices */
+.cinema-exit-floating-btn {
+  display: none;
+}
+
+body.cinema-mode .cinema-exit-floating-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  position: fixed;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 100;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+body.cinema-mode .cinema-exit-floating-btn:hover,
+body.cinema-mode .cinema-exit-floating-btn:active {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+  transform: scale(0.97);
+}
+
 /* ============================================================== */
 /* COMPACT RESPONSIVE NAVIGATION                                   */
 /* ============================================================== */
@@ -906,7 +941,7 @@ body.header-hidden .sticky-module-nav {
 
 @media (max-width: 767px) {
   .module-tab-btn {
-    padding: 0.5rem 0.55rem !important;
+    padding: 0.45rem 0.55rem !important;
     border-radius: 0.7rem !important;
   }
 
@@ -914,20 +949,59 @@ body.header-hidden .sticky-module-nav {
     display: none;
   }
 
+  .module-tab-step-num {
+    display: inline-block !important;
+  }
+
   .module-tab-btn i,
   .module-tab-btn svg {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1rem;
+    height: 1rem;
   }
 
   .lecture-cinema-stage {
-    min-height: 300px;
+    min-height: 280px;
   }
 
   .lecture-caption-ribbon {
-    min-height: 2.9rem;
-    margin: 0.35rem 0.65rem 0.45rem;
-    padding: 0.45rem 0.65rem;
+    min-height: 2.7rem;
+    margin: 0.35rem 0.5rem 0.45rem;
+    padding: 0.4rem 0.65rem;
+  }
+
+  body.cinema-mode .lecture-cinema-stage {
+    padding-bottom: 6.5rem;
+  }
+
+  body.cinema-mode .lecture-caption-ribbon {
+    bottom: 3.8rem !important;
+    width: 95vw !important;
+    padding: 0.45rem 0.75rem !important;
+    min-height: 2.8rem !important;
+  }
+
+  body.cinema-mode #lectureCaptionText {
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+  }
+
+  body.cinema-live .cinema-wave {
+    bottom: 0.5rem !important;
+    height: 38px !important;
+    width: 95vw !important;
+    padding: 0 0.75rem !important;
+    gap: 0.12rem !important;
+  }
+
+  body.cinema-mode .scene-title {
+    font-size: clamp(1.25rem, 5.2vw, 1.85rem) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  body.cinema-mode .scene-active-card {
+    padding: 1rem 0.85rem !important;
+    border-radius: 1.15rem !important;
   }
 }
 

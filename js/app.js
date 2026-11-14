@@ -394,8 +394,27 @@ let activeGlobalAudio = null;
 let currentSlideAudio = null;
 let currentGuideAudio = null;
 let currentStoryAudio = null;
+let persistentLectureAudio = null;
 
-window.stopAllAudios = function() {
+function isMobileOrTouchDevice() {
+  return (
+    ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0) ||
+    Boolean(window.matchMedia?.('(pointer: coarse)')?.matches) ||
+    (window.innerWidth <= 768)
+  );
+}
+
+function getOrInitLectureAudio() {
+  if (!persistentLectureAudio) {
+    persistentLectureAudio = new Audio();
+    persistentLectureAudio.preload = "auto";
+  }
+  return persistentLectureAudio;
+}
+
+window.stopAllAudios = function(preserveLectureAudio = false) {
   stopCaptionSync();
   currentLectureMeta = null;
   resetLecturePlaybackUI();
@@ -406,6 +425,9 @@ window.stopAllAudios = function() {
   if (currentLectureAudioInstance) {
     try { currentLectureAudioInstance.pause(); } catch(e) {}
     currentLectureAudioInstance = null;
+  }
+  if (persistentLectureAudio && !preserveLectureAudio) {
+    try { persistentLectureAudio.pause(); } catch(e) {}
   }
   if (currentSlideAudio) {
     try { currentSlideAudio.pause(); } catch(e) {}
@@ -437,9 +459,12 @@ window.stopAllAudios = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.playTrack = function(audioPath, onEnded, onError, rate = 1) {
-  window.stopAllAudios();
-  const audio = new Audio(audioPath);
+window.playTrack = function(audioPath, onEnded, onError, rate = 1, reuseAudio = null) {
+  window.stopAllAudios(Boolean(reuseAudio));
+  const audio = reuseAudio || new Audio();
+  if (audio.src !== audioPath && !audio.src.endsWith(audioPath)) {
+    audio.src = audioPath;
+  }
   activeGlobalAudio = audio;
   try {
     audio.playbackRate = rate;
@@ -454,11 +479,15 @@ window.playTrack = function(audioPath, onEnded, onError, rate = 1) {
     if (currentLectureAudioInstance === audio) currentLectureAudioInstance = null;
     if (onError) onError(e);
   };
-  audio.play().catch(e => {
-    if (activeGlobalAudio === audio) activeGlobalAudio = null;
-    if (currentLectureAudioInstance === audio) currentLectureAudioInstance = null;
-    if (onError) onError(e);
-  });
+  const playPromise = audio.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(e => {
+      if (e?.name === "AbortError") return;
+      if (activeGlobalAudio === audio) activeGlobalAudio = null;
+      if (currentLectureAudioInstance === audio) currentLectureAudioInstance = null;
+      if (onError) onError(e);
+    });
+  }
   return audio;
 };
 
@@ -590,13 +619,15 @@ window.updateModuleTabsUI = function() {
       btn.innerHTML = `
         <i data-lucide="${mod.icon || 'star'}" class="w-4 h-4"></i>
         <span class="module-tab-label">${mod.title}</span>
-        ${isCompleted ? '<span class="text-[10px] text-emerald-400 ml-1 font-bold">✓</span>' : ''}
+        <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">${mod.step}</span>
+        ${isCompleted ? '<span class="text-[10px] text-emerald-400 ml-0.5 font-bold">✓</span>' : ''}
       `;
     } else {
       btn.classList.add("opacity-50", "cursor-not-allowed");
       btn.innerHTML = `
         <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
         <span class="module-tab-label text-slate-500">${mod.title}</span>
+        <span class="module-tab-step-num sm:hidden text-[10px] font-mono text-slate-500 ml-0.5">${mod.step}</span>
       `;
     }
   });
@@ -1183,6 +1214,9 @@ let cinemaCountdownTimer = null;
 window.startCinemaPresentationMode = function() {
   if (isCinemaMode) return;
 
+  // 1. Khởi tạo và unlock persistent audio instance ngay trong tap gesture này
+  const player = getOrInitLectureAudio();
+
   window.stopAllAudios();
   isSlideAudioPlaying = false;
   currentLectureMeta = null;
@@ -1207,13 +1241,25 @@ window.startCinemaPresentationMode = function() {
   const oldOverlay = document.getElementById("cinemaCountdownOverlay");
   if (oldOverlay) oldOverlay.remove();
 
-  // Mobile browsers require audio playback to start directly from a user gesture.
-  // Skip the delayed countdown on touch screens so the first slide can use the tap.
-  if (window.matchMedia?.("(pointer: coarse)").matches) {
+  // Kiểm tra thiết bị di động / màn hình cảm ứng:
+  // Trên điện thoại di động: vào thẳng chế độ trình chiếu và phát audio ngay từ tap gesture này,
+  // tránh việc đếm ngược 5 giây làm hết hạn quyền autoplay (NotAllowedError) của Safari/Chrome di động.
+  if (isMobileOrTouchDevice()) {
     document.body.classList.add("cinema-live");
     playSceneAudio(0);
     return;
   }
+
+  // Trên desktop (chuẩn bị quay OBS / màn hình lớn):
+  // Nạp sẵn audio để sẵn sàng phát sau khi đếm ngược kết thúc
+  try {
+    const firstSlide = lesson?.masterLecture?.slides?.[0];
+    const firstAudio = firstSlide?.scenes?.[0]?.audioFile || firstSlide?.audioFile;
+    if (firstAudio) {
+      player.src = firstAudio;
+      player.load();
+    }
+  } catch (e) {}
 
   const overlay = document.createElement("div");
   overlay.id = "cinemaCountdownOverlay";
@@ -1221,7 +1267,7 @@ window.startCinemaPresentationMode = function() {
   overlay.innerHTML = `
     <span class="cinema-countdown-label">Chuẩn bị trình chiếu</span>
     <span id="cinemaCountdownNumber" class="cinema-countdown-number">5</span>
-    <span class="cinema-countdown-hint">Bấm Esc để thoát bất cứ lúc nào</span>
+    <span class="cinema-countdown-hint">Bấm Esc hoặc chạm bất kỳ đâu để thoát</span>
   `;
   document.body.appendChild(overlay);
 
@@ -1248,7 +1294,7 @@ window.startCinemaPresentationMode = function() {
     document.body.classList.add("cinema-live");
     setTimeout(() => {
       if (isCinemaMode) playSceneAudio(0);
-    }, 600);
+    }, 400);
   }, 1000);
 };
 
@@ -2008,6 +2054,12 @@ function renderMasterLecture(lesson) {
 
   container.innerHTML = `
     <div class="cyber-card lecture-stage-card p-3 sm:p-5 rounded-2xl relative overflow-hidden transition-all duration-300 w-full" id="slideStageMainCard">
+      <!-- Nút Thoát Trình Chiếu Nhanh (Dành cho Mobile, Tablet & Desktop) -->
+      <button id="btnExitCinemaFloating" onclick="exitCinemaMode(event)" class="cinema-exit-floating-btn" title="Thoát chế độ trình chiếu (Esc)">
+        <i data-lucide="x" class="w-4 h-4"></i>
+        <span class="text-xs font-semibold">Thoát</span>
+      </button>
+
       <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -2127,18 +2179,19 @@ function playSceneAudio(sIdx, options = {}) {
   updateLectureControls(true);
 
   const meta = { file: audioFile, sceneIndex: sIdx, audio: null };
+  const player = getOrInitLectureAudio();
 
   const audioTrack = window.playTrack(audioFile, () => {
     if (currentLectureMeta !== meta) return;
     if (!isSlideAudioPlaying) return;
 
-    // Đối với slide dùng audio rời theo scene: chuyển ngay lập tức sau 100ms mà không ngắt quãng 2 giây
+    // Đối với slide dùng audio rời theo scene: chuyển ngay lập tức mà không ngắt quãng
     if (!isContinuousSlide && sIdx < slide.scenes.length - 1) {
       currentLectureMeta = null;
       window.switchScene(sIdx + 1);
-      setTimeout(() => {
-        if (isSlideAudioPlaying) playSceneAudio(sIdx + 1);
-      }, 100);
+      if (isSlideAudioPlaying) {
+        playSceneAudio(sIdx + 1);
+      }
       return;
     }
 
@@ -2156,18 +2209,19 @@ function playSceneAudio(sIdx, options = {}) {
     if (isCinemaMode && currentSlideIndex < lesson.masterLecture.slides.length - 1) {
       setTimeout(() => {
         if (isCinemaMode) window.goToSlide(currentSlideIndex + 1, true);
-      }, 1400);
+      }, 1000);
     } else {
       window.unlockStep(1, false);
     }
-  }, () => {
+  }, (err) => {
     if (currentLectureMeta !== meta) return;
+    console.warn("Lecture audio error:", err);
     isSlideAudioPlaying = false;
     currentLectureMeta = null;
     updateLectureControls(false);
     resetLecturePlaybackUI();
     if (hint) hint.textContent = "Không tải được tệp âm thanh. Hãy kiểm tra kết nối và thử lại.";
-  });
+  }, 1, player);
 
   meta.audio = audioTrack;
   currentLectureMeta = meta;
@@ -2247,7 +2301,7 @@ window.goToSlide = function(idx, keepPlaying = false) {
     updateLectureControls(isSlideAudioPlaying);
 
     if (keepPlaying) {
-      setTimeout(() => playSceneAudio(0), 400);
+      playSceneAudio(0);
     }
     return;
   }
@@ -2262,7 +2316,7 @@ window.goToSlide = function(idx, keepPlaying = false) {
   }
 
   if (keepPlaying) {
-    setTimeout(() => playSceneAudio(0), 1000);
+    playSceneAudio(0);
   } else {
     updateLectureControls(false);
   }
@@ -3776,35 +3830,25 @@ function startEnglishSpeechRecognition(options) {
   };
 
   recognition.onerror = function(event) {
-    if (activeSpeechRecognition !== recognition) {
-      releaseInput();
-      return;
-    }
+    if (activeSpeechRecognition !== recognition) return;
     errorCode = event.error || "";
     if (!hasResult && latestTranscript) deliverTranscript(latestTranscript);
-    const microphoneDetected = speechMonitor?.sampleCount ? speechMonitor.hasSignal : null;
     clearActiveState();
     if (options.onStateChange) options.onStateChange(false);
-    releaseInput();
-    if (!hasResult) showSpeechStatus(options, speechRecognitionErrorMessage(errorCode, microphoneDetected), "error");
+    if (!hasResult) showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
     if (!hasResult && ["no-speech", "audio-capture", "NotReadableError", "NotFoundError"].includes(errorCode)) {
       showMicrophoneSetupShortcut(options);
     }
   };
 
   recognition.onend = function() {
-    if (activeSpeechRecognition !== recognition) {
-      releaseInput();
-      return;
-    }
+    if (activeSpeechRecognition !== recognition) return;
     if (!hasResult && latestTranscript) deliverTranscript(latestTranscript);
-    const microphoneDetected = speechMonitor?.sampleCount ? speechMonitor.hasSignal : null;
     activeSpeechRecognition = null;
     clearActiveState();
     if (options.onStateChange) options.onStateChange(false);
-    releaseInput();
     if (!hasResult && !errorCode) {
-      showSpeechStatus(options, speechRecognitionErrorMessage("no-speech", microphoneDetected), "error");
+      showSpeechStatus(options, speechRecognitionErrorMessage("no-speech"), "error");
       showMicrophoneSetupShortcut(options);
     }
   };
@@ -3813,55 +3857,20 @@ function startEnglishSpeechRecognition(options) {
   if (window.stopAllAudios) window.stopAllAudios();
   activeSpeechRecognition = recognition;
 
-  (async () => {
-    try {
-      if (navigator.mediaDevices?.getUserMedia) {
-        const preferredDeviceId = getPreferredMicrophoneId();
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            ...(preferredDeviceId ? { deviceId: { exact: preferredDeviceId } } : {}),
-            autoGainControl: true,
-            noiseSuppression: false
-          }
-        });
-        if (activeSpeechRecognition !== recognition || requestId !== speechStartSequence) {
-          releaseInput();
-          return;
-        }
-
-        const track = mediaStream.getAudioTracks()[0];
-        if (!track) throw new DOMException("No audio input track", "NotFoundError");
-        speechMonitor = startSpeechInputMonitor(options, mediaStream);
-        try {
-          recognition.start(track);
-        } catch (trackError) {
-          if (trackError instanceof TypeError) {
-            releaseInput();
-            recognition.start();
-          } else {
-            throw trackError;
-          }
-        }
-      } else {
-        recognition.start();
-      }
-    } catch (error) {
-      if (activeSpeechRecognition !== recognition) {
-        releaseInput();
-        return;
-      }
-      errorCode = error?.name || "";
-      activeSpeechRecognition = null;
-      clearActiveState();
-      if (options.onStateChange) options.onStateChange(false);
-      releaseInput();
-      showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
-      if (["NotFoundError", "NotReadableError", "OverconstrainedError"].includes(errorCode)) {
-        showMicrophoneSetupShortcut(options);
-      }
-      console.warn("Lỗi khởi động micro:", error);
+  try {
+    recognition.start();
+  } catch (error) {
+    if (activeSpeechRecognition !== recognition) return;
+    errorCode = error?.name || "";
+    activeSpeechRecognition = null;
+    clearActiveState();
+    if (options.onStateChange) options.onStateChange(false);
+    showSpeechStatus(options, speechRecognitionErrorMessage(errorCode), "error");
+    if (["NotFoundError", "NotReadableError", "OverconstrainedError"].includes(errorCode)) {
+      showMicrophoneSetupShortcut(options);
     }
-  })();
+    console.warn("Lỗi khởi động speech recognition:", error);
+  }
 }
 
 window.practiceMouthSound = function(targetWord, idx) {

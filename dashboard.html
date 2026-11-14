@@ -27,7 +27,7 @@
     <!-- GSAP 3.12.5 (GreenSock) & ScrollTrigger Presentation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <link rel="stylesheet" href="css/style.css?v=20261114_mic_sensitivity_fix3">
+  <link rel="stylesheet" href="css/style.css?v=20261114_mobile_cinema_mic_fix4">
 
   <style>
     /* Cognitive Typography & Smooth Transitions */
@@ -382,36 +382,43 @@
               <button onclick="switchLessonModule('moduleLecture')" id="btn-moduleLecture" title="0. Thuyết Giảng" aria-label="0. Thuyết Giảng" class="module-tab-btn active px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
                 <span class="module-tab-label">0. Thuyết Giảng</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">0</span>
               </button>
 
               <button onclick="switchLessonModule('moduleMouth')" id="btn-moduleMouth" title="1. Khẩu Hình" aria-label="1. Khẩu Hình" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="mic" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">1. Khẩu Hình</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">1</span>
               </button>
 
               <button onclick="switchLessonModule('moduleChunks')" id="btn-moduleChunks" title="2. Cụm Từ" aria-label="2. Cụm Từ" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">2. Cụm Từ</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">2</span>
               </button>
 
               <button onclick="switchLessonModule('moduleQuiz')" id="btn-moduleQuiz" title="3. Trắc Nghiệm" aria-label="3. Trắc Nghiệm" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">3. Trắc Nghiệm</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">3</span>
               </button>
 
               <button onclick="switchLessonModule('moduleFlashcard')" id="btn-moduleFlashcard" title="4. Sổ Thẻ 3D" aria-label="4. Sổ Thẻ 3D" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">4. Sổ Thẻ 3D</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">4</span>
               </button>
 
               <button onclick="switchLessonModule('moduleSpeaking')" id="btn-moduleSpeaking" title="5. Đối Thoại AI" aria-label="5. Đối Thoại AI" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="radio" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">5. Đối Thoại AI</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">5</span>
               </button>
 
               <button onclick="switchLessonModule('moduleTyping')" id="btn-moduleTyping" title="6. Ghép Khối" aria-label="6. Ghép Khối" class="module-tab-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 text-slate-400 hover:text-slate-200 border border-transparent whitespace-nowrap flex-shrink-0 cursor-pointer">
                 <i data-lucide="keyboard" class="w-3.5 h-3.5"></i>
                 <span class="module-tab-label">6. Ghép Khối</span>
+                <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">6</span>
               </button>
             </div>
 
@@ -841,7 +848,7 @@
     });
     if (window.lucide) window.lucide.createIcons();
   </script>
-  <script type="module" src="js/app.js?v=20261114_mic_sensitivity_fix3"></script>
+  <script type="module" src="js/app.js?v=20261114_mobile_cinema_mic_fix4"></script>
   <script src="js/cyber-effects.js"></script>
 </body>
 </html>
