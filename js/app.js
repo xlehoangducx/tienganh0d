@@ -1374,9 +1374,9 @@ function getSceneVisualGraphicHTML(visualType, theme) {
     return `
       <div class="motion-beat-visual my-3 p-3.5 rounded-xl bg-slate-900/80 border border-emerald-500/40 flex items-center justify-between gap-3 shadow-inner">
         <div class="flex items-center space-x-3">
-          <div class="relative w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+          <div class="relative w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 p-1.5">
             <span class="absolute inset-0 rounded-2xl bg-emerald-400/20 visual-pulse-ring"></span>
-            <i data-lucide="sparkles" class="w-5 h-5 relative z-10"></i>
+            <img src="favicon.svg?v=20261114_brand" class="w-full h-full relative z-10 object-contain" alt="Gia Sư Của Tui">
           </div>
           <div>
             <span class="text-xs font-bold text-emerald-300 block flex items-center space-x-1.5">
