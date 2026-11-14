@@ -27,7 +27,7 @@
     <!-- GSAP 3.12.5 (GreenSock) & ScrollTrigger Presentation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <link rel="stylesheet" href="css/style.css?v=20261114_mobile_cinema_mic_fix4">
+  <link rel="stylesheet" href="css/style.css?v=20261114_mobile_ui_refine5">
 
   <style>
     /* Cognitive Typography & Smooth Transitions */
@@ -84,13 +84,13 @@
           <span class="hidden sm:inline text-xs font-bold">Ngôn Ngữ</span>
         </button>
 
-        <a href="index.html" class="flex items-center space-x-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">
-            <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <a href="index.html" class="flex items-center space-x-2">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20 flex-shrink-0">
+            <i data-lucide="sparkles" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </div>
-          <div>
-            <span class="font-bold text-base tracking-tight text-white hidden sm:inline">Gia Sư Của Tui</span>
-            <span class="text-[10px] block text-emerald-400 font-mono">Điểm Tựa Tri Thức Cho Tương Lai</span>
+          <div class="min-w-0">
+            <span class="font-extrabold text-sm sm:text-base tracking-tight text-white block truncate">Gia Sư Của Tui</span>
+            <span class="text-[10px] hidden sm:block text-emerald-400 font-mono truncate">Điểm Tựa Tri Thức Cho Tương Lai</span>
           </div>
         </a>
       </div>
@@ -304,12 +304,12 @@
     </aside>
 
   <!-- ================= WORKSPACE CHÍNH (ZEN MODE • 100% CHIẾM TRỌN MÀN HÌNH & Ở TRUNG TÂM) ================= -->
-  <div class="flex-grow max-w-5xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 relative z-10">
+  <div class="flex-grow max-w-5xl w-full mx-auto px-2.5 sm:px-6 py-2.5 sm:py-6 relative z-10">
 
-    <main class="w-full space-y-5">
+    <main class="w-full space-y-3 sm:space-y-5">
 
       <!-- ALERT NẾU TÀI KHOẢN CHỜ DUYỆT -->
-      <div id="pendingAlert" class="hidden p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+      <div id="pendingAlert" class="hidden p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
         <div class="flex items-start space-x-3">
           <i data-lucide="clock" class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
           <div>
@@ -319,23 +319,36 @@
         </div>
       </div>
 
-      <!-- ALERT CHỐNG QUÊN (SPACED REPETITION) -->
-      <div id="spacedReviewAlert" class="hidden p-4 rounded-2xl cyber-card border-amber-500/40 text-amber-200 shadow-lg">
-        <div class="flex items-start space-x-3">
-          <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400 flex-shrink-0">
-            <i data-lucide="alarm-clock" class="w-5 h-5"></i>
+      <!-- ALERT CHỐNG QUÊN (SPACED REPETITION) - COMPACT ROW ON MOBILE -->
+      <div id="spacedReviewAlert" class="hidden p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl cyber-card border-amber-500/40 text-amber-200 shadow-md">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5 min-w-0">
+            <div class="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-amber-500/20 text-amber-400 flex-shrink-0">
+              <i data-lucide="alarm-clock" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center space-x-1.5 flex-wrap">
+                <h4 class="font-bold text-xs sm:text-sm text-white">Khởi động 3 phút chống quên</h4>
+                <span class="text-[10px] font-mono text-amber-400/90">(Đã <strong id="inactiveDaysCount">2</strong> ngày chưa ôn)</span>
+              </div>
+              <p class="text-[11px] text-amber-300/80 truncate hidden sm:block">
+                Làm nhanh bài trắc nghiệm để tái kích hoạt nơ-ron cũ nhé!
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 class="font-bold text-sm text-white">Khởi động 3 phút chống quên</h4>
-            <p class="text-xs text-amber-300/80 mt-0.5">
-              Đã <strong id="inactiveDaysCount">2</strong> ngày bạn chưa luyện tập. Hãy làm nhanh bài trắc nghiệm dưới đây để kích hoạt nơ-ron cũ nhé!
-            </p>
+          <div class="flex items-center space-x-1.5 flex-shrink-0">
+            <button onclick="switchLessonModule('moduleQuiz')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition cursor-pointer">
+              Ôn Ngay
+            </button>
+            <button onclick="dismissSpacedReviewAlert()" class="p-1 text-slate-400 hover:text-white transition rounded-lg cursor-pointer" title="Đóng thông báo" aria-label="Đóng thông báo">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- ================= VIEW 1: BÀI HỌC HIỆN TẠI ================= -->
-      <div id="curriculumView" class="space-y-4">
+      <div id="curriculumView" class="space-y-2.5 sm:space-y-4">
 
         <!-- 1. COMPACT UNIFIED FOCUS BAR (RESPONSIVE 2-TIER ON MOBILE, BALANCED 3-COL GRID ON PC) -->
         <div id="workspaceFocusBar" class="px-1 space-y-1.5 sm:space-y-0 sm:grid sm:grid-cols-[180px_1fr_180px] sm:items-center">
@@ -848,7 +861,7 @@
     });
     if (window.lucide) window.lucide.createIcons();
   </script>
-  <script type="module" src="js/app.js?v=20261114_mobile_cinema_mic_fix4"></script>
+  <script type="module" src="js/app.js?v=20261114_mobile_ui_refine5"></script>
   <script src="js/cyber-effects.js"></script>
 </body>
 </html>

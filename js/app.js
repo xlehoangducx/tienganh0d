@@ -615,7 +615,7 @@ window.updateModuleTabsUI = function() {
     btn.title = mod.title;
 
     if (isUnlocked) {
-      btn.classList.remove("opacity-50", "cursor-not-allowed");
+      btn.classList.remove("opacity-50", "opacity-60", "cursor-not-allowed");
       btn.innerHTML = `
         <i data-lucide="${mod.icon || 'star'}" class="w-4 h-4"></i>
         <span class="module-tab-label">${mod.title}</span>
@@ -623,11 +623,11 @@ window.updateModuleTabsUI = function() {
         ${isCompleted ? '<span class="text-[10px] text-emerald-400 ml-0.5 font-bold">✓</span>' : ''}
       `;
     } else {
-      btn.classList.add("opacity-50", "cursor-not-allowed");
+      btn.classList.add("opacity-60", "cursor-not-allowed");
       btn.innerHTML = `
-        <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i>
-        <span class="module-tab-label text-slate-500">${mod.title}</span>
-        <span class="module-tab-step-num sm:hidden text-[10px] font-mono text-slate-500 ml-0.5">${mod.step}</span>
+        <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
+        <span class="module-tab-label text-slate-400">${mod.title}</span>
+        <span class="module-tab-step-num sm:hidden text-[10px] font-mono font-bold text-slate-300 ml-0.5">${mod.step}</span>
       `;
     }
   });
@@ -908,7 +908,10 @@ window.selectLesson = function(lessonId) {
   if (durationEl) durationEl.textContent = lesson.duration || "25 phút";
   if (phaseBadge && milestone) phaseBadge.textContent = milestone.badge;
   const phaseBadgeMobile = document.getElementById("currentPhaseBadgeMobile");
-  if (phaseBadgeMobile && milestone) phaseBadgeMobile.textContent = milestone.badge;
+  if (phaseBadgeMobile && milestone) {
+    const match = milestone.badge.match(/\(([^)]+)\)/);
+    phaseBadgeMobile.textContent = match ? match[1] : milestone.badge;
+  }
 
   // Render các Module
   renderMasterLecture(lesson);
@@ -3975,10 +3978,17 @@ function updateProgressUI(progress) {
   if (headerBadge) headerBadge.textContent = `${progress.progressPercent || 0}%`;
 
   const reviewAlert = document.getElementById("spacedReviewAlert");
-  if (reviewAlert) reviewAlert.classList.toggle("hidden", !progress.needsReview);
+  const isDismissed = sessionStorage.getItem("dismissedSpacedReviewAlert") === "true";
+  if (reviewAlert) reviewAlert.classList.toggle("hidden", isDismissed || !progress.needsReview);
   const inactiveDays = document.getElementById("inactiveDaysCount");
   if (inactiveDays) inactiveDays.textContent = String(progress.daysInactive || 0);
 }
+
+window.dismissSpacedReviewAlert = function() {
+  const alertEl = document.getElementById("spacedReviewAlert");
+  if (alertEl) alertEl.classList.add("hidden");
+  sessionStorage.setItem("dismissedSpacedReviewAlert", "true");
+};
 
 // ==============================================================
 // 14. QUẢN TRỊ ADMIN (DUYỆT HỌC VIÊN)
