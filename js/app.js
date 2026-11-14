@@ -79,6 +79,12 @@ function saveRepetitionStats() {
 function updateChunkUIBadge(phrase) {
   const data = getChunkRepetitionData(phrase);
   const score = calculateRepetitionScore(data);
+  const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+  const chunk = (lesson?.chunks || []).find(c => c.phrase === phrase || normalizeText(c.phrase) === normalizeText(phrase));
+  const isPermutation = chunk?.type === 'permutation';
+  const target = isPermutation ? 3 : 7;
+  const currentScore = isPermutation ? Math.min(3, (data.listened ? 1 : 0) + (data.spokenCorrectly ? 2 : 0)) : score;
+  const isMaxed = currentScore >= target;
 
   // Cập nhật tất cả các thẻ cụm từ có data-phrase khớp
   document.querySelectorAll(`[data-phrase="${phrase.replace(/"/g, '\\"')}"]`).forEach(card => {
@@ -87,42 +93,49 @@ function updateChunkUIBadge(phrase) {
     const statusEl = card.querySelector('.rep-status-badge');
     const tagsEl = card.querySelector('.rep-tags-container');
 
-    if (countEl) countEl.textContent = `${score}/7 lần`;
+    if (countEl) countEl.textContent = `${currentScore}/${target} lần`;
     if (barEl) {
-      barEl.style.width = `${(score / 7) * 100}%`;
-      if (score >= 7) {
+      barEl.style.width = `${(currentScore / target) * 100}%`;
+      if (isMaxed) {
         barEl.className = "h-full rounded-full transition-all duration-500 bg-emerald-400 rep-bar-fill";
-      } else if (score >= 3) {
-        barEl.className = "h-full rounded-full transition-all duration-500 bg-amber-400 rep-bar-fill";
-      } else {
+      } else if (currentScore >= 1) {
         barEl.className = "h-full rounded-full transition-all duration-500 bg-cyan-400 rep-bar-fill";
+      } else {
+        barEl.className = "h-full rounded-full transition-all duration-500 bg-slate-700 rep-bar-fill";
       }
     }
     if (statusEl) {
-      if (score >= 7) {
+      if (isMaxed) {
         statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold rep-status-badge";
-        statusEl.textContent = "Đã khắc sâu vĩnh viễn ✨";
-      } else if (score >= 3) {
+        statusEl.textContent = isPermutation ? "Đã phản xạ linh hoạt ✨" : "Đã khắc sâu vĩnh viễn ✨";
+      } else if (currentScore >= 2) {
         statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold rep-status-badge";
         statusEl.textContent = "Phản xạ cơ miệng";
-      } else {
+      } else if (currentScore >= 1) {
         statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold rep-status-badge";
         statusEl.textContent = "Ghi nhận âm thanh";
+      } else {
+        statusEl.className = "text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-semibold rep-status-badge";
+        statusEl.textContent = "Chờ kích hoạt";
       }
     }
     if (tagsEl) {
       tagsEl.innerHTML = `
         <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
         <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
-        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
-        <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
+        ${isPermutation ? `
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-cyan-500/10 text-cyan-300/80 border border-cyan-500/20" title="Cụm mở rộng luyện phản xạ nhanh tại Bước 2">⚡ Biến thể mở rộng</span>
+        ` : `
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
+        `}
       `;
     }
   });
 
   // Tương thích ngược với các ID cũ
   const countEl = document.getElementById(`rep-count-${phrase}`);
-  if (countEl) countEl.textContent = `${score}/7 lần`;
+  if (countEl) countEl.textContent = `${currentScore}/${target} lần`;
 }
 
 function markChunkListened(phrase) {
@@ -200,7 +213,11 @@ const VIENEU_AUDIO_MAP = {
   "youre welcome enjoy your trip": "assets/audio/david-buoi-01-turn-3.mp3"
 };
 
-export function speakText(text) {
+export function speakText(text, explicitAudio = null) {
+  if (explicitAudio) {
+    window.playTrack(explicitAudio);
+    return;
+  }
   if (!text) return;
   const normKey = text.trim().toLowerCase().replace(/[.,!?;:"']/g, "").replace(/\s+/g, " ").trim();
   const matchedAudio = VIENEU_AUDIO_MAP[normKey];
@@ -209,6 +226,51 @@ export function speakText(text) {
     window.playTrack(matchedAudio);
     return;
   }
+
+  // Tra cứu động trong bài học đang kích hoạt trước khi fallback Web Speech
+  try {
+    const lesson = CURRICULUM_DATA.lessons.find(l => l.id === currentActiveLessonId);
+    if (lesson) {
+      // 1. Kiểm tra chunks
+      const chunkMatch = (lesson.chunks || []).find(c => 
+        normalizeText(c.phrase) === normalizeText(text) || 
+        normalizeText(c.audioText) === normalizeText(text)
+      );
+      if (chunkMatch?.audioFile) {
+        window.playTrack(chunkMatch.audioFile);
+        return;
+      }
+      // 2. Kiểm tra mouthTechniques words
+      for (const tech of (lesson.mouthTechniques || [])) {
+        const wordMatch = (tech.words || []).find(w => 
+          normalizeText(w.word || w) === normalizeText(text)
+        );
+        if (wordMatch?.audioFile) {
+          window.playTrack(wordMatch.audioFile);
+          return;
+        }
+      }
+      // 3. Kiểm tra typingChallenges
+      const typeMatch = (lesson.typingChallenges || []).find(tc => 
+        normalizeText(tc.fullSentence) === normalizeText(text) ||
+        normalizeText(tc.audioText) === normalizeText(text)
+      );
+      if (typeMatch?.audioFile) {
+        window.playTrack(typeMatch.audioFile);
+        return;
+      }
+      // 4. Kiểm tra dialogueScenario turns
+      if (lesson.dialogueScenario?.turns) {
+        const turnMatch = lesson.dialogueScenario.turns.find(turn => 
+          normalizeText(turn.text || turn.targetText) === normalizeText(text)
+        );
+        if (turnMatch?.audioFile) {
+          window.playTrack(turnMatch.audioFile);
+          return;
+        }
+      }
+    }
+  } catch(e) {}
 
   // Fallback sang Web Speech API nếu chưa có file MP3
   if (!('speechSynthesis' in window)) return;
@@ -2212,13 +2274,18 @@ function playSceneAudio(sIdx, options = {}) {
     const isFinalSlide = isLastSlide();
 
     if (!isFinalSlide) {
-      // Tự động chuyển tiếp mượt mà sang slide tiếp theo (Slide 1 -> 2 -> 3 -> 4 -> 5)
-      if (hint) hint.textContent = "Chuẩn bị chuyển sang slide tiếp theo...";
-      setTimeout(() => {
-        if (!isLastSlide()) {
-          window.goToSlide(currentSlideIndex + 1, true);
+      if (isCinemaMode) {
+        if (hint) hint.textContent = "Chuẩn bị chuyển sang slide tiếp theo...";
+        setTimeout(() => {
+          if (!isLastSlide() && isCinemaMode) {
+            window.goToSlide(currentSlideIndex + 1, true);
+          }
+        }, 1200);
+      } else {
+        if (hint) {
+          hint.innerHTML = `<span class="text-cyan-300 font-semibold">Đã hoàn thành slide này.</span> Bấm <button onclick="window.goToSlide(${currentSlideIndex + 1}, true)" class="underline text-emerald-400 font-bold hover:text-emerald-300 cursor-pointer">Slide ${currentSlideIndex + 2} tiếp theo</button> hoặc chọn trên thanh số để tiếp tục.`;
         }
-      }, 1200);
+      }
       return;
     }
 
@@ -2413,9 +2480,10 @@ function renderMouthTechniques(techniques) {
   if (guideBanner) {
     guideBanner.innerHTML = window.renderGuideBanner(1, "Hướng Dẫn Bước 1: Khẩu Hình & Phát Âm", "Bấm loa nghe mẫu và bấm micro để AI chấm điểm từng âm nhé!");
   }
+  const soundSummary = (techniques || []).map(t => (t.sound || '').split(' ')[0]).filter(Boolean).join(', ') || 'các âm';
   const nextStepArea = document.getElementById("mouthNextStepArea");
   if (nextStepArea) {
-    nextStepArea.innerHTML = window.renderNextStepCTA(2, "✓ Hoàn Thành Bước 1 • Chuyển Sang Bước 2: Cụm Từ & Phản Xạ", "Sau khi đã luyện qua khẩu hình 3 âm /θ/, /s/, /t/, hãy chuyển sang cụm từ giao tiếp!");
+    nextStepArea.innerHTML = window.renderNextStepCTA(2, "✓ Hoàn Thành Bước 1 • Chuyển Sang Bước 2: Cụm Từ & Phản Xạ", `Sau khi đã luyện qua khẩu hình ${soundSummary}, hãy chuyển sang cụm từ giao tiếp!`);
   }
 
   const container = document.getElementById("mouthTechniquesContainer");
@@ -2533,7 +2601,11 @@ window.selectMouthWord = function(techIdx, wordIdx) {
 window.replaySelectedMouthWord = function(techIdx) {
   const wordObj = selectedMouthWords[techIdx];
   if (wordObj && wordObj.word) {
-    speakText(wordObj.word);
+    if (wordObj.audioFile) {
+      window.playTrack(wordObj.audioFile);
+    } else {
+      speakText(wordObj.word, wordObj.audioFile);
+    }
   }
 };
 
@@ -2584,15 +2656,19 @@ function renderChunks(chunks) {
   container.innerHTML = guideHeader + chunks.map((c, idx) => {
     const data = getChunkRepetitionData(c.phrase);
     const score = calculateRepetitionScore(data);
+    const isPermutation = c.type === 'permutation';
+    const target = isPermutation ? 3 : 7;
+    const currentScore = isPermutation ? Math.min(3, (data.listened ? 1 : 0) + (data.spokenCorrectly ? 2 : 0)) : score;
+    const isMaxed = currentScore >= target;
 
     return `
-    <div class="p-4 rounded-xl cyber-card card-3d ${c.type === 'permutation' ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}" data-phrase="${escapeHtml(c.phrase)}">
+    <div class="p-4 rounded-xl cyber-card card-3d ${isPermutation ? 'border-cyan-500/30 bg-cyan-950/15' : 'border-emerald-500/30'}" data-phrase="${escapeHtml(c.phrase)}">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex-grow">
           <div class="flex flex-wrap items-baseline gap-2 mb-1">
             <span class="text-base sm:text-lg font-bold text-white tracking-wide">${c.phrase}</span>
             <span class="text-xs font-mono text-cyan-400">${c.ipa}</span>
-            ${c.type === 'permutation' ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">Cách nói mở rộng</span>' : '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">Mẫu câu cốt lõi</span>'}
+            ${isPermutation ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">Cách nói mở rộng</span>' : '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">Mẫu câu cốt lõi</span>'}
           </div>
           <p class="text-xs sm:text-sm text-emerald-300 font-medium mb-1">${c.meaning}</p>
           <span class="text-[11px] text-slate-400 block">${c.context}</span>
@@ -2615,31 +2691,34 @@ function renderChunks(chunks) {
         <div class="flex items-center space-x-2">
           <span class="text-xs">🧠</span>
           <span class="text-slate-400">Khắc sâu não bộ:</span>
-          <strong class="${score >= 7 ? 'text-emerald-400' : 'text-cyan-400'} rep-count-badge" id="rep-count-${idx}">${score}/7 lần</strong>
-          <span id="rep-status-${idx}" class="text-[10px] px-1.5 py-0.5 rounded rep-status-badge ${score >= 7 ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (score >= 3 ? 'bg-amber-500/20 text-amber-300 font-semibold' : 'bg-blue-500/20 text-blue-300 font-semibold')}">
-            ${score >= 7 ? 'Đã khắc sâu vĩnh viễn ✨' : (score >= 3 ? 'Phản xạ cơ miệng' : 'Ghi nhận âm thanh')}
+          <strong class="${isMaxed ? 'text-emerald-400' : 'text-cyan-400'} rep-count-badge" id="rep-count-${idx}">${currentScore}/${target} lần</strong>
+          <span id="rep-status-${idx}" class="text-[10px] px-1.5 py-0.5 rounded rep-status-badge ${isMaxed ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : (currentScore >= 2 ? 'bg-amber-500/20 text-amber-300 font-semibold' : (currentScore >= 1 ? 'bg-blue-500/20 text-blue-300 font-semibold' : 'bg-slate-800 text-slate-400 font-semibold'))}">
+            ${isMaxed ? (isPermutation ? 'Đã phản xạ linh hoạt ✨' : 'Đã khắc sâu vĩnh viễn ✨') : (currentScore >= 2 ? 'Phản xạ cơ miệng' : (currentScore >= 1 ? 'Ghi nhận âm thanh' : 'Chờ kích hoạt'))}
           </span>
         </div>
 
         <div class="flex items-center space-x-1.5 rep-tags-container" id="rep-tags-${idx}">
           <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.listened ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'bg-slate-800 text-slate-500'}">🎧 Nghe ${data.listened ? '✓' : '○'}</span>
           <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.spokenCorrectly ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'bg-slate-800 text-slate-500'}">🎙️ Nói ≥70% ${data.spokenCorrectly ? '✓' : '○'}</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
-          <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
+          ${isPermutation ? `
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-cyan-500/10 text-cyan-300/80 border border-cyan-500/20" title="Cụm mở rộng luyện phản xạ nhanh tại Bước 2">⚡ Biến thể mở rộng</span>
+          ` : `
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.dialoguePassed ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 5: Đối Thoại">💬 Đối thoại (ở B5) ${data.dialoguePassed ? '✓' : '🔒'}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-mono ${data.typedCorrectly ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'bg-slate-800/80 text-slate-500'}" title="Mở khóa ở Bước 6: Ghép Khối">⌨️ Gõ câu (ở B6) ${data.typedCorrectly ? '✓' : '🔒'}</span>
+          `}
         </div>
 
         <div class="w-full sm:w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div id="rep-bar-${idx}" class="h-full rounded-full transition-all duration-500 rep-bar-fill ${score >= 7 ? 'bg-emerald-400' : (score >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(score / 7) * 100}%"></div>
+          <div id="rep-bar-${idx}" class="h-full rounded-full transition-all duration-500 rep-bar-fill ${isMaxed ? 'bg-emerald-400' : (currentScore >= 1 ? 'bg-cyan-400' : 'bg-slate-700')}" style="width: ${(currentScore / target) * 100}%"></div>
         </div>
 
         <div class="w-full text-[10px] text-slate-400 mt-1 italic flex items-center space-x-1.5">
           <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
-          <span>Tại Bước 2: Hãy hoàn thành <strong>Nghe (+1đ)</strong> và <strong>Nói (+2đ)</strong>. Kênh <strong>Đối thoại (+2đ)</strong> và <strong>Gõ câu (+2đ)</strong> sẽ mở khóa ở Bước 5 & 6 để đạt trọn vẹn 7/7 điểm khắc sâu!</span>
-        </div>
-      </div>
-
-        <div class="w-full sm:w-28 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div id="rep-bar-${c.phrase}" class="h-full rounded-full transition-all duration-500 ${score >= 7 ? 'bg-emerald-400' : (score >= 3 ? 'bg-amber-400' : 'bg-cyan-400')}" style="width: ${(score / 7) * 100}%"></div>
+          ${isPermutation ? `
+            <span>⚡ Biến thể mở rộng: Hoàn thành <strong>Nghe (+1đ)</strong> và <strong>Nói (+2đ)</strong> để làm chủ phản xạ 3/3!</span>
+          ` : `
+            <span>🧠 Mẫu câu cốt lõi: Hoàn thành <strong>Nghe (+1đ)</strong>, <strong>Nói (+2đ)</strong>, và mở khóa tiếp ở <strong>Đối thoại B5 (+2đ)</strong>, <strong>Gõ câu B6 (+2đ)</strong> để đạt trọn vẹn 7/7 điểm khắc sâu!</span>
+          `}
         </div>
       </div>
 
@@ -2842,7 +2921,7 @@ function renderFlashcards(chunks) {
         <div class="flashcard-front absolute inset-0 p-5 flex flex-col justify-between rounded-2xl bg-[#0b0e17] border border-slate-800">
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Thẻ #0${idx+1} • Chạm để lật</span>
-            <button onclick="event.stopPropagation(); speakText('${c.phrase.replace(/'/g, "\\'")}')" class="text-emerald-400 hover:text-white p-1.5 rounded-lg bg-emerald-500/10">
+            <button onclick="event.stopPropagation(); ${c.audioFile ? `window.playTrack('${c.audioFile}')` : `speakText('${c.phrase.replace(/'/g, "\\'")}')`}" class="text-emerald-400 hover:text-white p-1.5 rounded-lg bg-emerald-500/10" title="Nghe phát âm chuẩn">
               <i data-lucide="volume-2" class="w-4 h-4"></i>
             </button>
           </div>
@@ -3484,17 +3563,23 @@ function calculateSimilarity(str1, str2) {
   if (s1 === s2) return 1.0;
   if (!s1 || !s2) return 0.0;
 
-  const words1 = s1.split(/\s+/).filter(Boolean);
-  const words2 = s2.split(/\s+/).filter(Boolean);
-  const wordDist = levenshteinDistance(words1, words2);
-  const wordSim = Math.max(0, 1 - wordDist / Math.max(words1.length, words2.length));
-
-  // Đo thêm khoảng cách ký tự (âm vị) để tránh phạt quá nặng các âm đuôi hoặc tạp âm micro
   const charDist = levenshteinDistance(s1, s2);
   const charSim = Math.max(0, 1 - charDist / Math.max(s1.length, s2.length));
 
-  // Kết hợp tối ưu: ưu tiên độ khớp từ nhưng bù đắp bởi âm vị tương đồng
-  return Math.max(wordSim, wordSim * 0.7 + charSim * 0.3);
+  const words1 = s1.split(/\s+/).filter(Boolean);
+  const words2 = s2.split(/\s+/).filter(Boolean);
+  const maxWords = Math.max(words1.length, words2.length);
+
+  // Nếu là từ đơn lẻ (luyện khẩu hình ở Bước 1), độ tương đồng ký tự/âm vị chính là độ chính xác
+  if (maxWords === 1) {
+    return charSim;
+  }
+
+  const wordDist = levenshteinDistance(words1, words2);
+  const wordSim = Math.max(0, 1 - wordDist / maxWords);
+
+  // Kết hợp tối ưu cho câu: vừa kiểm tra trật tự từ, vừa dung sai âm vị cho người học
+  return Math.max(wordSim, wordSim * 0.6 + charSim * 0.4, charSim * 0.75);
 }
 
 let activeSpeechRecognition = null;
@@ -3975,7 +4060,7 @@ window.practiceMouthSound = function(targetWord, idx) {
 };
 
 function playPraiseForChunk(idx, chunk) {
-  const praiseAudioPath = `assets/audio/praise-chunk-buoi01-${idx + 1}.mp3`;
+  const praiseAudioPath = chunk?.praiseAudioFile || `assets/audio/praise-chunk-buoi01-${idx + 1}.mp3`;
   const praiseAudio = new Audio(praiseAudioPath);
   praiseAudio.play().catch(() => {
     if ('speechSynthesis' in window) {

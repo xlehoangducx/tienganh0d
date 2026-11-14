@@ -366,6 +366,7 @@ export const CURRICULUM_DATA = {
           context: "Mẫu câu cốt lõi: Bắt tay làm quen người mới lần đầu tiên",
           audioFile: "assets/audio/hi-nice-to-meet-you.mp3",
           audioText: "Hi, nice to meet you!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-1.mp3",
           type: "core",
           repetitionTarget: 7
         },
@@ -376,8 +377,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Tạo cảm giác nhiệt tình, hào hứng hơn",
           audioFile: "assets/audio/hi-great-to-meet-you.mp3",
           audioText: "Hi, great to meet you!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-2.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         },
         {
           phrase: "Good to see you again!",
@@ -386,8 +388,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Khi gặp lại người quen từ lần thứ hai trở đi",
           audioFile: "assets/audio/good-to-see-you-again.mp3",
           audioText: "Good to see you again!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-3.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         },
         {
           phrase: "Thank you so much!",
@@ -396,6 +399,7 @@ export const CURRICULUM_DATA = {
           context: "Mẫu câu cốt lõi: Khi nhận sự giúp đỡ, nói với giọng trầm ấm",
           audioFile: "assets/audio/thank-you-so-much.mp3",
           audioText: "Thank you so much!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-4.mp3",
           type: "core",
           repetitionTarget: 7
         },
@@ -406,8 +410,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Cụ thể hóa lời cảm ơn cho sự trợ giúp vừa nhận",
           audioFile: "assets/audio/thank-you-for-your-help.mp3",
           audioText: "Thank you for your help!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-5.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         },
         {
           phrase: "Thanks a lot!",
@@ -416,8 +421,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Nói nhanh gọn với bạn bè đồng trang lứa",
           audioFile: "assets/audio/thanks-a-lot.mp3",
           audioText: "Thanks a lot!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-6.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         },
         {
           phrase: "Have a great day!",
@@ -426,6 +432,7 @@ export const CURRICULUM_DATA = {
           context: "Mẫu câu cốt lõi: Khi chào tạm biệt lúc ra về hoặc kết thúc trò chuyện",
           audioFile: "assets/audio/have-a-great-day.mp3",
           audioText: "Have a great day!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-7.mp3",
           type: "core",
           repetitionTarget: 7
         },
@@ -436,8 +443,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Chào tạm biệt đồng nghiệp vào chiều thứ Sáu",
           audioFile: "assets/audio/have-a-nice-weekend.mp3",
           audioText: "Have a nice weekend!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-8.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         },
         {
           phrase: "Have a safe trip!",
@@ -446,8 +454,9 @@ export const CURRICULUM_DATA = {
           context: "Cách nói mở rộng: Tiễn bạn bè đi xa, ra sân bay hoặc đi du lịch",
           audioFile: "assets/audio/have-a-safe-trip.mp3",
           audioText: "Have a safe trip!",
+          praiseAudioFile: "assets/audio/praise-chunk-buoi01-9.mp3",
           type: "permutation",
-          repetitionTarget: 7
+          repetitionTarget: 3
         }
       ],
 
@@ -457,11 +466,11 @@ export const CURRICULUM_DATA = {
           id: "q1",
           question: "Khi bạn gặp một người khách nước ngoài lần đầu tiên, câu nào tự nhiên và đúng chuẩn nhất?",
           options: [
-            "Hi, nice to meet you!",
             "Thank you so much!",
+            "Hi, nice to meet you!",
             "Have a great day!"
           ],
-          correctIndex: 0,
+          correctIndex: 1,
           explanation: "'Hi, nice to meet you!' là câu mở đầu kinh điển nhất khi làm quen người mới."
         },
         {
@@ -479,22 +488,22 @@ export const CURRICULUM_DATA = {
           id: "q3",
           question: "Khi được đồng nghiệp hoặc người bản xứ giúp hoàn thành một việc, bạn nói câu nào lịch sự nhất?",
           options: [
-            "Thank you for your help!",
             "Have a safe trip!",
-            "Good to see you again!"
+            "Good to see you again!",
+            "Thank you for your help!"
           ],
-          correctIndex: 0,
+          correctIndex: 2,
           explanation: "'Thank you for your help!' là cấu trúc biến thể chuẩn xác để cảm ơn sự hỗ trợ trực tiếp."
         },
         {
           id: "q4",
           question: "Vào chiều thứ Sáu lúc tan làm, câu chúc tạm biệt nào tự nhiên và ấm áp nhất?",
           options: [
-            "Have a nice weekend!",
             "Nice to meet you!",
+            "Have a nice weekend!",
             "I need some water!"
           ],
-          correctIndex: 0,
+          correctIndex: 1,
           explanation: "'Have a nice weekend!' là câu chúc phổ biến nhất của người Mỹ khi chia tay trước kỳ nghỉ cuối tuần."
         }
       ],
